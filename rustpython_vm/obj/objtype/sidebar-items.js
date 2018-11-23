@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["base_classes",""],["create_type",""],["get_attributes",""],["get_type_name",""],["init",""],["isinstance",""],["issubclass",""],["new",""],["type_call",""],["type_getattribute",""],["type_new",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["create_object",""],["init",""],["new_instance",""]]});

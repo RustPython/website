@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["ast","Implement abstract syntax tree nodes for the python language."],["lexer","This module takes care of lexing python source text. This means source code is translated into seperate tokens."],["parser",""],["token","Different token definitions. Loosely based on token.h from CPython source:"]]});
