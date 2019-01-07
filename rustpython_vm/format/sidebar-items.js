@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["FormatAlign",""],["FormatGrouping",""],["FormatParseError",""],["FormatPart",""],["FormatSign",""],["FormatType",""]],"struct":[["FormatSpec",""],["FormatString",""]]});

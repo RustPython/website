@@ -629,6 +629,8 @@
 <span id="629">629</span>
 <span id="630">630</span>
 <span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! `ast` standard module for abstract syntax trees.</span>
 <span class="doccomment">//!</span>
@@ -639,9 +641,7 @@
 
 <span class="kw">use</span> <span class="self">self</span>::<span class="ident">rustpython_parser</span>::{<span class="ident">ast</span>, <span class="ident">parser</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">obj</span>::{<span class="ident">objstr</span>, <span class="ident">objtype</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">AttributeProtocol</span>, <span class="ident">DictProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
-};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">ToBigInt</span>;
 <span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex64</span>;
@@ -673,7 +673,7 @@ impl AstToPyAst {
     <span class="comment">// let ast_node = ctx.new_instance(this.Module);</span>
     <span class="kw">let</span> <span class="ident">ast_node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_object</span>();
     <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">body</span>);
-    <span class="ident">ast_node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">ast_node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
     <span class="ident">ast_node</span>
 }
 
@@ -705,14 +705,14 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;ClassDef&quot;</span>);
 
             <span class="comment">// Set name:</span>
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;name&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;name&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()));
 
             <span class="comment">// Set body:</span>
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="kw">let</span> <span class="ident">py_decorator_list</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">decorator_list</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;decorator_list&quot;</span>, <span class="ident">py_decorator_list</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;decorator_list&quot;</span>, <span class="ident">py_decorator_list</span>);
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">FunctionDef</span> {
@@ -724,16 +724,16 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;FunctionDef&quot;</span>);
 
             <span class="comment">// Set name:</span>
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;name&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;name&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()));
 
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;args&quot;</span>, <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;args&quot;</span>, <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>));
 
             <span class="comment">// Set body:</span>
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="kw">let</span> <span class="ident">py_decorator_list</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">decorator_list</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;decorator_list&quot;</span>, <span class="ident">py_decorator_list</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;decorator_list&quot;</span>, <span class="ident">py_decorator_list</span>);
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Continue</span> <span class="op">=&gt;</span> {
@@ -751,13 +751,13 @@ impl AstToPyAst {
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assert</span> { <span class="ident">test</span>, <span class="ident">msg</span> } <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Pass&quot;</span>);
 
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>));
 
             <span class="kw">let</span> <span class="ident">py_msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">msg</span>),
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">none</span>(),
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;msg&quot;</span>, <span class="ident">py_msg</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;msg&quot;</span>, <span class="ident">py_msg</span>);
 
             <span class="ident">node</span>
         }
@@ -770,7 +770,7 @@ impl AstToPyAst {
                     .<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">v</span>))
                     .<span class="ident">collect</span>(),
             );
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;targets&quot;</span>, <span class="ident">py_targets</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;targets&quot;</span>, <span class="ident">py_targets</span>);
 
             <span class="ident">node</span>
         }
@@ -787,7 +787,7 @@ impl AstToPyAst {
             } <span class="kw">else</span> {
                 <span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="ident">node</span>
         }
@@ -795,17 +795,17 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;If&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_test</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
 
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                 <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>)
             } <span class="kw">else</span> {
                 <span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
 
             <span class="ident">node</span>
         }
@@ -818,20 +818,20 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;For&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_target</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">target</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;target&quot;</span>, <span class="ident">py_target</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;target&quot;</span>, <span class="ident">py_target</span>);
 
             <span class="kw">let</span> <span class="ident">py_iter</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">iter</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;iter&quot;</span>, <span class="ident">py_iter</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;iter&quot;</span>, <span class="ident">py_iter</span>);
 
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                 <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>)
             } <span class="kw">else</span> {
                 <span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
 
             <span class="ident">node</span>
         }
@@ -839,17 +839,17 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;While&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_test</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
 
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                 <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>)
             } <span class="kw">else</span> {
                 <span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
 
             <span class="ident">node</span>
         }
@@ -857,7 +857,7 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Expr&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">expression</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">value</span>);
 
             <span class="ident">node</span>
         }
@@ -868,7 +868,7 @@ impl AstToPyAst {
 
     <span class="comment">// set lineno on node:</span>
     <span class="kw">let</span> <span class="ident">lineno</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">statement</span>.<span class="ident">location</span>.<span class="ident">get_row</span>().<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>());
-    <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>);
 
     <span class="ident">node</span>
 }
@@ -891,10 +891,10 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Call&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_func_ast</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">function</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;func&quot;</span>, <span class="ident">py_func_ast</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;func&quot;</span>, <span class="ident">py_func_ast</span>);
 
             <span class="kw">let</span> <span class="ident">py_args</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;args&quot;</span>, <span class="ident">py_args</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;args&quot;</span>, <span class="ident">py_args</span>);
 
             <span class="ident">node</span>
         }
@@ -902,7 +902,7 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;BinOp&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;left&quot;</span>, <span class="ident">py_a</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;left&quot;</span>, <span class="ident">py_a</span>);
 
             <span class="comment">// Operator:</span>
             <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
@@ -921,10 +921,10 @@ impl AstToPyAst {
                 <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">FloorDiv</span> <span class="op">=&gt;</span> <span class="string">&quot;FloorDiv&quot;</span>,
             };
             <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
 
             <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;right&quot;</span>, <span class="ident">py_b</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;right&quot;</span>, <span class="ident">py_b</span>);
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Unop</span> { <span class="ident">op</span>, <span class="ident">a</span> } <span class="op">=&gt;</span> {
@@ -937,10 +937,10 @@ impl AstToPyAst {
                 <span class="ident">ast</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Pos</span> <span class="op">=&gt;</span> <span class="string">&quot;UAdd&quot;</span>,
             };
             <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
 
             <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;operand&quot;</span>, <span class="ident">py_a</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;operand&quot;</span>, <span class="ident">py_a</span>);
 
             <span class="ident">node</span>
         }
@@ -951,14 +951,14 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
             <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>);
             <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">py_a</span>, <span class="ident">py_b</span>]);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
 
             <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
                 <span class="ident">ast</span>::<span class="ident">BooleanOperator</span>::<span class="ident">And</span> <span class="op">=&gt;</span> <span class="string">&quot;And&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">BooleanOperator</span>::<span class="ident">Or</span> <span class="op">=&gt;</span> <span class="string">&quot;Or&quot;</span>,
             };
             <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
 
             <span class="ident">node</span>
         }
@@ -966,7 +966,7 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Compare&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;left&quot;</span>, <span class="ident">py_a</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;left&quot;</span>, <span class="ident">py_a</span>);
 
             <span class="comment">// Operator:</span>
             <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
@@ -982,10 +982,10 @@ impl AstToPyAst {
                 <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">IsNot</span> <span class="op">=&gt;</span> <span class="string">&quot;IsNot&quot;</span>,
             };
             <span class="kw">let</span> <span class="ident">py_ops</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>())]);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;ops&quot;</span>, <span class="ident">py_ops</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;ops&quot;</span>, <span class="ident">py_ops</span>);
 
             <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>)]);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;comparators&quot;</span>, <span class="ident">py_b</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;comparators&quot;</span>, <span class="ident">py_b</span>);
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> {
@@ -993,16 +993,16 @@ impl AstToPyAst {
 
             <span class="comment">// Id:</span>
             <span class="kw">let</span> <span class="ident">py_name</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;id&quot;</span>, <span class="ident">py_name</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;id&quot;</span>, <span class="ident">py_name</span>);
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Lambda</span> { <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Lambda&quot;</span>);
 
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;args&quot;</span>, <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;args&quot;</span>, <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>));
 
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="ident">node</span>
         }
@@ -1010,13 +1010,13 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;IfExp&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_test</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
 
             <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
 
             <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
 
             <span class="ident">node</span>
         }
@@ -1030,28 +1030,28 @@ impl AstToPyAst {
                     <span class="ident">ctx</span>.<span class="ident">new_complex</span>(<span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="kw-2">*</span><span class="ident">real</span>, <span class="kw-2">*</span><span class="ident">imag</span>))
                 }
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;n&quot;</span>, <span class="ident">py_n</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;n&quot;</span>, <span class="ident">py_n</span>);
 
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">True</span> <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;NameConstant&quot;</span>);
 
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>));
 
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">False</span> <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;NameConstant&quot;</span>);
 
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>));
 
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;NameConstant&quot;</span>);
 
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">none</span>());
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">none</span>());
 
             <span class="ident">node</span>
         }
@@ -1060,7 +1060,7 @@ impl AstToPyAst {
 
             <span class="kw">let</span> <span class="ident">elts</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">e</span>)).<span class="ident">collect</span>();
             <span class="kw">let</span> <span class="ident">py_elts</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elts</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
 
             <span class="ident">node</span>
         }
@@ -1069,7 +1069,7 @@ impl AstToPyAst {
 
             <span class="kw">let</span> <span class="ident">elts</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">e</span>)).<span class="ident">collect</span>();
             <span class="kw">let</span> <span class="ident">py_elts</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elts</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
 
             <span class="ident">node</span>
         }
@@ -1078,7 +1078,7 @@ impl AstToPyAst {
 
             <span class="kw">let</span> <span class="ident">elts</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">e</span>)).<span class="ident">collect</span>();
             <span class="kw">let</span> <span class="ident">py_elts</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elts</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
 
             <span class="ident">node</span>
         }
@@ -1093,10 +1093,10 @@ impl AstToPyAst {
             }
 
             <span class="kw">let</span> <span class="ident">py_keys</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">keys</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;keys&quot;</span>, <span class="ident">py_keys</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;keys&quot;</span>, <span class="ident">py_keys</span>);
 
             <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">values</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
 
             <span class="ident">node</span>
         }
@@ -1115,7 +1115,7 @@ impl AstToPyAst {
                 .<span class="ident">map</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">comprehension_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">g</span>))
                 .<span class="ident">collect</span>();
             <span class="kw">let</span> <span class="ident">py_generators</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">g</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;generators&quot;</span>, <span class="ident">py_generators</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;generators&quot;</span>, <span class="ident">py_generators</span>);
 
             <span class="ident">node</span>
         }
@@ -1126,7 +1126,7 @@ impl AstToPyAst {
                 <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>),
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">none</span>(),
             };
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="ident">node</span>
         }
@@ -1134,7 +1134,7 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;YieldFrom&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="ident">node</span>
         }
@@ -1142,10 +1142,10 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Subscript&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="kw">let</span> <span class="ident">py_slice</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;slice&quot;</span>, <span class="ident">py_slice</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;slice&quot;</span>, <span class="ident">py_slice</span>);
 
             <span class="ident">node</span>
         }
@@ -1153,10 +1153,10 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Attribute&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="kw">let</span> <span class="ident">py_attr</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>());
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;attr&quot;</span>, <span class="ident">py_attr</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;attr&quot;</span>, <span class="ident">py_attr</span>);
 
             <span class="ident">node</span>
         }
@@ -1164,7 +1164,7 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Starred&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="ident">node</span>
         }
@@ -1172,25 +1172,25 @@ impl AstToPyAst {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Slice&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">elements</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;bounds&quot;</span>, <span class="ident">py_value</span>);
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;bounds&quot;</span>, <span class="ident">py_value</span>);
 
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Str&quot;</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;s&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;s&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
             <span class="ident">node</span>
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Bytes</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Bytes&quot;</span>);
-            <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;s&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
+            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;s&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
             <span class="ident">node</span>
         }
     };
 
     <span class="comment">// TODO: retrieve correct lineno:</span>
     <span class="kw">let</span> <span class="ident">lineno</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">One</span>::<span class="ident">one</span>());
-    <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>);
 
     <span class="ident">node</span>
 }
@@ -1198,7 +1198,8 @@ impl AstToPyAst {
 <span class="kw">fn</span> <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Parameters</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;arguments&quot;</span>);
 
-    <span class="ident">node</span>.<span class="ident">set_attr</span>(
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">node</span>,
         <span class="string">&quot;args&quot;</span>,
         <span class="ident">ctx</span>.<span class="ident">new_list</span>(
             <span class="ident">args</span>.<span class="ident">args</span>
@@ -1215,13 +1216,13 @@ impl AstToPyAst {
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;comprehension&quot;</span>);
 
     <span class="kw">let</span> <span class="ident">py_target</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">target</span>);
-    <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;target&quot;</span>, <span class="ident">py_target</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;target&quot;</span>, <span class="ident">py_target</span>);
 
     <span class="kw">let</span> <span class="ident">py_iter</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">iter</span>);
-    <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;iter&quot;</span>, <span class="ident">py_iter</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;iter&quot;</span>, <span class="ident">py_iter</span>);
 
     <span class="kw">let</span> <span class="ident">py_ifs</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">ifs</span>);
-    <span class="ident">node</span>.<span class="ident">set_attr</span>(<span class="string">&quot;ifs&quot;</span>, <span class="ident">py_ifs</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;ifs&quot;</span>, <span class="ident">py_ifs</span>);
 
     <span class="ident">node</span>
 }
@@ -1244,18 +1245,21 @@ impl AstToPyAst {
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mk_module</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">ast_mod</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_module</span>(<span class="kw-2">&amp;</span><span class="string">&quot;ast&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">new_scope</span>(<span class="prelude-val">None</span>));
-    <span class="ident">ast_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;parse&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">ast_parse</span>));
-    <span class="ident">ast_mod</span>.<span class="ident">set_item</span>(
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">ast_mod</span>, <span class="string">&quot;parse&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">ast_parse</span>));
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">ast_mod</span>,
         <span class="string">&quot;Module&quot;</span>,
         <span class="ident">ctx</span>.<span class="ident">new_class</span>(<span class="kw-2">&amp;</span><span class="string">&quot;_ast.Module&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">object</span>()),
     );
 
     <span class="comment">// TODO: maybe we can use some clever macro to generate this?</span>
-    <span class="ident">ast_mod</span>.<span class="ident">set_item</span>(
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">ast_mod</span>,
         <span class="string">&quot;FunctionDef&quot;</span>,
         <span class="ident">ctx</span>.<span class="ident">new_class</span>(<span class="kw-2">&amp;</span><span class="string">&quot;_ast.FunctionDef&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">object</span>()),
     );
-    <span class="ident">ast_mod</span>.<span class="ident">set_item</span>(
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">ast_mod</span>,
         <span class="string">&quot;Call&quot;</span>,
         <span class="ident">ctx</span>.<span class="ident">new_class</span>(<span class="kw-2">&amp;</span><span class="string">&quot;_ast.Call&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">object</span>()),
     );

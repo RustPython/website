@@ -35,6 +35,8 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
 </pre><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">ast</span>;
 <span class="kw">mod</span> <span class="ident">io</span>;
@@ -44,6 +46,7 @@
 <span class="kw">mod</span> <span class="ident">pystruct</span>;
 <span class="kw">mod</span> <span class="ident">random</span>;
 <span class="kw">mod</span> <span class="ident">re</span>;
+<span class="kw">mod</span> <span class="ident">string</span>;
 <span class="kw">mod</span> <span class="ident">time_module</span>;
 <span class="kw">mod</span> <span class="ident">tokenize</span>;
 <span class="kw">mod</span> <span class="ident">types</span>;
@@ -63,6 +66,7 @@
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;math&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">math</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;re&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">re</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;random&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">random</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
+    <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;string&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">string</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;struct&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">pystruct</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;time&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">time_module</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(

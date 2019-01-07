@@ -276,9 +276,25 @@
 <span id="276">276</span>
 <span id="277">277</span>
 <span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">AttributeProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
+    <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
 };
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objint</span>;
@@ -331,7 +347,7 @@
         )<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot cast {:?} to float&quot;</span>, <span class="ident">obj</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot cast {} to float&quot;</span>, <span class="ident">obj</span>.<span class="ident">borrow</span>())))
     }
 }
 
@@ -438,7 +454,7 @@
             .<span class="ident">ctx</span>
             .<span class="ident">new_float</span>(<span class="ident">v1</span> <span class="op">+</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>()))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {:?} and {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">i2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
     }
 }
 
@@ -455,7 +471,11 @@
         <span class="kw">let</span> <span class="ident">r2</span> <span class="op">=</span> <span class="ident">float_mod</span>(<span class="ident">vm</span>, <span class="ident">args</span>.<span class="ident">clone</span>());
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">r1</span>.<span class="ident">unwrap</span>(), <span class="ident">r2</span>.<span class="ident">unwrap</span>()]))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot divmod power {:?} and {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">i2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
+            <span class="string">&quot;Cannot divmod power {} and {}&quot;</span>,
+            <span class="ident">i</span>.<span class="ident">borrow</span>(),
+            <span class="ident">i2</span>.<span class="ident">borrow</span>()
+        )))
     }
 }
 
@@ -472,7 +492,11 @@
             .<span class="ident">ctx</span>
             .<span class="ident">new_float</span>((<span class="ident">get_value</span>(<span class="ident">i</span>) <span class="op">/</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>()).<span class="ident">floor</span>()))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot floordiv {:?} and {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">i2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
+            <span class="string">&quot;Cannot floordiv {} and {}&quot;</span>,
+            <span class="ident">i</span>.<span class="ident">borrow</span>(),
+            <span class="ident">i2</span>.<span class="ident">borrow</span>()
+        )))
     }
 }
 
@@ -490,7 +514,7 @@
             .<span class="ident">ctx</span>
             .<span class="ident">new_float</span>(<span class="ident">v1</span> <span class="op">-</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>()))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {:?} and {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">i2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
     }
 }
 
@@ -507,7 +531,7 @@
             .<span class="ident">ctx</span>
             .<span class="ident">new_float</span>(<span class="ident">get_value</span>(<span class="ident">i</span>) <span class="op">%</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>()))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot mod {:?} and {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">i2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot mod {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
     }
 }
 
@@ -533,27 +557,35 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">v1</span>.<span class="ident">powf</span>(<span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>());
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="ident">result</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {:?} and {:?}&quot;</span>, <span class="ident">i</span>, <span class="ident">i2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
     }
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
     <span class="kw">let</span> <span class="kw-2">ref</span> <span class="ident">float_type</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">float_type</span>;
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__eq__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_eq</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__lt__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_lt</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__le__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_le</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__gt__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_gt</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__ge__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_ge</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__abs__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_abs</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__add__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_add</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__divmod__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_divmod</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__floordiv__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_floordiv</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__init__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_init</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__mod__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_mod</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__neg__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_neg</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__pow__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_pow</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__sub__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_sub</span>));
-    <span class="ident">float_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__repr__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_repr</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__eq__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_eq</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__lt__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_lt</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__le__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_le</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__gt__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_gt</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__ge__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_ge</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__abs__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_abs</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__add__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_add</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">float_type</span>,
+        <span class="string">&quot;__divmod__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_divmod</span>),
+    );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">float_type</span>,
+        <span class="string">&quot;__floordiv__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_floordiv</span>),
+    );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__init__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_init</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__mod__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_mod</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__neg__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_neg</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__pow__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_pow</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__sub__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_sub</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">float_type</span>, <span class="string">&quot;__repr__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">float_repr</span>));
 }
 </pre>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

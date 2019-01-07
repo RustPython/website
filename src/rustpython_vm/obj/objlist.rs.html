@@ -251,10 +251,44 @@
 <span id="251">251</span>
 <span id="252">252</span>
 <span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">AttributeProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>,
-    <span class="ident">TypeProtocol</span>,
+    <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
 };
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objbool</span>;
@@ -341,7 +375,7 @@
         <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">e1</span>.<span class="ident">iter</span>().<span class="ident">chain</span>(<span class="ident">e2</span>.<span class="ident">iter</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>();
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elements</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {:?} and {:?}&quot;</span>, <span class="ident">o</span>, <span class="ident">o2</span>)))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {} and {}&quot;</span>, <span class="ident">o</span>.<span class="ident">borrow</span>(), <span class="ident">o2</span>.<span class="ident">borrow</span>())))
     }
 }
 
@@ -487,23 +521,59 @@
     <span class="ident">set_item</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">elements</span>, <span class="ident">key</span>.<span class="ident">clone</span>(), <span class="ident">value</span>.<span class="ident">clone</span>())
 }
 
+<span class="kw">fn</span> <span class="ident">list_mul</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [
+            (<span class="ident">list</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">list_type</span>())),
+            (<span class="ident">product</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))
+        ]
+    );
+
+    <span class="kw">let</span> <span class="ident">counter</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">product</span>).<span class="ident">to_usize</span>().<span class="ident">unwrap</span>();
+
+    <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">get_elements</span>(<span class="ident">list</span>);
+    <span class="kw">let</span> <span class="ident">current_len</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">len</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_elements</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">counter</span> <span class="op">*</span> <span class="ident">current_len</span>);
+
+    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">counter</span> {
+        <span class="ident">new_elements</span>.<span class="ident">extend</span>(<span class="ident">elements</span>.<span class="ident">clone</span>());
+    }
+
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">new_elements</span>))
+}
+
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
     <span class="kw">let</span> <span class="kw-2">ref</span> <span class="ident">list_type</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">list_type</span>;
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__add__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_add</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__contains__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_contains</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__eq__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_eq</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__getitem__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_getitem</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__iter__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_iter</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__setitem__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_setitem</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__len__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_len</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__new__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_new</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;__repr__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_repr</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;append&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_append</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;clear&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_clear</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;count&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_count</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;extend&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_extend</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;reverse&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_reverse</span>));
-    <span class="ident">list_type</span>.<span class="ident">set_attr</span>(<span class="string">&quot;sort&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_sort</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__add__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_add</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">list_type</span>,
+        <span class="string">&quot;__contains__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_contains</span>),
+    );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__eq__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_eq</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">list_type</span>,
+        <span class="string">&quot;__getitem__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_getitem</span>),
+    );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__iter__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_iter</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">list_type</span>,
+        <span class="string">&quot;__setitem__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_setitem</span>),
+    );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__mul__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_mul</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__len__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_len</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__new__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_new</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;__repr__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_repr</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;append&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_append</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;clear&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_clear</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;count&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_count</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;extend&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_extend</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;reverse&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_reverse</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">list_type</span>, <span class="string">&quot;sort&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">list_sort</span>));
 }
 </pre>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

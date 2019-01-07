@@ -60,24 +60,28 @@
 <span id="60">60</span>
 <span id="61">61</span>
 <span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Random module.</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rand</span>;
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">obj</span>::{<span class="ident">objfloat</span>, <span class="ident">objtype</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">DictProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
-};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="ident">stdlib</span>::<span class="ident">random</span>::<span class="ident">rand</span>::<span class="ident">distributions</span>::{<span class="ident">Distribution</span>, <span class="ident">Normal</span>};
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mk_module</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">py_mod</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_module</span>(<span class="kw-2">&amp;</span><span class="string">&quot;random&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">new_scope</span>(<span class="prelude-val">None</span>));
-    <span class="ident">py_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;gauss&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">random_gauss</span>));
-    <span class="ident">py_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;normalvariate&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">random_normalvariate</span>));
-    <span class="ident">py_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;random&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">random_random</span>));
-    <span class="comment">// py_mod.set_item(&quot;weibull&quot;, ctx.new_rustfunc(random_weibullvariate));</span>
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_mod</span>, <span class="string">&quot;gauss&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">random_gauss</span>));
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">py_mod</span>,
+        <span class="string">&quot;normalvariate&quot;</span>,
+        <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">random_normalvariate</span>),
+    );
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_mod</span>, <span class="string">&quot;random&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">random_random</span>));
+    <span class="comment">// py_mod.set_attr(&quot;weibull&quot;, ctx.new_rustfunc(random_weibullvariate));</span>
     <span class="comment">// TODO: implement more random functions.</span>
     <span class="ident">py_mod</span>
 }

@@ -57,8 +57,6 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
 </pre><pre class="rust ">
 <span class="comment">/*
  * Regular expressions.
@@ -71,9 +69,7 @@
 <span class="kw">use</span> <span class="self">self</span>::<span class="ident">regex</span>::<span class="ident">Regex</span>;
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">obj</span>::{<span class="ident">objstr</span>, <span class="ident">objtype</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">DictProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
-};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="kw">fn</span> <span class="ident">re_match</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
@@ -116,9 +112,9 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mk_module</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">py_mod</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_module</span>(<span class="kw-2">&amp;</span><span class="string">&quot;re&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">new_scope</span>(<span class="prelude-val">None</span>));
     <span class="kw">let</span> <span class="ident">match_type</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_class</span>(<span class="kw-2">&amp;</span><span class="string">&quot;Match&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ctx</span>.<span class="ident">object</span>());
-    <span class="ident">py_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;Match&quot;</span>, <span class="ident">match_type</span>);
-    <span class="ident">py_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;match&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">re_match</span>));
-    <span class="ident">py_mod</span>.<span class="ident">set_item</span>(<span class="string">&quot;search&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">re_search</span>));
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_mod</span>, <span class="string">&quot;Match&quot;</span>, <span class="ident">match_type</span>);
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_mod</span>, <span class="string">&quot;match&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">re_match</span>));
+    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_mod</span>, <span class="string">&quot;search&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">re_search</span>));
     <span class="ident">py_mod</span>
 }
 </pre>
