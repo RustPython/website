@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_elements",""],["init",""],["sequence_to_hashmap",""],["set_contains",""]]});
+initSidebarItems({"fn":[["get_elements",""],["init",""],["set_contains",""]]});

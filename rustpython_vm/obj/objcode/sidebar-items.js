@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["copy_code","Extract rust bytecode object from a python code object."],["init",""]]});
+initSidebarItems({"fn":[["get_value",""],["init",""]]});

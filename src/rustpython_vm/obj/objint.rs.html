@@ -461,17 +461,252 @@
 <span id="461">461</span>
 <span id="462">462</span>
 <span id="463">463</span>
-</pre><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">format</span>::<span class="ident">FormatSpec</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">FromPyObjectRef</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>,
-    <span class="ident">TypeProtocol</span>,
-};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objfloat</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objstr</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtype</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">format</span>::<span class="ident">FormatSpec</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
+    <span class="ident">FromPyObjectRef</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>,
+    <span class="ident">TypeProtocol</span>,
+};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="ident">num_bigint</span>::{<span class="ident">BigInt</span>, <span class="ident">ToBigInt</span>};
+<span class="kw">use</span> <span class="ident">num_integer</span>::<span class="ident">Integer</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">Pow</span>, <span class="ident">Signed</span>, <span class="ident">ToPrimitive</span>, <span class="ident">Zero</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>};
 
@@ -502,7 +737,7 @@
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">Zero</span>::<span class="ident">zero</span>(),
     };
     <span class="prelude-val">Ok</span>(<span class="ident">PyObject</span>::<span class="ident">new</span>(
-        <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="ident">value</span>: <span class="ident">val</span> },
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="ident">value</span>: <span class="ident">val</span> },
         <span class="ident">cls</span>.<span class="ident">clone</span>(),
     ))
 }
@@ -522,7 +757,7 @@
         <span class="kw">match</span> <span class="ident">i32</span>::<span class="ident">from_str_radix</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>, <span class="ident">base</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>(),
             <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
-                <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Error occured during int conversion {:?}&quot;</span>, <span class="ident">err</span>);
+                <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Error occurred during int conversion {:?}&quot;</span>, <span class="ident">err</span>);
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="macro">format</span><span class="macro">!</span>(
                     <span class="string">&quot;invalid literal for int() with base {}: &#39;{}&#39;&quot;</span>,
                     <span class="ident">base</span>, <span class="ident">s</span>
@@ -541,7 +776,7 @@
 
 <span class="comment">// Retrieve inner int value:</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_value</span>(<span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">IntType</span> {
-    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="ident">value</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="ident">value</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
         <span class="ident">value</span>.<span class="ident">clone</span>()
     } <span class="kw">else</span> {
         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Inner error getting int {:?}&quot;</span>, <span class="ident">obj</span>);
@@ -554,22 +789,50 @@
     }
 }
 
+<span class="kw">fn</span> <span class="ident">int_bool</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
+    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="op">!</span><span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>).<span class="ident">is_zero</span>();
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">result</span>))
+}
+
+<span class="kw">fn</span> <span class="ident">int_invert</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
+
+    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="op">!</span><span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
+
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">result</span>))
+}
+
 <span class="kw">fn</span> <span class="ident">int_eq</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
         <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
+
+    <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">other</span>);
         <span class="ident">zelf</span> <span class="op">==</span> <span class="ident">other</span>
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">float_type</span>()) {
-        <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">objfloat</span>::<span class="ident">get_value</span>(<span class="ident">other</span>);
-        <span class="ident">zelf</span> <span class="op">==</span> <span class="ident">other</span>
     } <span class="kw">else</span> {
-        <span class="bool-val">false</span>
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>());
+    };
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">result</span>))
+}
+
+<span class="kw">fn</span> <span class="ident">int_ne</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
+    );
+
+    <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
+    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">other</span>);
+        <span class="ident">zelf</span> <span class="op">!=</span> <span class="ident">other</span>
+    } <span class="kw">else</span> {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>());
     };
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">result</span>))
 }
@@ -578,11 +841,13 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [
-            (<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())),
-            (<span class="ident">other</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))
-        ]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>());
+    }
+
     <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
     <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">other</span>);
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">zelf</span> <span class="op">&lt;</span> <span class="ident">other</span>;
@@ -593,11 +858,13 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [
-            (<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())),
-            (<span class="ident">other</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))
-        ]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>());
+    }
+
     <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
     <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">other</span>);
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">zelf</span> <span class="op">&lt;=</span> <span class="ident">other</span>;
@@ -608,11 +875,13 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [
-            (<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())),
-            (<span class="ident">other</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))
-        ]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>());
+    }
+
     <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
     <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">other</span>);
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">zelf</span> <span class="op">&gt;</span> <span class="ident">other</span>;
@@ -623,15 +892,77 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [
-            (<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())),
-            (<span class="ident">other</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))
-        ]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>());
+    }
+
     <span class="kw">let</span> <span class="ident">zelf</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
     <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">other</span>);
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">zelf</span> <span class="op">&gt;=</span> <span class="ident">other</span>;
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">result</span>))
+}
+
+<span class="kw">fn</span> <span class="ident">int_lshift</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+    );
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
+            <span class="string">&quot;unsupported operand type(s) for &lt;&lt; &#39;{}&#39; and &#39;{}&#39;&quot;</span>,
+            <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">typ</span>()),
+            <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">i2</span>.<span class="ident">typ</span>())
+        )));
+    }
+
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">n_bits</span>) <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_usize</span>() {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">i</span>) <span class="op">&lt;&lt;</span> <span class="ident">n_bits</span>));
+    }
+
+    <span class="comment">// i2 failed `to_usize()` conversion</span>
+    <span class="kw">match</span> <span class="ident">get_value</span>(<span class="ident">i2</span>) {
+        <span class="kw-2">ref</span> <span class="ident">v</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">&lt;</span> <span class="ident">BigInt</span>::<span class="ident">zero</span>() <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;negative shift count&quot;</span>.<span class="ident">to_string</span>())),
+        <span class="kw-2">ref</span> <span class="ident">v</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">&gt;</span> <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="ident">usize</span>::<span class="ident">max_value</span>()) <span class="op">=&gt;</span> {
+            <span class="comment">// TODO: raise OverflowError</span>
+            <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Failed converting {} to rust usize&quot;</span>, <span class="ident">get_value</span>(<span class="ident">i2</span>));
+        }
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Failed converting {} to rust usize&quot;</span>, <span class="ident">get_value</span>(<span class="ident">i2</span>)),
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">int_rshift</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+    );
+
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
+            <span class="string">&quot;unsupported operand type(s) for &gt;&gt; &#39;{}&#39; and &#39;{}&#39;&quot;</span>,
+            <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>.<span class="ident">typ</span>()),
+            <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">i2</span>.<span class="ident">typ</span>())
+        )));
+    }
+
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">n_bits</span>) <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_usize</span>() {
+        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">i</span>) <span class="op">&gt;&gt;</span> <span class="ident">n_bits</span>));
+    }
+
+    <span class="comment">// i2 failed `to_usize()` conversion</span>
+    <span class="kw">match</span> <span class="ident">get_value</span>(<span class="ident">i2</span>) {
+        <span class="kw-2">ref</span> <span class="ident">v</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">&lt;</span> <span class="ident">BigInt</span>::<span class="ident">zero</span>() <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;negative shift count&quot;</span>.<span class="ident">to_string</span>())),
+        <span class="kw-2">ref</span> <span class="ident">v</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">v</span> <span class="op">&gt;</span> <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="ident">usize</span>::<span class="ident">max_value</span>()) <span class="op">=&gt;</span> {
+            <span class="comment">// TODO: raise OverflowError</span>
+            <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Failed converting {} to rust usize&quot;</span>, <span class="ident">get_value</span>(<span class="ident">i2</span>));
+        }
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Failed converting {} to rust usize&quot;</span>, <span class="ident">get_value</span>(<span class="ident">i2</span>)),
+    }
 }
 
 <span class="kw">fn</span> <span class="ident">int_hash</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
@@ -640,7 +971,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">hash_map</span>::<span class="ident">DefaultHasher</span>::<span class="ident">new</span>();
     <span class="ident">value</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
     <span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">hasher</span>.<span class="ident">finish</span>();
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">hash</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>()))
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">hash</span>))
 }
 
 <span class="kw">fn</span> <span class="ident">int_abs</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
@@ -652,18 +983,17 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">_i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
-    <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">_i</span>);
-    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">i</span> <span class="op">+</span> <span class="ident">get_value</span>(<span class="ident">i2</span>)))
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">float_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
-            .<span class="ident">ctx</span>
-            .<span class="ident">new_float</span>(<span class="ident">i</span>.<span class="ident">to_f64</span>().<span class="ident">unwrap</span>() <span class="op">+</span> <span class="ident">objfloat</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>)))
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">zelf</span>) <span class="op">+</span> <span class="ident">get_value</span>(<span class="ident">other</span>)))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot add {} and {}&quot;</span>, <span class="ident">_i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
+}
+
+<span class="kw">fn</span> <span class="ident">int_radd</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="ident">int_add</span>(<span class="ident">vm</span>, <span class="ident">args</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">int_float</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
@@ -679,14 +1009,31 @@
         <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
     );
     <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">i</span>) <span class="op">/</span> <span class="ident">get_value</span>(<span class="ident">i2</span>)))
+        <span class="kw">let</span> (<span class="ident">v1</span>, <span class="ident">v2</span>) <span class="op">=</span> (<span class="ident">get_value</span>(<span class="ident">i</span>), <span class="ident">get_value</span>(<span class="ident">i2</span>));
+
+        <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!=</span> <span class="ident">BigInt</span>::<span class="ident">zero</span>() {
+            <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span> <span class="op">/</span> <span class="ident">v2</span>))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;integer floordiv by zero&quot;</span>.<span class="ident">to_string</span>()))
+        }
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-            <span class="string">&quot;Cannot floordiv {} and {}&quot;</span>,
-            <span class="ident">i</span>.<span class="ident">borrow</span>(),
-            <span class="ident">i2</span>.<span class="ident">borrow</span>()
-        )))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
+}
+
+<span class="kw">fn</span> <span class="ident">int_round</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))],
+        <span class="ident">optional</span> <span class="op">=</span> [(<span class="ident">_precision</span>, <span class="prelude-val">None</span>)]
+    );
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">i</span>)))
+}
+
+<span class="kw">fn</span> <span class="ident">int_pass_value</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">i</span>)))
 }
 
 <span class="kw">fn</span> <span class="ident">int_format</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
@@ -711,21 +1058,25 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">_i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
-    <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">_i</span>);
-    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">i</span> <span class="op">-</span> <span class="ident">get_value</span>(<span class="ident">i2</span>)))
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">float_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
-            .<span class="ident">ctx</span>
-            .<span class="ident">new_float</span>(<span class="ident">i</span>.<span class="ident">to_f64</span>().<span class="ident">unwrap</span>() <span class="op">-</span> <span class="ident">objfloat</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>)))
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">zelf</span>) <span class="op">-</span> <span class="ident">get_value</span>(<span class="ident">other</span>)))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-            <span class="string">&quot;Cannot substract {} and {}&quot;</span>,
-            <span class="ident">_i</span>.<span class="ident">borrow</span>(),
-            <span class="ident">i2</span>.<span class="ident">borrow</span>()
-        )))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">int_rsub</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
+    );
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">other</span>) <span class="op">-</span> <span class="ident">get_value</span>(<span class="ident">zelf</span>)))
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -733,40 +1084,76 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
-    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">i</span>) <span class="op">*</span> <span class="ident">get_value</span>(<span class="ident">i2</span>)))
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">float_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
-            .<span class="ident">ctx</span>
-            .<span class="ident">new_float</span>(<span class="ident">get_value</span>(<span class="ident">i</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>() <span class="op">*</span> <span class="ident">objfloat</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>)))
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">get_value</span>(<span class="ident">zelf</span>) <span class="op">*</span> <span class="ident">get_value</span>(<span class="ident">other</span>)))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-            <span class="string">&quot;Cannot multiply {} and {}&quot;</span>,
-            <span class="ident">i</span>.<span class="ident">borrow</span>(),
-            <span class="ident">i2</span>.<span class="ident">borrow</span>()
-        )))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
+}
+
+<span class="kw">fn</span> <span class="ident">int_rmul</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="ident">int_mul</span>(<span class="ident">vm</span>, <span class="ident">args</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">int_truediv</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
     );
-    <span class="kw">let</span> <span class="ident">v1</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
-    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
-            .<span class="ident">ctx</span>
-            .<span class="ident">new_float</span>(<span class="ident">v1</span>.<span class="ident">to_f64</span>().<span class="ident">unwrap</span>() <span class="op">/</span> <span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_f64</span>().<span class="ident">unwrap</span>()))
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">float_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
-            .<span class="ident">ctx</span>
-            .<span class="ident">new_float</span>(<span class="ident">v1</span>.<span class="ident">to_f64</span>().<span class="ident">unwrap</span>() <span class="op">/</span> <span class="ident">objfloat</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>)))
+
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="ident">div_ints</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">get_value</span>(<span class="ident">zelf</span>), <span class="kw-2">&amp;</span><span class="ident">get_value</span>(<span class="ident">other</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot divide {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">int_rtruediv</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">other</span>, <span class="prelude-val">None</span>)]
+    );
+
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">other</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="ident">div_ints</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">get_value</span>(<span class="ident">other</span>), <span class="kw-2">&amp;</span><span class="ident">get_value</span>(<span class="ident">zelf</span>))
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
+    }
+}
+
+<span class="attribute">#[<span class="ident">inline</span>]</span>
+<span class="kw">fn</span> <span class="ident">div_ints</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">i1</span>: <span class="kw-2">&amp;</span><span class="ident">BigInt</span>, <span class="ident">i2</span>: <span class="kw-2">&amp;</span><span class="ident">BigInt</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">if</span> <span class="ident">i2</span>.<span class="ident">is_zero</span>() {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;integer division by zero&quot;</span>.<span class="ident">to_string</span>()));
+    }
+
+    <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">f1</span>), <span class="prelude-val">Some</span>(<span class="ident">f2</span>)) <span class="op">=</span> (<span class="ident">i1</span>.<span class="ident">to_f64</span>(), <span class="ident">i2</span>.<span class="ident">to_f64</span>()) {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="ident">f1</span> <span class="op">/</span> <span class="ident">f2</span>))
+    } <span class="kw">else</span> {
+        <span class="kw">let</span> (<span class="ident">quotient</span>, <span class="kw-2">mut</span> <span class="ident">rem</span>) <span class="op">=</span> <span class="ident">i1</span>.<span class="ident">div_rem</span>(<span class="ident">i2</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">divisor</span> <span class="op">=</span> <span class="ident">i2</span>.<span class="ident">clone</span>();
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">quotient</span>) <span class="op">=</span> <span class="ident">quotient</span>.<span class="ident">to_f64</span>() {
+            <span class="kw">let</span> <span class="ident">rem_part</span> <span class="op">=</span> <span class="kw">loop</span> {
+                <span class="kw">if</span> <span class="ident">rem</span>.<span class="ident">is_zero</span>() {
+                    <span class="kw">break</span> <span class="number">0.0</span>;
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">rem</span>), <span class="prelude-val">Some</span>(<span class="ident">divisor</span>)) <span class="op">=</span> (<span class="ident">rem</span>.<span class="ident">to_f64</span>(), <span class="ident">divisor</span>.<span class="ident">to_f64</span>()) {
+                    <span class="kw">break</span> <span class="ident">rem</span> <span class="op">/</span> <span class="ident">divisor</span>;
+                } <span class="kw">else</span> {
+                    <span class="comment">// try with smaller numbers</span>
+                    <span class="ident">rem</span> <span class="op">/=</span> <span class="number">2</span>;
+                    <span class="ident">divisor</span> <span class="op">/=</span> <span class="number">2</span>;
+                }
+            };
+
+            <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="ident">quotient</span> <span class="op">+</span> <span class="ident">rem_part</span>))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;int too large to convert to float&quot;</span>.<span class="ident">to_string</span>()))
+        }
     }
 }
 
@@ -778,9 +1165,15 @@
     );
     <span class="kw">let</span> <span class="ident">v1</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
     <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span> <span class="op">%</span> <span class="ident">get_value</span>(<span class="ident">i2</span>)))
+        <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>);
+
+        <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!=</span> <span class="ident">BigInt</span>::<span class="ident">zero</span>() {
+            <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span> <span class="op">%</span> <span class="ident">get_value</span>(<span class="ident">i2</span>)))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;integer modulo by zero&quot;</span>.<span class="ident">to_string</span>()))
+        }
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot modulo {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -804,16 +1197,12 @@
     <span class="kw">let</span> <span class="ident">v1</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
     <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
         <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>).<span class="ident">to_u32</span>().<span class="ident">unwrap</span>();
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span>.<span class="ident">pow</span>(<span class="ident">v2</span>).<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>()))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span>.<span class="ident">pow</span>(<span class="ident">v2</span>)))
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">float_type</span>()) {
         <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">objfloat</span>::<span class="ident">get_value</span>(<span class="ident">i2</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>((<span class="ident">v1</span>.<span class="ident">to_f64</span>().<span class="ident">unwrap</span>()).<span class="ident">powf</span>(<span class="ident">v2</span>)))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-            <span class="string">&quot;Cannot raise power {} and {}&quot;</span>,
-            <span class="ident">i</span>.<span class="ident">borrow</span>(),
-            <span class="ident">i2</span>.<span class="ident">borrow</span>()
-        )))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -823,17 +1212,22 @@
         <span class="ident">args</span>,
         <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
     );
-    <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">i</span>.<span class="ident">clone</span>(), <span class="ident">i2</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[]);
+
     <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-        <span class="kw">let</span> <span class="ident">r1</span> <span class="op">=</span> <span class="ident">int_floordiv</span>(<span class="ident">vm</span>, <span class="ident">args</span>.<span class="ident">clone</span>());
-        <span class="kw">let</span> <span class="ident">r2</span> <span class="op">=</span> <span class="ident">int_mod</span>(<span class="ident">vm</span>, <span class="ident">args</span>.<span class="ident">clone</span>());
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">r1</span>.<span class="ident">unwrap</span>(), <span class="ident">r2</span>.<span class="ident">unwrap</span>()]))
+        <span class="kw">let</span> <span class="ident">v1</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
+        <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>);
+
+        <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!=</span> <span class="ident">BigInt</span>::<span class="ident">zero</span>() {
+            <span class="kw">let</span> (<span class="ident">r1</span>, <span class="ident">r2</span>) <span class="op">=</span> <span class="ident">v1</span>.<span class="ident">div_rem</span>(<span class="kw-2">&amp;</span><span class="ident">v2</span>);
+
+            <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
+                .<span class="ident">ctx</span>
+                .<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">r1</span>), <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">r2</span>)]))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;integer divmod by zero&quot;</span>.<span class="ident">to_string</span>()))
+        }
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-            <span class="string">&quot;Cannot divmod power {} and {}&quot;</span>,
-            <span class="ident">i</span>.<span class="ident">borrow</span>(),
-            <span class="ident">i2</span>.<span class="ident">borrow</span>()
-        )))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -848,7 +1242,24 @@
         <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span> <span class="op">^</span> <span class="ident">v2</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot xor {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">int_rxor</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>())), (<span class="ident">i2</span>, <span class="prelude-val">None</span>)]
+    );
+
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">i2</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
+        <span class="kw">let</span> <span class="ident">right_val</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
+        <span class="kw">let</span> <span class="ident">left_val</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>);
+
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">left_val</span> <span class="op">^</span> <span class="ident">right_val</span>))
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -863,7 +1274,7 @@
         <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span> <span class="op">|</span> <span class="ident">v2</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot or {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -878,7 +1289,7 @@
         <span class="kw">let</span> <span class="ident">v2</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i2</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v1</span> <span class="op">&amp;</span> <span class="ident">v2</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot and {} and {}&quot;</span>, <span class="ident">i</span>.<span class="ident">borrow</span>(), <span class="ident">i2</span>.<span class="ident">borrow</span>())))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">not_implemented</span>())
     }
 }
 
@@ -886,44 +1297,101 @@
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
     <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
     <span class="kw">let</span> <span class="ident">bits</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">bits</span>();
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">bits</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>()))
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">bits</span>))
+}
+
+<span class="kw">fn</span> <span class="ident">int_conjugate</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
+    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">get_value</span>(<span class="ident">i</span>);
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v</span>))
+}
+
+<span class="kw">fn</span> <span class="ident">int_real</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
+    <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from_pyobj</span>(<span class="ident">zelf</span>);
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>))
+}
+
+<span class="kw">fn</span> <span class="ident">int_imag</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">_zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
+    <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">0</span>);
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>))
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
-    <span class="kw">let</span> <span class="kw-2">ref</span> <span class="ident">int_type</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">int_type</span>;
+    <span class="kw">let</span> <span class="ident">int_doc</span> <span class="op">=</span> <span class="string">&quot;int(x=0) -&gt; integer
+int(x, base=10) -&gt; integer
+
+Convert a number or string to an integer, or return 0 if no arguments
+are given.  If x is a number, return x.__int__().  For floating point
+numbers, this truncates towards zero.
+
+If x is not a number or if base is given, then x must be a string,
+bytes, or bytearray instance representing an integer literal in the
+given base.  The literal can be preceded by &#39;+&#39; or &#39;-&#39; and be surrounded
+by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
+Base 0 means to interpret the base from the string as an integer literal.
+&gt;&gt;&gt; int(&#39;0b100&#39;, base=0)
+4&quot;</span>;
+    <span class="kw">let</span> <span class="ident">int_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">int_type</span>;
+
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__eq__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_eq</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__ne__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_ne</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__lt__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_lt</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__le__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_le</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__gt__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_gt</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__ge__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_ge</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__abs__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_abs</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__add__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_add</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__radd__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_radd</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__and__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_and</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__divmod__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_divmod</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__float__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_float</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__round__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_round</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__ceil__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pass_value</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__floor__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pass_value</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__index__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pass_value</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__trunc__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pass_value</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__int__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pass_value</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(
         <span class="kw-2">&amp;</span><span class="ident">int_type</span>,
         <span class="string">&quot;__floordiv__&quot;</span>,
         <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_floordiv</span>),
     );
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__hash__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_hash</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__lshift__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_lshift</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__rshift__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_rshift</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__new__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_new</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__mod__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_mod</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__mul__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_mul</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__rmul__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_rmul</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__neg__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_neg</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__or__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_or</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__pos__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pos</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__pow__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_pow</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__repr__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_repr</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__sub__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_sub</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__rsub__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_rsub</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__format__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_format</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__truediv__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_truediv</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">int_type</span>,
+        <span class="string">&quot;__rtruediv__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_rtruediv</span>),
+    );
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__xor__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_xor</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__rxor__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_rxor</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__bool__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_bool</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__invert__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_invert</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(
         <span class="kw-2">&amp;</span><span class="ident">int_type</span>,
         <span class="string">&quot;bit_length&quot;</span>,
         <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_bit_length</span>),
     );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;__doc__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_str</span>(<span class="ident">int_doc</span>.<span class="ident">to_string</span>()));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;conjugate&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">int_conjugate</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;real&quot;</span>, <span class="ident">context</span>.<span class="ident">new_property</span>(<span class="ident">int_real</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="string">&quot;imag&quot;</span>, <span class="ident">context</span>.<span class="ident">new_property</span>(<span class="ident">int_imag</span>));
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-files.js"></script><script src="../../../source-script.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -64,19 +64,71 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
-</pre><pre class="rust ">
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/*! Python `property` descriptor class.
 
 */</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
-};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtype</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
-    <span class="kw">let</span> <span class="kw-2">ref</span> <span class="ident">property_type</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">property_type</span>;
+    <span class="kw">let</span> <span class="ident">property_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">property_type</span>;
+
+    <span class="kw">let</span> <span class="ident">property_doc</span> <span class="op">=</span>
+        <span class="string">&quot;Property attribute.\n\n  \
+         fget\n    \
+         function to be used for getting an attribute value\n  \
+         fset\n    \
+         function to be used for setting an attribute value\n  \
+         fdel\n    \
+         function to be used for del\&#39;ing an attribute\n  \
+         doc\n    \
+         docstring\n\n\
+         Typical use is to define a managed attribute x:\n\n\
+         class C(object):\n    \
+         def getx(self): return self._x\n    \
+         def setx(self, value): self._x = value\n    \
+         def delx(self): del self._x\n    \
+         x = property(getx, setx, delx, \&quot;I\&#39;m the \&#39;x\&#39; property.\&quot;)\n\n\
+         Decorators make defining new properties or modifying existing ones easy:\n\n\
+         class C(object):\n    \
+         @property\n    \
+         def x(self):\n        \&quot;I am the \&#39;x\&#39; property.\&quot;\n        \
+         return self._x\n    \
+         @x.setter\n    \
+         def x(self, value):\n        \
+         self._x = value\n    \
+         @x.deleter\n    \
+         def x(self):\n        \
+         del self._x&quot;</span>;
+
     <span class="ident">context</span>.<span class="ident">set_attr</span>(
         <span class="kw-2">&amp;</span><span class="ident">property_type</span>,
         <span class="string">&quot;__get__&quot;</span>,
@@ -86,6 +138,11 @@
         <span class="kw-2">&amp;</span><span class="ident">property_type</span>,
         <span class="string">&quot;__new__&quot;</span>,
         <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">property_new</span>),
+    );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(
+        <span class="kw-2">&amp;</span><span class="ident">property_type</span>,
+        <span class="string">&quot;__doc__&quot;</span>,
+        <span class="ident">context</span>.<span class="ident">new_str</span>(<span class="ident">property_doc</span>.<span class="ident">to_string</span>()),
     );
     <span class="comment">// TODO: how to handle __set__ ?</span>
 }
@@ -122,14 +179,9 @@
     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;property.__new__ {:?}&quot;</span>, <span class="ident">args</span>.<span class="ident">args</span>);
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">cls</span>, <span class="prelude-val">None</span>), (<span class="ident">fget</span>, <span class="prelude-val">None</span>)]);
 
-    <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-        <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> {
-            <span class="ident">dict</span>: <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_dict</span>(),
-        },
-        <span class="ident">cls</span>.<span class="ident">clone</span>(),
-    );
+    <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_instance</span>(<span class="ident">cls</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>);
     <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="string">&quot;fget&quot;</span>, <span class="ident">fget</span>.<span class="ident">clone</span>());
     <span class="prelude-val">Ok</span>(<span class="ident">py_obj</span>)
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-files.js"></script><script src="../../../source-script.js"></script><script defer src="../../../search-index.js"></script></body></html>

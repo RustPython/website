@@ -79,29 +79,38 @@
 <span id="79">79</span>
 <span id="80">80</span>
 <span id="81">81</span>
-</pre><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
-};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtype</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
+    <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
+};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">Zero</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">boolval</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-        <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_zero</span>(),
-        <span class="ident">PyObjectKind</span>::<span class="ident">Float</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">value</span> <span class="op">!=</span> <span class="number">0.0</span>,
-        <span class="ident">PyObjectKind</span>::<span class="ident">Sequence</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">elements</span>.<span class="ident">is_empty</span>(),
-        <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">elements</span>.<span class="ident">is_empty</span>(),
-        <span class="ident">PyObjectKind</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_empty</span>(),
-        <span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span> { .. } <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_zero</span>(),
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Float</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">value</span> <span class="op">!=</span> <span class="number">0.0</span>,
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Sequence</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">elements</span>.<span class="ident">is_empty</span>(),
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">elements</span>.<span class="ident">is_empty</span>(),
+        <span class="ident">PyObjectPayload</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_empty</span>(),
+        <span class="ident">PyObjectPayload</span>::<span class="prelude-val">None</span> { .. } <span class="op">=&gt;</span> <span class="bool-val">false</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="string">&quot;__bool__&quot;</span>) {
                 <span class="kw">let</span> <span class="ident">bool_res</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">default</span>())<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">bool_res</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-                    <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_zero</span>(),
+                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">bool_res</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+                    <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_zero</span>(),
                     <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;TypeError&quot;</span>))),
                 };
+
                 <span class="ident">v</span>
             } <span class="kw">else</span> {
                 <span class="bool-val">true</span>
@@ -112,9 +121,16 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
-    <span class="kw">let</span> <span class="kw-2">ref</span> <span class="ident">bool_type</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">bool_type</span>;
+    <span class="kw">let</span> <span class="ident">bool_doc</span> <span class="op">=</span> <span class="string">&quot;bool(x) -&gt; bool
+
+Returns True when the argument x is true, False otherwise.
+The builtins True and False are the only two instances of the class bool.
+The class bool is a subclass of the class int, and cannot be subclassed.&quot;</span>;
+
+    <span class="kw">let</span> <span class="ident">bool_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">bool_type</span>;
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">bool_type</span>, <span class="string">&quot;__new__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">bool_new</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">bool_type</span>, <span class="string">&quot;__repr__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">bool_repr</span>));
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">bool_type</span>, <span class="string">&quot;__doc__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_str</span>(<span class="ident">bool_doc</span>.<span class="ident">to_string</span>()));
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">not</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
@@ -128,7 +144,7 @@
 
 <span class="comment">// Retrieve inner int value:</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_value</span>(<span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="ident">value</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="ident">value</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
         <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_zero</span>()
     } <span class="kw">else</span> {
         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Inner error getting inner boolean&quot;</span>);
@@ -156,10 +172,10 @@
     <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">val</span> {
         <span class="prelude-val">Some</span>(<span class="ident">val</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">bv</span> <span class="op">=</span> <span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">val</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-            <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="ident">bv</span>.<span class="ident">clone</span>())
+            <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="ident">bv</span>)
         }
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_bool</span>(<span class="bool-val">false</span>),
     })
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-files.js"></script><script src="../../../source-script.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AccessibleVM",""],["AccessibleVMPtr",""],["VMStore",""],["WASMVirtualMachine",""]]});

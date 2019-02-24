@@ -1025,32 +1025,108 @@
 <span id="1025">1025</span>
 <span id="1026">1026</span>
 <span id="1027">1027</span>
-</pre><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">bytecode</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">exceptions</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">frame</span>::<span class="ident">Frame</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objbytearray</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objbytes</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objcode</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objcomplex</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objfloat</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objframe</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objfunction</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objgenerator</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objint</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objiter</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objlist</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objobject</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objproperty</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objset</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objsuper</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objtuple</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
+<span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
+<span id="1090">1090</span>
+<span id="1091">1091</span>
+<span id="1092">1092</span>
+<span id="1093">1093</span>
+<span id="1094">1094</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">exceptions</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">Frame</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbytearray</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbytes</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objcode</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objcomplex</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objenumerate</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objfilter</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objfloat</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objframe</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objfunction</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objgenerator</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objint</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objiter</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objlist</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objmap</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objmemory</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objnone</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objobject</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objproperty</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objrange</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objset</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objslice</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objsuper</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtuple</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objzip</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">BigInt</span>;
+<span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">ToBigInt</span>;
 <span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex64</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">One</span>, <span class="ident">Zero</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -1093,12 +1169,16 @@ https://doc.rust-lang.org/std/cell/index.html#introducing-mutability-inside-of-s
 <span class="doccomment">/// since exceptions are also python objects.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyResult</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span>; <span class="comment">// A valid value, or an exception</span>
 
+<span class="doccomment">/// For attributes we do not use a dict, but a hashmap. This is probably</span>
+<span class="doccomment">/// faster, unordered, and only supports strings as keys.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyAttributes</span> <span class="op">=</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span>;
+
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">PyObject</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">use</span> <span class="self">self</span>::<span class="ident">TypeProtocol</span>;
-        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>, .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;module &#39;{}&#39;&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> { <span class="ident">name</span>, .. } <span class="op">=&gt;</span> {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> { <span class="ident">name</span>, .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;module &#39;{}&#39;&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="ident">name</span>, .. } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">type_name</span> <span class="op">=</span> <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">typ</span>());
                 <span class="comment">// We don&#39;t have access to a vm, so just assume that if its parent&#39;s name</span>
                 <span class="comment">// is type, it&#39;s a type</span>
@@ -1132,6 +1212,8 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     <span class="kw">pub</span> <span class="ident">classmethod_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">code_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">dict_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">enumerate_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">filter_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">float_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">frame_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">frozenset_type</span>: <span class="ident">PyObjectRef</span>,
@@ -1142,14 +1224,21 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     <span class="kw">pub</span> <span class="ident">true_value</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">false_value</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">list_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">map_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">memoryview_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">none</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">not_implemented</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">tuple_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">set_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">staticmethod_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">super_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">str_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">range_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">slice_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">type_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">zip_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">function_type</span>: <span class="ident">PyObjectRef</span>,
+    <span class="kw">pub</span> <span class="ident">builtin_function_or_method_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">property_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">module_type</span>: <span class="ident">PyObjectRef</span>,
     <span class="kw">pub</span> <span class="ident">bound_method_type</span>: <span class="ident">PyObjectRef</span>,
@@ -1164,13 +1253,14 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
  */</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Scope</span> {
-    <span class="kw">pub</span> <span class="ident">locals</span>: <span class="ident">PyObjectRef</span>,         <span class="comment">// Variables</span>
+    <span class="kw">pub</span> <span class="ident">locals</span>: <span class="ident">PyObjectRef</span>, <span class="comment">// Variables</span>
+    <span class="comment">// TODO: pub locals: RefCell&lt;PyAttributes&gt;,         // Variables</span>
     <span class="kw">pub</span> <span class="ident">parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>, <span class="comment">// Parent scope</span>
 }
 
 <span class="kw">fn</span> <span class="ident">_nothing</span>() <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="ident">PyObject</span> {
-        <span class="ident">kind</span>: <span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span>,
+        <span class="ident">payload</span>: <span class="ident">PyObjectPayload</span>::<span class="prelude-val">None</span>,
         <span class="ident">typ</span>: <span class="prelude-val">None</span>,
     }
     .<span class="ident">into_ref</span>()
@@ -1180,14 +1270,9 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">type_type</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
     <span class="ident">base</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
-    <span class="ident">dict_type</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">_dict_type</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
 ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-        <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> {
-            <span class="ident">elements</span>: <span class="ident">HashMap</span>::<span class="ident">new</span>(),
-        },
-        <span class="ident">dict_type</span>.<span class="ident">clone</span>(),
-    );
+    <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="ident">PyAttributes</span>::<span class="ident">new</span>();
     <span class="ident">objtype</span>::<span class="ident">new</span>(<span class="ident">type_type</span>.<span class="ident">clone</span>(), <span class="ident">name</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">base</span>.<span class="ident">clone</span>()], <span class="ident">dict</span>).<span class="ident">unwrap</span>()
 }
 
@@ -1206,6 +1291,12 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="kw">let</span> <span class="ident">classmethod_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;classmethod&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">staticmethod_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;staticmethod&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">function_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;function&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">builtin_function_or_method_type</span> <span class="op">=</span> <span class="ident">create_type</span>(
+            <span class="string">&quot;builtin_function_or_method&quot;</span>,
+            <span class="kw-2">&amp;</span><span class="ident">type_type</span>,
+            <span class="kw-2">&amp;</span><span class="ident">object_type</span>,
+            <span class="kw-2">&amp;</span><span class="ident">dict_type</span>,
+        );
         <span class="kw">let</span> <span class="ident">property_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;property&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">super_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;super&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">generator_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;generator&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
@@ -1224,56 +1315,77 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="kw">let</span> <span class="ident">bytearray_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;bytearray&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">tuple_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;tuple&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">iter_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;iter&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">enumerate_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;enumerate&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">filter_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;filter&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">map_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;map&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">zip_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;zip&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">bool_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;bool&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">memoryview_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;memoryview&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">code_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;code&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">int_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">range_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;range&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
+        <span class="kw">let</span> <span class="ident">slice_type</span> <span class="op">=</span> <span class="ident">create_type</span>(<span class="string">&quot;slice&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
         <span class="kw">let</span> <span class="ident">exceptions</span> <span class="op">=</span> <span class="ident">exceptions</span>::<span class="ident">ExceptionZoo</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>);
 
         <span class="kw">let</span> <span class="ident">none</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span>,
+            <span class="ident">PyObjectPayload</span>::<span class="prelude-val">None</span>,
             <span class="ident">create_type</span>(<span class="string">&quot;NoneType&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>),
         );
 
+        <span class="kw">let</span> <span class="ident">not_implemented</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
+            <span class="ident">PyObjectPayload</span>::<span class="ident">NotImplemented</span>,
+            <span class="ident">create_type</span>(<span class="string">&quot;NotImplementedType&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">type_type</span>, <span class="kw-2">&amp;</span><span class="ident">object_type</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>),
+        );
+
         <span class="kw">let</span> <span class="ident">true_value</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="ident">value</span>: <span class="ident">One</span>::<span class="ident">one</span>() },
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="ident">value</span>: <span class="ident">One</span>::<span class="ident">one</span>() },
             <span class="ident">bool_type</span>.<span class="ident">clone</span>(),
         );
         <span class="kw">let</span> <span class="ident">false_value</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> {
                 <span class="ident">value</span>: <span class="ident">Zero</span>::<span class="ident">zero</span>(),
             },
             <span class="ident">bool_type</span>.<span class="ident">clone</span>(),
         );
         <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">PyContext</span> {
-            <span class="ident">bool_type</span>: <span class="ident">bool_type</span>,
-            <span class="ident">bytearray_type</span>: <span class="ident">bytearray_type</span>,
-            <span class="ident">bytes_type</span>: <span class="ident">bytes_type</span>,
-            <span class="ident">code_type</span>: <span class="ident">code_type</span>,
-            <span class="ident">complex_type</span>: <span class="ident">complex_type</span>,
-            <span class="ident">classmethod_type</span>: <span class="ident">classmethod_type</span>,
-            <span class="ident">int_type</span>: <span class="ident">int_type</span>,
-            <span class="ident">float_type</span>: <span class="ident">float_type</span>,
-            <span class="ident">frame_type</span>: <span class="ident">frame_type</span>,
-            <span class="ident">staticmethod_type</span>: <span class="ident">staticmethod_type</span>,
-            <span class="ident">list_type</span>: <span class="ident">list_type</span>,
-            <span class="ident">set_type</span>: <span class="ident">set_type</span>,
-            <span class="ident">frozenset_type</span>: <span class="ident">frozenset_type</span>,
-            <span class="ident">true_value</span>: <span class="ident">true_value</span>,
-            <span class="ident">false_value</span>: <span class="ident">false_value</span>,
-            <span class="ident">tuple_type</span>: <span class="ident">tuple_type</span>,
-            <span class="ident">iter_type</span>: <span class="ident">iter_type</span>,
-            <span class="ident">dict_type</span>: <span class="ident">dict_type</span>,
-            <span class="ident">none</span>: <span class="ident">none</span>,
-            <span class="ident">str_type</span>: <span class="ident">str_type</span>,
+            <span class="ident">bool_type</span>,
+            <span class="ident">memoryview_type</span>,
+            <span class="ident">bytearray_type</span>,
+            <span class="ident">bytes_type</span>,
+            <span class="ident">code_type</span>,
+            <span class="ident">complex_type</span>,
+            <span class="ident">classmethod_type</span>,
+            <span class="ident">int_type</span>,
+            <span class="ident">float_type</span>,
+            <span class="ident">frame_type</span>,
+            <span class="ident">staticmethod_type</span>,
+            <span class="ident">list_type</span>,
+            <span class="ident">set_type</span>,
+            <span class="ident">frozenset_type</span>,
+            <span class="ident">true_value</span>,
+            <span class="ident">false_value</span>,
+            <span class="ident">tuple_type</span>,
+            <span class="ident">iter_type</span>,
+            <span class="ident">enumerate_type</span>,
+            <span class="ident">filter_type</span>,
+            <span class="ident">map_type</span>,
+            <span class="ident">zip_type</span>,
+            <span class="ident">dict_type</span>,
+            <span class="ident">none</span>,
+            <span class="ident">not_implemented</span>,
+            <span class="ident">str_type</span>,
+            <span class="ident">range_type</span>,
+            <span class="ident">slice_type</span>,
             <span class="ident">object</span>: <span class="ident">object_type</span>,
-            <span class="ident">function_type</span>: <span class="ident">function_type</span>,
-            <span class="ident">super_type</span>: <span class="ident">super_type</span>,
-            <span class="ident">property_type</span>: <span class="ident">property_type</span>,
-            <span class="ident">generator_type</span>: <span class="ident">generator_type</span>,
-            <span class="ident">module_type</span>: <span class="ident">module_type</span>,
-            <span class="ident">bound_method_type</span>: <span class="ident">bound_method_type</span>,
-            <span class="ident">member_descriptor_type</span>: <span class="ident">member_descriptor_type</span>,
-            <span class="ident">type_type</span>: <span class="ident">type_type</span>,
-            <span class="ident">exceptions</span>: <span class="ident">exceptions</span>,
+            <span class="ident">function_type</span>,
+            <span class="ident">builtin_function_or_method_type</span>,
+            <span class="ident">super_type</span>,
+            <span class="ident">property_type</span>,
+            <span class="ident">generator_type</span>,
+            <span class="ident">module_type</span>,
+            <span class="ident">bound_method_type</span>,
+            <span class="ident">member_descriptor_type</span>,
+            <span class="ident">type_type</span>,
+            <span class="ident">exceptions</span>,
         };
         <span class="ident">objtype</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objlist</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
@@ -1289,13 +1401,21 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">objbytes</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objbytearray</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objproperty</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objmemory</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objstr</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objrange</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objslice</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objsuper</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objtuple</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objiter</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objenumerate</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objfilter</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objmap</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objzip</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objbool</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objcode</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">objframe</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="ident">objnone</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">exceptions</span>::<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
         <span class="ident">context</span>
     }
@@ -1340,6 +1460,14 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="self">self</span>.<span class="ident">set_type</span>.<span class="ident">clone</span>()
     }
 
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">range_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">range_type</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">slice_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">slice_type</span>.<span class="ident">clone</span>()
+    }
+
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">frozenset_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">frozenset_type</span>.<span class="ident">clone</span>()
     }
@@ -1348,12 +1476,32 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="self">self</span>.<span class="ident">bool_type</span>.<span class="ident">clone</span>()
     }
 
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">memoryview_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">memoryview_type</span>.<span class="ident">clone</span>()
+    }
+
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tuple_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">tuple_type</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">iter_type</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enumerate_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">enumerate_type</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">filter_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">filter_type</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">map_type</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">zip_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">zip_type</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">str_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
@@ -1366,6 +1514,10 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">function_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">function_type</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builtin_function_or_method_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">builtin_function_or_method_type</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">property_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
@@ -1397,37 +1549,47 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">none</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">none</span>.<span class="ident">clone</span>()
     }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">not_implemented</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">not_implemented</span>.<span class="ident">clone</span>()
+    }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">object</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">object</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_object</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="self">self</span>.<span class="ident">new_instance</span>(<span class="self">self</span>.<span class="ident">object</span>(), <span class="prelude-val">None</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_int</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ToBigInt</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> {
-                <span class="ident">dict</span>: <span class="self">self</span>.<span class="ident">new_dict</span>(),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> {
+                <span class="ident">value</span>: <span class="ident">i</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>(),
             },
-            <span class="self">self</span>.<span class="ident">object</span>(),
+            <span class="self">self</span>.<span class="ident">int_type</span>(),
         )
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_int</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">BigInt</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="ident">value</span>: <span class="ident">i</span> }, <span class="self">self</span>.<span class="ident">int_type</span>())
-    }
-
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">f64</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Float</span> { <span class="ident">value</span>: <span class="ident">i</span> }, <span class="self">self</span>.<span class="ident">float_type</span>())
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Float</span> { <span class="ident">value</span>: <span class="ident">i</span> }, <span class="self">self</span>.<span class="ident">float_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">Complex64</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Complex</span> { <span class="ident">value</span>: <span class="ident">i</span> }, <span class="self">self</span>.<span class="ident">complex_type</span>())
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Complex</span> { <span class="ident">value</span>: <span class="ident">i</span> }, <span class="self">self</span>.<span class="ident">complex_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">String</span> { <span class="ident">value</span>: <span class="ident">s</span> }, <span class="self">self</span>.<span class="ident">str_type</span>())
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">String</span> { <span class="ident">value</span>: <span class="ident">s</span> }, <span class="self">self</span>.<span class="ident">str_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_bytes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">data</span> }, <span class="self">self</span>.<span class="ident">bytes_type</span>())
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">data</span> }, <span class="self">self</span>.<span class="ident">bytes_type</span>())
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_bytearray</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">data</span> },
+            <span class="self">self</span>.<span class="ident">bytearray_type</span>(),
+        )
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">b</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
@@ -1439,27 +1601,23 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_tuple</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Sequence</span> { <span class="ident">elements</span>: <span class="ident">elements</span> },
-            <span class="self">self</span>.<span class="ident">tuple_type</span>(),
-        )
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Sequence</span> { <span class="ident">elements</span> }, <span class="self">self</span>.<span class="ident">tuple_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_list</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Sequence</span> { <span class="ident">elements</span>: <span class="ident">elements</span> },
-            <span class="self">self</span>.<span class="ident">list_type</span>(),
-        )
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Sequence</span> { <span class="ident">elements</span> }, <span class="self">self</span>.<span class="ident">list_type</span>())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">objset</span>::<span class="ident">sequence_to_hashmap</span>(<span class="kw-2">&amp;</span><span class="ident">elements</span>);
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Set</span> { <span class="ident">elements</span>: <span class="ident">elements</span> }, <span class="self">self</span>.<span class="ident">set_type</span>())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="comment">// Initialized empty, as calling __hash__ is required for adding each object to the set</span>
+        <span class="comment">// which requires a VM context - this is done in the objset code itself.</span>
+        <span class="kw">let</span> <span class="ident">elements</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Set</span> { <span class="ident">elements</span> }, <span class="self">self</span>.<span class="ident">set_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dict</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> {
                 <span class="ident">elements</span>: <span class="ident">HashMap</span>::<span class="ident">new</span>(),
             },
             <span class="self">self</span>.<span class="ident">dict_type</span>(),
@@ -1467,17 +1625,14 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_class</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">base</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">objtype</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">type_type</span>(), <span class="ident">name</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">base</span>], <span class="self">self</span>.<span class="ident">new_dict</span>()).<span class="ident">unwrap</span>()
+        <span class="ident">objtype</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">type_type</span>(), <span class="ident">name</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">base</span>], <span class="ident">PyAttributes</span>::<span class="ident">new</span>()).<span class="ident">unwrap</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_scope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_dict</span>();
-        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Scope</span> {
-            <span class="ident">locals</span>: <span class="ident">locals</span>,
-            <span class="ident">parent</span>: <span class="ident">parent</span>,
-        };
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Scope</span> { <span class="ident">locals</span>, <span class="ident">parent</span> };
         <span class="ident">PyObject</span> {
-            <span class="ident">kind</span>: <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="ident">scope</span>: <span class="ident">scope</span> },
+            <span class="ident">payload</span>: <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="ident">scope</span> },
             <span class="ident">typ</span>: <span class="prelude-val">None</span>,
         }
         .<span class="ident">into_ref</span>()
@@ -1485,7 +1640,7 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">scope</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> {
                 <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_string</span>(),
                 <span class="ident">dict</span>: <span class="ident">scope</span>.<span class="ident">clone</span>(),
             },
@@ -1498,10 +1653,10 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">function</span>: <span class="ident">F</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">RustFunction</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">RustFunction</span> {
                 <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">function</span>),
             },
-            <span class="self">self</span>.<span class="ident">function_type</span>(),
+            <span class="self">self</span>.<span class="ident">builtin_function_or_method_type</span>(),
         )
     }
 
@@ -1510,13 +1665,13 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">function</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">RustFunction</span> { <span class="ident">function</span> },
-            <span class="self">self</span>.<span class="ident">function_type</span>(),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">RustFunction</span> { <span class="ident">function</span> },
+            <span class="self">self</span>.<span class="ident">builtin_function_or_method_type</span>(),
         )
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_frame</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">frame</span>: <span class="ident">Frame</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Frame</span> { <span class="ident">frame</span>: <span class="ident">frame</span> }, <span class="self">self</span>.<span class="ident">frame_type</span>())
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Frame</span> { <span class="ident">frame</span> }, <span class="self">self</span>.<span class="ident">frame_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_property</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&gt;</span>(
@@ -1524,18 +1679,13 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">function</span>: <span class="ident">F</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="kw">let</span> <span class="ident">fget</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_rustfunc</span>(<span class="ident">function</span>);
-        <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> {
-                <span class="ident">dict</span>: <span class="self">self</span>.<span class="ident">new_dict</span>(),
-            },
-            <span class="self">self</span>.<span class="ident">property_type</span>(),
-        );
+        <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_instance</span>(<span class="self">self</span>.<span class="ident">property_type</span>(), <span class="prelude-val">None</span>);
         <span class="self">self</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="string">&quot;fget&quot;</span>, <span class="ident">fget</span>.<span class="ident">clone</span>());
         <span class="ident">py_obj</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_code_object</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">code</span>: <span class="ident">bytecode</span>::<span class="ident">CodeObject</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Code</span> { <span class="ident">code</span> }, <span class="self">self</span>.<span class="ident">code_type</span>())
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectPayload</span>::<span class="ident">Code</span> { <span class="ident">code</span> }, <span class="self">self</span>.<span class="ident">code_type</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_function</span>(
@@ -1545,10 +1695,10 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">defaults</span>: <span class="ident">PyObjectRef</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">Function</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Function</span> {
                 <span class="ident">code</span>: <span class="ident">code_obj</span>,
-                <span class="ident">scope</span>: <span class="ident">scope</span>,
-                <span class="ident">defaults</span>: <span class="ident">defaults</span>,
+                <span class="ident">scope</span>,
+                <span class="ident">defaults</span>,
             },
             <span class="self">self</span>.<span class="ident">function_type</span>(),
         )
@@ -1556,10 +1706,7 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_bound_method</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">function</span>: <span class="ident">PyObjectRef</span>, <span class="ident">object</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span>::<span class="ident">new</span>(
-            <span class="ident">PyObjectKind</span>::<span class="ident">BoundMethod</span> {
-                <span class="ident">function</span>: <span class="ident">function</span>,
-                <span class="ident">object</span>: <span class="ident">object</span>,
-            },
+            <span class="ident">PyObjectPayload</span>::<span class="ident">BoundMethod</span> { <span class="ident">function</span>, <span class="ident">object</span> },
             <span class="self">self</span>.<span class="ident">bound_method_type</span>(),
         )
     }
@@ -1568,28 +1715,31 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">function</span>: <span class="ident">F</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_dict</span>();
-        <span class="self">self</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="string">&quot;function&quot;</span>, <span class="self">self</span>.<span class="ident">new_rustfunc</span>(<span class="ident">function</span>));
-        <span class="self">self</span>.<span class="ident">new_instance</span>(<span class="ident">dict</span>, <span class="self">self</span>.<span class="ident">member_descriptor_type</span>())
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dict</span> <span class="op">=</span> <span class="ident">PyAttributes</span>::<span class="ident">new</span>();
+        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="string">&quot;function&quot;</span>.<span class="ident">to_string</span>(), <span class="self">self</span>.<span class="ident">new_rustfunc</span>(<span class="ident">function</span>));
+        <span class="self">self</span>.<span class="ident">new_instance</span>(<span class="self">self</span>.<span class="ident">member_descriptor_type</span>(), <span class="prelude-val">Some</span>(<span class="ident">dict</span>))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_instance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dict</span>: <span class="ident">PyObjectRef</span>, <span class="ident">class</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> { <span class="ident">dict</span>: <span class="ident">dict</span> }, <span class="ident">class</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_instance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">class</span>: <span class="ident">PyObjectRef</span>, <span class="ident">dict</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyAttributes</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=</span> <span class="ident">dict</span> {
+            <span class="ident">dict</span>
+        } <span class="kw">else</span> {
+            <span class="ident">PyAttributes</span>::<span class="ident">new</span>()
+        };
+        <span class="ident">PyObject</span>::<span class="ident">new</span>(
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Instance</span> {
+                <span class="ident">dict</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">dict</span>),
+            },
+            <span class="ident">class</span>,
+        )
     }
 
     <span class="comment">// Item set/get:</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">v</span>: <span class="ident">PyObjectRef</span>) {
-        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">borrow_mut</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> {
+        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">borrow_mut</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_str</span>(<span class="ident">key</span>.<span class="ident">to_string</span>());
                 <span class="ident">objdict</span>::<span class="ident">set_item_in_content</span>(<span class="ident">elements</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">v</span>);
-            }
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> {
-                <span class="ident">name</span>: <span class="kw">_</span>,
-                <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">dict</span>,
-            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">set_item</span>(<span class="ident">dict</span>, <span class="ident">key</span>, <span class="ident">v</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">scope</span>.<span class="ident">locals</span>, <span class="ident">key</span>, <span class="ident">v</span>);
             }
             <span class="kw-2">ref</span> <span class="ident">k</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;TODO {:?}&quot;</span>, <span class="ident">k</span>),
         };
@@ -1603,16 +1753,36 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>) {
-        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>: <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">set_item</span>(<span class="ident">dict</span>, <span class="ident">attr_name</span>, <span class="ident">value</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> { <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">set_item</span>(<span class="ident">dict</span>, <span class="ident">attr_name</span>, <span class="ident">value</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> {
-                <span class="ident">name</span>: <span class="kw">_</span>,
-                <span class="kw-2">ref</span> <span class="ident">dict</span>,
-                <span class="ident">mro</span>: <span class="kw">_</span>,
-            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">set_item</span>(<span class="ident">dict</span>, <span class="ident">attr_name</span>, <span class="ident">value</span>),
-            <span class="kw-2">ref</span> <span class="ident">kind</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;set_attr unimplemented for: {:?}&quot;</span>, <span class="ident">kind</span>),
+        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">set_attr</span>(<span class="ident">dict</span>, <span class="ident">attr_name</span>, <span class="ident">value</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Instance</span> { <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">|</span> <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> {
+                <span class="ident">dict</span>.<span class="ident">borrow_mut</span>().<span class="ident">insert</span>(<span class="ident">attr_name</span>.<span class="ident">to_string</span>(), <span class="ident">value</span>);
+            }
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">scope</span>.<span class="ident">locals</span>, <span class="ident">attr_name</span>, <span class="ident">value</span>);
+            }
+            <span class="kw-2">ref</span> <span class="ident">payload</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;set_attr unimplemented for: {:?}&quot;</span>, <span class="ident">payload</span>),
         };
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unwrap_constant</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">Constant</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">value</span> {
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_int</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Float</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_float</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Complex</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_complex</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Bytes</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Boolean</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_bool</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="kw-2">ref</span> <span class="ident">code</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">new_code_object</span>(<span class="ident">code</span>.<span class="ident">clone</span>()),
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Tuple</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">elements</span>
+                    .<span class="ident">iter</span>()
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">unwrap_constant</span>(<span class="ident">value</span>))
+                    .<span class="ident">collect</span>();
+                <span class="self">self</span>.<span class="ident">new_tuple</span>(<span class="ident">elements</span>)
+            }
+            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">none</span>(),
+        }
     }
 }
 
@@ -1620,7 +1790,7 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 <span class="doccomment">/// python class, and carries some rust payload optionally. This rust</span>
 <span class="doccomment">/// payload can be a rust float or rust int in case of float and int objects.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PyObject</span> {
-    <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">PyObjectKind</span>,
+    <span class="kw">pub</span> <span class="ident">payload</span>: <span class="ident">PyObjectPayload</span>,
     <span class="kw">pub</span> <span class="ident">typ</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
     <span class="comment">// pub dict: HashMap&lt;String, PyObjectRef&gt;, // __dict__ member</span>
 }
@@ -1670,18 +1840,15 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 
 <span class="kw">impl</span> <span class="ident">ParentProtocol</span> <span class="kw">for</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">fn</span> <span class="ident">has_parent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">scope</span>.<span class="ident">parent</span> {
-                <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            },
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">parent</span>.<span class="ident">is_some</span>(),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Only scopes have parent (not {:?}&quot;</span>, <span class="self">self</span>),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_parent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">scope</span>.<span class="ident">parent</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">scope</span>.<span class="ident">parent</span> {
                 <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">value</span>.<span class="ident">clone</span>(),
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;OMG&quot;</span>),
             },
@@ -1697,16 +1864,16 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 
 <span class="kw">fn</span> <span class="ident">class_get_item</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">class</span>.<span class="ident">borrow</span>();
-    <span class="kw">match</span> <span class="ident">class</span>.<span class="ident">kind</span> {
-        <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">attr_name</span>),
+    <span class="kw">match</span> <span class="ident">class</span>.<span class="ident">payload</span> {
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">borrow</span>().<span class="ident">get</span>(<span class="ident">attr_name</span>).<span class="ident">cloned</span>(),
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Only classes should be in MRO!&quot;</span>),
     }
 }
 
 <span class="kw">fn</span> <span class="ident">class_has_item</span>(<span class="ident">class</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">class</span>.<span class="ident">borrow</span>();
-    <span class="kw">match</span> <span class="ident">class</span>.<span class="ident">kind</span> {
-        <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">contains_key</span>(<span class="ident">attr_name</span>),
+    <span class="kw">match</span> <span class="ident">class</span>.<span class="ident">payload</span> {
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">borrow</span>().<span class="ident">contains_key</span>(<span class="ident">attr_name</span>),
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Only classes should be in MRO!&quot;</span>),
     }
 }
@@ -1714,33 +1881,32 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 <span class="kw">impl</span> <span class="ident">AttributeProtocol</span> <span class="kw">for</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">fn</span> <span class="ident">get_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">borrow</span>();
-        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">attr_name</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">mro</span>, .. } <span class="op">=&gt;</span> {
+        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">attr_name</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">mro</span>, .. } <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="ident">class_get_item</span>(<span class="self">self</span>, <span class="ident">attr_name</span>) {
                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>);
                 }
-                <span class="kw">for</span> <span class="kw-2">ref</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">mro</span> {
+                <span class="kw">for</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">mro</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="ident">class_get_item</span>(<span class="ident">class</span>, <span class="ident">attr_name</span>) {
                         <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>);
                     }
                 }
                 <span class="prelude-val">None</span>
             }
-            <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> { <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">attr_name</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Instance</span> { <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">borrow</span>().<span class="ident">get</span>(<span class="ident">attr_name</span>).<span class="ident">cloned</span>(),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 
     <span class="kw">fn</span> <span class="ident">has_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">borrow</span>();
-        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>: <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">contains_key</span>(<span class="ident">attr_name</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">mro</span>, .. } <span class="op">=&gt;</span> {
-                <span class="ident">class_has_item</span>(<span class="self">self</span>, <span class="ident">attr_name</span>)
-                    <span class="op">||</span> <span class="ident">mro</span>.<span class="ident">into_iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">class_has_item</span>(<span class="ident">d</span>, <span class="ident">attr_name</span>))
+        <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">contains_key</span>(<span class="ident">attr_name</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">mro</span>, .. } <span class="op">=&gt;</span> {
+                <span class="ident">class_has_item</span>(<span class="self">self</span>, <span class="ident">attr_name</span>) <span class="op">||</span> <span class="ident">mro</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">class_has_item</span>(<span class="ident">d</span>, <span class="ident">attr_name</span>))
             }
-            <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> { <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">contains_key</span>(<span class="ident">attr_name</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Instance</span> { <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">borrow</span>().<span class="ident">contains_key</span>(<span class="ident">attr_name</span>),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
         }
     }
@@ -1754,36 +1920,50 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 
 <span class="kw">impl</span> <span class="ident">DictProtocol</span> <span class="kw">for</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">fn</span> <span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="ident">objdict</span>::<span class="ident">content_contains_key_str</span>(<span class="ident">elements</span>, <span class="ident">k</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>: <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">contains_key</span>(<span class="ident">k</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">contains_key</span>(<span class="ident">k</span>),
-            <span class="kw-2">ref</span> <span class="ident">kind</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;TODO {:?}&quot;</span>, <span class="ident">kind</span>),
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> {
+                <span class="ident">objdict</span>::<span class="ident">content_contains_key_str</span>(<span class="ident">elements</span>, <span class="ident">k</span>)
+            }
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">contains_key</span>(<span class="ident">k</span>),
+            <span class="kw-2">ref</span> <span class="ident">payload</span> <span class="op">=&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;TODO {:?}&quot;</span>, <span class="ident">payload</span>),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_item</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="ident">objdict</span>::<span class="ident">content_get_key_str</span>(<span class="ident">elements</span>, <span class="ident">k</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>: <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">k</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">get_item</span>(<span class="ident">k</span>),
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="ident">objdict</span>::<span class="ident">content_get_key_str</span>(<span class="ident">elements</span>, <span class="ident">k</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">get_item</span>(<span class="ident">k</span>),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;TODO&quot;</span>),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">get_key_value_pairs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">PyObjectRef</span>, <span class="ident">PyObjectRef</span>)<span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="ident">elements</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="ident">objdict</span>::<span class="ident">get_key_value_pairs</span>(<span class="self">self</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>: <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">dict</span> } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_key_value_pairs</span>(),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">get_key_value_pairs</span>(),
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { .. } <span class="op">=&gt;</span> <span class="ident">objdict</span>::<span class="ident">get_key_value_pairs</span>(<span class="self">self</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> { <span class="kw-2">ref</span> <span class="ident">dict</span>, .. } <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">get_key_value_pairs</span>(),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">get_key_value_pairs</span>(),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;TODO&quot;</span>),
+        }
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BufferProtocol</span> {
+    <span class="kw">fn</span> <span class="ident">readonly</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">BufferProtocol</span> <span class="kw">for</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">fn</span> <span class="ident">readonly</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">typ</span>()).<span class="ident">as_ref</span>() {
+            <span class="string">&quot;bytes&quot;</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="string">&quot;bytearray&quot;</span> <span class="op">|</span> <span class="string">&quot;memoryview&quot;</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Bytes-Like type expected not {:?}&quot;</span>, <span class="self">self</span>),
         }
     }
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">PyObject</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;[PyObj {:?}]&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>)
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;[PyObj {:?}]&quot;</span>, <span class="self">self</span>.<span class="ident">payload</span>)
     }
 }
 
@@ -1802,10 +1982,7 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">kwarg_names</span>.<span class="ident">iter</span>().<span class="ident">rev</span>() {
             <span class="ident">kwargs</span>.<span class="ident">push</span>((<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">args</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()));
         }
-        <span class="ident">PyFuncArgs</span> {
-            <span class="ident">args</span>: <span class="ident">args</span>,
-            <span class="ident">kwargs</span>: <span class="ident">kwargs</span>,
-        }
+        <span class="ident">PyFuncArgs</span> { <span class="ident">args</span>, <span class="ident">kwargs</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyFuncArgs</span> {
@@ -1814,7 +1991,7 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
             <span class="ident">kwargs</span>: <span class="self">self</span>.<span class="ident">kwargs</span>.<span class="ident">clone</span>(),
         };
         <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">item</span>);
-        <span class="kw">return</span> <span class="ident">args</span>;
+        <span class="ident">args</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shift</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
@@ -1844,7 +2021,7 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
 <span class="doccomment">/// a holder for the rust payload of a python object. It is more a carrier</span>
 <span class="doccomment">/// of rust data for a particular python object. Determine the python type</span>
 <span class="doccomment">/// by using for example the `.typ()` method on a python object.</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PyObjectKind</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PyObjectPayload</span> {
     <span class="ident">String</span> {
         <span class="ident">value</span>: <span class="ident">String</span>,
     },
@@ -1867,16 +2044,37 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">elements</span>: <span class="ident">objdict</span>::<span class="ident">DictContentType</span>,
     },
     <span class="ident">Set</span> {
-        <span class="ident">elements</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+        <span class="ident">elements</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
     },
     <span class="ident">Iterator</span> {
         <span class="ident">position</span>: <span class="ident">usize</span>,
         <span class="ident">iterated_obj</span>: <span class="ident">PyObjectRef</span>,
     },
+    <span class="ident">EnumerateIterator</span> {
+        <span class="ident">counter</span>: <span class="ident">BigInt</span>,
+        <span class="ident">iterator</span>: <span class="ident">PyObjectRef</span>,
+    },
+    <span class="ident">FilterIterator</span> {
+        <span class="ident">predicate</span>: <span class="ident">PyObjectRef</span>,
+        <span class="ident">iterator</span>: <span class="ident">PyObjectRef</span>,
+    },
+    <span class="ident">MapIterator</span> {
+        <span class="ident">mapper</span>: <span class="ident">PyObjectRef</span>,
+        <span class="ident">iterators</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    },
+    <span class="ident">ZipIterator</span> {
+        <span class="ident">iterators</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    },
     <span class="ident">Slice</span> {
-        <span class="ident">start</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
-        <span class="ident">stop</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
-        <span class="ident">step</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
+        <span class="ident">start</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;</span>,
+        <span class="ident">stop</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;</span>,
+        <span class="ident">step</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;</span>,
+    },
+    <span class="ident">Range</span> {
+        <span class="ident">range</span>: <span class="ident">objrange</span>::<span class="ident">RangeType</span>,
+    },
+    <span class="ident">MemoryView</span> {
+        <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
     },
     <span class="ident">Code</span> {
         <span class="ident">code</span>: <span class="ident">bytecode</span>::<span class="ident">CodeObject</span>,
@@ -1904,137 +2102,73 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">dict</span>: <span class="ident">PyObjectRef</span>,
     },
     <span class="prelude-val">None</span>,
+    <span class="ident">NotImplemented</span>,
     <span class="ident">Class</span> {
         <span class="ident">name</span>: <span class="ident">String</span>,
-        <span class="ident">dict</span>: <span class="ident">PyObjectRef</span>,
+        <span class="ident">dict</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">PyAttributes</span><span class="op">&gt;</span>,
         <span class="ident">mro</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
     },
     <span class="ident">WeakRef</span> {
         <span class="ident">referent</span>: <span class="ident">PyObjectWeakRef</span>,
     },
     <span class="ident">Instance</span> {
-        <span class="ident">dict</span>: <span class="ident">PyObjectRef</span>,
+        <span class="ident">dict</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">PyAttributes</span><span class="op">&gt;</span>,
     },
     <span class="ident">RustFunction</span> {
         <span class="ident">function</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&gt;</span>,
     },
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">PyObjectKind</span> {
+<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">PyObjectPayload</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;str \&quot;{}\&quot;&quot;</span>, <span class="ident">value</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;int {}&quot;</span>, <span class="ident">value</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Float</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;float {}&quot;</span>, <span class="ident">value</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Complex</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;complex {}&quot;</span>, <span class="ident">value</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Bytes</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;bytes/bytearray {:?}&quot;</span>, <span class="ident">value</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Sequence</span> { <span class="ident">elements</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;list or tuple&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="ident">elements</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;dict&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Set</span> { <span class="ident">elements</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;set&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">WeakRef</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;weakref&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Iterator</span> {
-                <span class="ident">position</span>: <span class="kw">_</span>,
-                <span class="ident">iterated_obj</span>: <span class="kw">_</span>,
-            } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;iterator&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Slice</span> {
-                <span class="ident">start</span>: <span class="kw">_</span>,
-                <span class="ident">stop</span>: <span class="kw">_</span>,
-                <span class="ident">step</span>: <span class="kw">_</span>,
-            } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;slice&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Code</span> { <span class="kw-2">ref</span> <span class="ident">code</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;code: {:?}&quot;</span>, <span class="ident">code</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Function</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;function&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Generator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;generator&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">BoundMethod</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;str \&quot;{}\&quot;&quot;</span>, <span class="ident">value</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;int {}&quot;</span>, <span class="ident">value</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Float</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;float {}&quot;</span>, <span class="ident">value</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Complex</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;complex {}&quot;</span>, <span class="ident">value</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Bytes</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;bytes/bytearray {:?}&quot;</span>, <span class="ident">value</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">MemoryView</span> { <span class="kw-2">ref</span> <span class="ident">obj</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;bytes/bytearray {:?}&quot;</span>, <span class="ident">obj</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Sequence</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;list or tuple&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;dict&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Set</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;set&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">WeakRef</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;weakref&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Range</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;range&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Iterator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;iterator&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">EnumerateIterator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;enumerate&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">FilterIterator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;filter&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">MapIterator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;map&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">ZipIterator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;zip&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Slice</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;slice&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Code</span> { <span class="kw-2">ref</span> <span class="ident">code</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;code: {:?}&quot;</span>, <span class="ident">code</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Function</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;function&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Generator</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;generator&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">BoundMethod</span> {
                 <span class="kw-2">ref</span> <span class="ident">function</span>,
                 <span class="kw-2">ref</span> <span class="ident">object</span>,
             } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;bound-method: {:?} of {:?}&quot;</span>, <span class="ident">function</span>, <span class="ident">object</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="ident">name</span>: <span class="kw">_</span>, <span class="ident">dict</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;module&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="ident">scope</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;scope&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;None&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Class</span> {
-                <span class="kw-2">ref</span> <span class="ident">name</span>,
-                <span class="ident">dict</span>: <span class="kw">_</span>,
-                <span class="ident">mro</span>: <span class="kw">_</span>,
-            } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;class {:?}&quot;</span>, <span class="ident">name</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> { <span class="ident">dict</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;instance&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">RustFunction</span> { <span class="ident">function</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;rust function&quot;</span>),
-            <span class="kw-2">&amp;</span><span class="ident">PyObjectKind</span>::<span class="ident">Frame</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;frame&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Module</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;module&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;scope&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;None&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">NotImplemented</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;NotImplemented&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> { <span class="kw-2">ref</span> <span class="ident">name</span>, .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;class {:?}&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Instance</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;instance&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">RustFunction</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;rust function&quot;</span>),
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Frame</span> { .. } <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;frame&quot;</span>),
         }
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PyObject</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kind</span>: <span class="ident">PyObjectKind</span>, <span class="comment">/* dict: PyObjectRef,*/</span> <span class="ident">typ</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
+        <span class="ident">payload</span>: <span class="ident">PyObjectPayload</span>,
+        <span class="comment">/* dict: PyObjectRef,*/</span> <span class="ident">typ</span>: <span class="ident">PyObjectRef</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">PyObject</span> {
-            <span class="ident">kind</span>: <span class="ident">kind</span>,
+            <span class="ident">payload</span>,
             <span class="ident">typ</span>: <span class="prelude-val">Some</span>(<span class="ident">typ</span>),
             <span class="comment">// dict: HashMap::new(),  // dict,</span>
         }
         .<span class="ident">into_ref</span>()
-    }
-
-    <span class="doccomment">/// Deprecated method, please call `vm.to_pystr`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">value</span>.<span class="ident">clone</span>(),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">value</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Float</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">value</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Complex</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">value</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Bytes</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;b&#39;{:?}&#39;&quot;</span>, <span class="ident">value</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Sequence</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;(/[{}]/)&quot;</span>,
-                <span class="ident">elements</span>
-                    .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="ident">elem</span>.<span class="ident">borrow</span>().<span class="ident">str</span>())
-                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
-                    .<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>)
-            ),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;{{ {} }}&quot;</span>,
-                <span class="ident">elements</span>
-                    .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}: ...&quot;</span>, <span class="ident">elem</span>.<span class="number">0</span>))
-                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
-                    .<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>)
-            ),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Set</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;{{ {} }}&quot;</span>,
-                <span class="ident">elements</span>
-                    .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="ident">elem</span>.<span class="number">1</span>.<span class="ident">borrow</span>().<span class="ident">str</span>())
-                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
-                    .<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>)
-            ),
-            <span class="ident">PyObjectKind</span>::<span class="ident">WeakRef</span> { .. } <span class="op">=&gt;</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;weakref&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;None&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> {
-                <span class="kw-2">ref</span> <span class="ident">name</span>,
-                <span class="ident">dict</span>: <span class="kw-2">ref</span> <span class="ident">_dict</span>,
-                <span class="ident">mro</span>: <span class="kw">_</span>,
-            } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;class &#39;{}&#39;&gt;&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Instance</span> { <span class="ident">dict</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;instance&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;code&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Function</span> { .. } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;func&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Generator</span> { .. } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;generator&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Frame</span> { .. } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;frame&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">BoundMethod</span> { .. } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;bound-method&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">RustFunction</span> { <span class="ident">function</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;rustfunc&gt;&quot;</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Module</span> { <span class="kw-2">ref</span> <span class="ident">name</span>, <span class="ident">dict</span>: <span class="kw">_</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;module &#39;{}&#39;&gt;&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;scope &#39;{:?}&#39;&gt;&quot;</span>, <span class="ident">scope</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Slice</span> {
-                <span class="kw-2">ref</span> <span class="ident">start</span>,
-                <span class="kw-2">ref</span> <span class="ident">stop</span>,
-                <span class="kw-2">ref</span> <span class="ident">step</span>,
-            } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;slice &#39;{:?}:{:?}:{:?}&#39;&gt;&quot;</span>, <span class="ident">start</span>, <span class="ident">stop</span>, <span class="ident">step</span>),
-            <span class="ident">PyObjectKind</span>::<span class="ident">Iterator</span> {
-                <span class="kw-2">ref</span> <span class="ident">position</span>,
-                <span class="kw-2">ref</span> <span class="ident">iterated_obj</span>,
-            } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;&lt;iter pos {} in {}&gt;&quot;</span>,
-                <span class="ident">position</span>,
-                <span class="ident">iterated_obj</span>.<span class="ident">borrow_mut</span>().<span class="ident">str</span>()
-            ),
-        }
     }
 
     <span class="comment">// Move this object into a reference object, transferring ownership.</span>
@@ -2053,5 +2187,5 @@ impl Iterator for (VirtualMachine, PyObjectRef) {
         <span class="ident">PyContext</span>::<span class="ident">new</span>();
     }
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-files.js"></script><script src="../../source-script.js"></script><script defer src="../../search-index.js"></script></body></html>

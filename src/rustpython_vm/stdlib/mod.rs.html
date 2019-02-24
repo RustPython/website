@@ -37,9 +37,22 @@
 <span id="37">37</span>
 <span id="38">38</span>
 <span id="39">39</span>
-</pre><pre class="rust ">
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">ast</span>;
-<span class="kw">mod</span> <span class="ident">io</span>;
+<span class="kw">mod</span> <span class="ident">dis</span>;
 <span class="kw">mod</span> <span class="ident">json</span>;
 <span class="kw">mod</span> <span class="ident">keyword</span>;
 <span class="kw">mod</span> <span class="ident">math</span>;
@@ -53,14 +66,19 @@
 <span class="kw">mod</span> <span class="ident">weakref</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">io</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
+<span class="kw">mod</span> <span class="ident">os</span>;
+
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>};
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">StdlibInitFunc</span> <span class="op">=</span> <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_module_inits</span>() <span class="op">-&gt;</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">StdlibInitFunc</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">modules</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;ast&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ast</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
-    <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;io&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">io</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
+    <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;dis&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">dis</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;json&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">json</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;keyword&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">keyword</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;math&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">math</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
@@ -75,7 +93,15 @@
     );
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;types&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">types</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
     <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;_weakref&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">weakref</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
+
+    <span class="comment">// disable some modules on WASM</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
+    {
+        <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;io&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">io</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
+        <span class="ident">modules</span>.<span class="ident">insert</span>(<span class="string">&quot;os&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">os</span>::<span class="ident">mk_module</span> <span class="kw">as</span> <span class="ident">StdlibInitFunc</span>);
+    }
+
     <span class="ident">modules</span>
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-files.js"></script><script src="../../../source-script.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -310,16 +310,51 @@
 <span id="310">310</span>
 <span id="311">311</span>
 <span id="312">312</span>
-</pre><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
-};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objiter</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objstr</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtype</span>;
-<span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">ToBigInt</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::{<span class="ident">Ref</span>, <span class="ident">RefMut</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
+    <span class="ident">PyAttributes</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>,
+    <span class="ident">TypeProtocol</span>,
+};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::{<span class="ident">ReprGuard</span>, <span class="ident">VirtualMachine</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::{<span class="ident">Ref</span>, <span class="ident">RefCell</span>, <span class="ident">RefMut</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Deref</span>, <span class="ident">DerefMut</span>};
 
@@ -331,7 +366,7 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">dict_type</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="ident">PyObject</span>::<span class="ident">new</span>(
-        <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> {
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> {
             <span class="ident">elements</span>: <span class="ident">HashMap</span>::<span class="ident">new</span>(),
         },
         <span class="ident">dict_type</span>.<span class="ident">clone</span>(),
@@ -340,7 +375,7 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_elements</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Deref</span><span class="op">&lt;</span><span class="ident">Target</span> <span class="op">=</span> <span class="ident">DictContentType</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
     <span class="ident">Ref</span>::<span class="ident">map</span>(<span class="ident">obj</span>.<span class="ident">borrow</span>(), <span class="op">|</span><span class="ident">py_obj</span><span class="op">|</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=</span> <span class="ident">py_obj</span>.<span class="ident">kind</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=</span> <span class="ident">py_obj</span>.<span class="ident">payload</span> {
             <span class="ident">elements</span>
         } <span class="kw">else</span> {
             <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot extract dict elements&quot;</span>);
@@ -350,7 +385,7 @@
 
 <span class="kw">fn</span> <span class="ident">get_mut_elements</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">DerefMut</span><span class="op">&lt;</span><span class="ident">Target</span> <span class="op">=</span> <span class="ident">DictContentType</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
     <span class="ident">RefMut</span>::<span class="ident">map</span>(<span class="ident">obj</span>.<span class="ident">borrow_mut</span>(), <span class="op">|</span><span class="ident">py_obj</span><span class="op">|</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">elements</span> } <span class="op">=</span> <span class="ident">py_obj</span>.<span class="ident">kind</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">elements</span> } <span class="op">=</span> <span class="ident">py_obj</span>.<span class="ident">payload</span> {
             <span class="ident">elements</span>
         } <span class="kw">else</span> {
             <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot extract dict elements&quot;</span>);
@@ -358,7 +393,13 @@
     })
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_item</span>(<span class="ident">dict</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">needle</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_item</span>(
+    <span class="ident">dict</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>,
+    <span class="ident">needle</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+) {
+    <span class="comment">// TODO: use vm to call eventual __hash__ and __eq__methods.</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">get_mut_elements</span>(<span class="ident">dict</span>);
     <span class="ident">set_item_in_content</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">elements</span>, <span class="ident">needle</span>, <span class="ident">value</span>);
 }
@@ -419,10 +460,26 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">content_contains_key_str</span>(<span class="ident">elements</span>: <span class="kw-2">&amp;</span><span class="ident">DictContentType</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="comment">// TODO: let hash: usize = key;</span>
-    <span class="kw">match</span> <span class="ident">elements</span>.<span class="ident">get</span>(<span class="ident">key</span>) {
-        <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+    <span class="ident">elements</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">is_some</span>()
+}
+
+<span class="doccomment">/// Take a python dictionary and convert it to attributes.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">py_dict_to_attributes</span>(<span class="ident">dict</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyAttributes</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">PyAttributes</span>::<span class="ident">new</span>();
+    <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">get_key_value_pairs</span>(<span class="ident">dict</span>) {
+        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
+        <span class="ident">attrs</span>.<span class="ident">insert</span>(<span class="ident">key</span>, <span class="ident">value</span>);
     }
+    <span class="ident">attrs</span>
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">attributes_to_py_dict</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">attributes</span>: <span class="ident">PyAttributes</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_dict</span>();
+    <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">attributes</span> {
+        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">key</span>);
+        <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>);
+    }
+    <span class="prelude-val">Ok</span>(<span class="ident">dict</span>)
 }
 
 <span class="comment">// Python dict methods:</span>
@@ -438,7 +495,7 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dict_obj</span>) <span class="op">=</span> <span class="ident">dict_obj</span> {
         <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">dict_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()) {
             <span class="kw">for</span> (<span class="ident">needle</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">get_key_value_pairs</span>(<span class="kw-2">&amp;</span><span class="ident">dict_obj</span>) {
-                <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="kw-2">&amp;</span><span class="ident">needle</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>);
+                <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">needle</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>);
             }
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_iter</span>(<span class="ident">vm</span>, <span class="ident">dict_obj</span>)<span class="question-mark">?</span>;
@@ -453,15 +510,16 @@
                 <span class="kw">let</span> <span class="ident">elem_iter</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_iter</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">element</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">needle</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_next_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elem_iter</span>)<span class="question-mark">?</span>.<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="ident">err</span>(<span class="ident">vm</span>))<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_next_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elem_iter</span>)<span class="question-mark">?</span>.<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="ident">err</span>(<span class="ident">vm</span>))<span class="question-mark">?</span>;
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_next_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elem_iter</span>)<span class="question-mark">?</span> {
+                <span class="kw">if</span> <span class="ident">objiter</span>::<span class="ident">get_next_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elem_iter</span>)<span class="question-mark">?</span>.<span class="ident">is_some</span>() {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>(<span class="ident">vm</span>));
                 }
-                <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="kw-2">&amp;</span><span class="ident">needle</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>);
+                <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">needle</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>);
             }
         }
     }
     <span class="kw">for</span> (<span class="ident">needle</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">kwargs</span> {
-        <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">needle</span>), <span class="kw-2">&amp;</span><span class="ident">value</span>);
+        <span class="kw">let</span> <span class="ident">py_needle</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">needle</span>);
+        <span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">py_needle</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>);
     }
     <span class="prelude-val">Ok</span>(<span class="ident">dict</span>)
 }
@@ -469,22 +527,27 @@
 <span class="kw">fn</span> <span class="ident">dict_len</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">dict_obj</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))]);
     <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">get_elements</span>(<span class="ident">dict_obj</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">elements</span>.<span class="ident">len</span>().<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>()))
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">elements</span>.<span class="ident">len</span>()))
 }
 
 <span class="kw">fn</span> <span class="ident">dict_repr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">dict_obj</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))]);
 
-    <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">get_key_value_pairs</span>(<span class="ident">dict_obj</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">str_parts</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-    <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">elements</span> {
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">key_str</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>);
-        <span class="kw">let</span> <span class="ident">value_str</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>);
-        <span class="ident">str_parts</span>.<span class="ident">push</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">key_str</span>, <span class="ident">value_str</span>));
-    }
+    <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">_guard</span>) <span class="op">=</span> <span class="ident">ReprGuard</span>::<span class="ident">enter</span>(<span class="ident">dict_obj</span>) {
+        <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">get_key_value_pairs</span>(<span class="ident">dict_obj</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">str_parts</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+        <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">elements</span> {
+            <span class="kw">let</span> <span class="ident">key_repr</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">value_repr</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>)<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">key_str</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">key_repr</span>);
+            <span class="kw">let</span> <span class="ident">value_str</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">value_repr</span>);
+            <span class="ident">str_parts</span>.<span class="ident">push</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">key_str</span>, <span class="ident">value_str</span>));
+        }
 
-    <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{{{}}}&quot;</span>, <span class="ident">str_parts</span>.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>));
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{{{}}}&quot;</span>, <span class="ident">str_parts</span>.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>))
+    } <span class="kw">else</span> {
+        <span class="string">&quot;{...}&quot;</span>.<span class="ident">to_string</span>()
+    };
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">s</span>))
 }
 
@@ -529,6 +592,12 @@
     }
 }
 
+<span class="kw">fn</span> <span class="ident">dict_clear</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">dict</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))]);
+    <span class="ident">get_mut_elements</span>(<span class="ident">dict</span>).<span class="ident">clear</span>();
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
+}
+
 <span class="doccomment">/// When iterating over a dictionary, we iterate over the keys of it.</span>
 <span class="kw">fn</span> <span class="ident">dict_iter</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">dict</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))]);
@@ -540,7 +609,7 @@
     <span class="kw">let</span> <span class="ident">key_list</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">keys</span>);
 
     <span class="kw">let</span> <span class="ident">iter_obj</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-        <span class="ident">PyObjectKind</span>::<span class="ident">Iterator</span> {
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Iterator</span> {
             <span class="ident">position</span>: <span class="number">0</span>,
             <span class="ident">iterated_obj</span>: <span class="ident">key_list</span>,
         },
@@ -561,7 +630,7 @@
         ]
     );
 
-    <span class="ident">set_item</span>(<span class="ident">dict</span>, <span class="ident">needle</span>, <span class="ident">value</span>);
+    <span class="ident">set_item</span>(<span class="ident">dict</span>, <span class="ident">vm</span>, <span class="ident">needle</span>, <span class="ident">value</span>);
 
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
 }
@@ -588,16 +657,16 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_type</span>(<span class="ident">type_type</span>: <span class="ident">PyObjectRef</span>, <span class="ident">object_type</span>: <span class="ident">PyObjectRef</span>, <span class="ident">dict_type</span>: <span class="ident">PyObjectRef</span>) {
-    (<span class="kw-2">*</span><span class="ident">dict_type</span>.<span class="ident">borrow_mut</span>()).<span class="ident">kind</span> <span class="op">=</span> <span class="ident">PyObjectKind</span>::<span class="ident">Class</span> {
+    (<span class="kw-2">*</span><span class="ident">dict_type</span>.<span class="ident">borrow_mut</span>()).<span class="ident">payload</span> <span class="op">=</span> <span class="ident">PyObjectPayload</span>::<span class="ident">Class</span> {
         <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;dict&quot;</span>),
-        <span class="ident">dict</span>: <span class="ident">new</span>(<span class="ident">dict_type</span>.<span class="ident">clone</span>()),
+        <span class="ident">dict</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">HashMap</span>::<span class="ident">new</span>()),
         <span class="ident">mro</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">object_type</span>],
     };
     (<span class="kw-2">*</span><span class="ident">dict_type</span>.<span class="ident">borrow_mut</span>()).<span class="ident">typ</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">type_type</span>.<span class="ident">clone</span>());
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
-    <span class="kw">let</span> <span class="kw-2">ref</span> <span class="ident">dict_type</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">dict_type</span>;
+    <span class="kw">let</span> <span class="ident">dict_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">dict_type</span>;
     <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">dict_type</span>, <span class="string">&quot;__len__&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">dict_len</span>));
     <span class="ident">context</span>.<span class="ident">set_attr</span>(
         <span class="kw-2">&amp;</span><span class="ident">dict_type</span>,
@@ -622,6 +691,7 @@
         <span class="string">&quot;__setitem__&quot;</span>,
         <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">dict_setitem</span>),
     );
+    <span class="ident">context</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">dict_type</span>, <span class="string">&quot;clear&quot;</span>, <span class="ident">context</span>.<span class="ident">new_rustfunc</span>(<span class="ident">dict_clear</span>));
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-files.js"></script><script src="../../../source-script.js"></script><script defer src="../../../search-index.js"></script></body></html>

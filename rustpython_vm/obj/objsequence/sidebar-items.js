@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_elements",""],["get_item",""],["get_mut_elements",""],["seq_equal",""]],"trait":[["PySliceableSequence",""]]});
+initSidebarItems({"fn":[["get_elements",""],["get_item",""],["get_mut_elements",""],["seq_equal",""],["seq_ge",""],["seq_gt",""],["seq_le",""],["seq_lt",""],["seq_mul",""]],"trait":[["PySliceableSequence",""]]});

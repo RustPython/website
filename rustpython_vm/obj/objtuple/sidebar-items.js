@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""],["tuple_contains",""]]});
+initSidebarItems({"fn":[["init",""],["tuple_contains",""],["tuple_index",""]]});

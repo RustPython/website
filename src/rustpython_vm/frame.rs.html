@@ -1134,7 +1134,25 @@
 <span id="1134">1134</span>
 <span id="1135">1135</span>
 <span id="1136">1136</span>
-</pre><pre class="rust ">
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rustpython_parser</span>;
 
 <span class="kw">use</span> <span class="self">self</span>::<span class="ident">rustpython_parser</span>::<span class="ident">ast</span>;
@@ -1142,26 +1160,33 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">builtins</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">bytecode</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">import</span>::{<span class="ident">import</span>, <span class="ident">import_module</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objcode</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objiter</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objlist</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">DictProtocol</span>, <span class="ident">IdProtocol</span>, <span class="ident">ParentProtocol</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyObjectRef</span>,
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">builtins</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">import</span>::{<span class="ident">import</span>, <span class="ident">import_module</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objcode</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objiter</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objlist</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
+    <span class="ident">DictProtocol</span>, <span class="ident">IdProtocol</span>, <span class="ident">ParentProtocol</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>,
     <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
 };
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
-<span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">ToBigInt</span>;
-<span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">ToPrimitive</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">BigInt</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">enum</span> <span class="ident">Block</span> {
+<span class="kw">struct</span> <span class="ident">Block</span> {
+    <span class="doccomment">/// The type of block.</span>
+    <span class="ident">typ</span>: <span class="ident">BlockType</span>,
+    <span class="doccomment">/// The level of the value stack when the block was entered.</span>
+    <span class="ident">level</span>: <span class="ident">usize</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">enum</span> <span class="ident">BlockType</span> {
     <span class="ident">Loop</span> {
         <span class="ident">start</span>: <span class="ident">bytecode</span>::<span class="ident">Label</span>,
         <span class="ident">end</span>: <span class="ident">bytecode</span>::<span class="ident">Label</span>,
@@ -1180,7 +1205,7 @@
     <span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">bytecode</span>::<span class="ident">CodeObject</span>,
     <span class="comment">// We need 1 stack per frame</span>
     <span class="ident">stack</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>, <span class="comment">// The main data frame of the stack machine</span>
-    <span class="ident">blocks</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,      <span class="comment">// Block frames, for controling loops and exceptions</span>
+    <span class="ident">blocks</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,      <span class="comment">// Block frames, for controlling loops and exceptions</span>
     <span class="kw">pub</span> <span class="ident">locals</span>: <span class="ident">PyObjectRef</span>, <span class="comment">// Variables</span>
     <span class="kw">pub</span> <span class="ident">lasti</span>: <span class="ident">usize</span>,        <span class="comment">// index of last instruction ran</span>
 }
@@ -1208,12 +1233,12 @@
         <span class="comment">// locals.extend(callargs);</span>
 
         <span class="ident">Frame</span> {
-            <span class="ident">code</span>: <span class="ident">objcode</span>::<span class="ident">copy_code</span>(<span class="kw-2">&amp;</span><span class="ident">code</span>),
+            <span class="ident">code</span>: <span class="ident">objcode</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">code</span>),
             <span class="ident">stack</span>: <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="ident">blocks</span>: <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="comment">// save the callargs as locals</span>
             <span class="comment">// globals: locals.clone(),</span>
-            <span class="ident">locals</span>: <span class="ident">locals</span>,
+            <span class="ident">locals</span>,
             <span class="ident">lasti</span>: <span class="number">0</span>,
         }
     }
@@ -1226,11 +1251,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_frame</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ExecutionResult</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">filename</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">source_path</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">source_path</span> {
-            <span class="ident">source_path</span>.<span class="ident">to_string</span>()
-        } <span class="kw">else</span> {
-            <span class="string">&quot;&lt;unknown&gt;&quot;</span>.<span class="ident">to_string</span>()
-        };
+        <span class="kw">let</span> <span class="ident">filename</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">source_path</span>.<span class="ident">to_string</span>();
 
         <span class="kw">let</span> <span class="ident">prev_frame</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>.<span class="ident">current_frame</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_frame</span>(<span class="self">self</span>.<span class="ident">clone</span>())));
 
@@ -1258,7 +1279,7 @@
                     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Adding to traceback: {:?} {:?}&quot;</span>, <span class="ident">traceback</span>, <span class="ident">lineno</span>);
                     <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[
                         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">filename</span>.<span class="ident">clone</span>()),
-                        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">lineno</span>.<span class="ident">get_row</span>().<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>()),
+                        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">lineno</span>.<span class="ident">get_row</span>()),
                         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">run_obj_name</span>.<span class="ident">clone</span>()),
                     ]);
                     <span class="ident">objlist</span>::<span class="ident">list_append</span>(
@@ -1311,7 +1332,7 @@
 
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">instruction</span> {
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unwrap_constant</span>(<span class="ident">vm</span>, <span class="ident">value</span>);
+                <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">unwrap_constant</span>(<span class="ident">value</span>);
                 <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
@@ -1339,7 +1360,7 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">Rotate</span> { <span class="ident">amount</span> } <span class="op">=&gt;</span> {
                 <span class="comment">// Shuffles top of stack amount down</span>
-                <span class="kw">if</span> <span class="ident">amount</span> <span class="op">&lt;</span> <span class="kw-2">&amp;</span><span class="number">2</span> {
+                <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">amount</span> <span class="op">&lt;</span> <span class="number">2</span> {
                     <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Can only rotate two or more values&quot;</span>);
                 }
 
@@ -1360,6 +1381,16 @@
                 }
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BuildString</span> { <span class="ident">size</span> } <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="self">self</span>
+                    .<span class="ident">pop_multiple</span>(<span class="kw-2">*</span><span class="ident">size</span>)
+                    .<span class="ident">into_iter</span>()
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">pyobj</span><span class="op">|</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">pyobj</span>))
+                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>();
+                <span class="kw">let</span> <span class="ident">str_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">s</span>);
+                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">str_obj</span>);
+                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BuildList</span> { <span class="ident">size</span>, <span class="ident">unpack</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_elements</span>(<span class="ident">vm</span>, <span class="kw-2">*</span><span class="ident">size</span>, <span class="kw-2">*</span><span class="ident">unpack</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">list_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elements</span>);
@@ -1368,7 +1399,10 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BuildSet</span> { <span class="ident">size</span>, <span class="ident">unpack</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_elements</span>(<span class="ident">vm</span>, <span class="kw-2">*</span><span class="ident">size</span>, <span class="kw-2">*</span><span class="ident">unpack</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_set</span>(<span class="ident">elements</span>);
+                <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_set</span>();
+                <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">elements</span> {
+                    <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="string">&quot;add&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">item</span>])<span class="question-mark">?</span>;
+                }
                 <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">py_obj</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
@@ -1386,11 +1420,11 @@
                         <span class="comment">// Take all key-value pairs from the dict:</span>
                         <span class="kw">let</span> <span class="ident">dict_elements</span> <span class="op">=</span> <span class="ident">objdict</span>::<span class="ident">get_key_value_pairs</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>);
                         <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">dict_elements</span>.<span class="ident">iter</span>() {
-                            <span class="ident">objdict</span>::<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">map_obj</span>, <span class="ident">key</span>, <span class="ident">value</span>);
+                            <span class="ident">objdict</span>::<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">map_obj</span>, <span class="ident">vm</span>, <span class="ident">key</span>, <span class="ident">value</span>);
                         }
                     } <span class="kw">else</span> {
                         <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                        <span class="ident">objdict</span>::<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">map_obj</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">obj</span>);
+                        <span class="ident">objdict</span>::<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">map_obj</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">obj</span>);
                     }
                 }
                 <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">map_obj</span>);
@@ -1400,22 +1434,22 @@
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">size</span> <span class="op">==</span> <span class="number">2</span> <span class="op">||</span> <span class="kw-2">*</span><span class="ident">size</span> <span class="op">==</span> <span class="number">3</span>);
                 <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_multiple</span>(<span class="kw-2">*</span><span class="ident">size</span>);
 
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">elements</span>
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">elements</span>
                     .<span class="ident">into_iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">x</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-                        <span class="ident">PyObjectKind</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">to_i32</span>().<span class="ident">unwrap</span>()),
-                        <span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">x</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+                        <span class="ident">PyObjectPayload</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+                        <span class="ident">PyObjectPayload</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
                         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Expect Int or None as BUILD_SLICE arguments, got {:?}&quot;</span>, <span class="ident">x</span>),
                     })
                     .<span class="ident">collect</span>();
 
-                <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">out</span>[<span class="number">0</span>];
-                <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="ident">out</span>[<span class="number">1</span>];
-                <span class="kw">let</span> <span class="ident">step</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">out</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">3</span> { <span class="ident">out</span>[<span class="number">2</span>] } <span class="kw">else</span> { <span class="prelude-val">None</span> };
+                <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">out</span>[<span class="number">0</span>].<span class="ident">take</span>();
+                <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="ident">out</span>[<span class="number">1</span>].<span class="ident">take</span>();
+                <span class="kw">let</span> <span class="ident">step</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">out</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">3</span> { <span class="ident">out</span>[<span class="number">2</span>].<span class="ident">take</span>() } <span class="kw">else</span> { <span class="prelude-val">None</span> };
 
                 <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-                    <span class="ident">PyObjectKind</span>::<span class="ident">Slice</span> { <span class="ident">start</span>, <span class="ident">stop</span>, <span class="ident">step</span> },
-                    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">type_type</span>(),
+                    <span class="ident">PyObjectPayload</span>::<span class="ident">Slice</span> { <span class="ident">start</span>, <span class="ident">stop</span>, <span class="ident">step</span> },
+                    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">slice_type</span>(),
                 );
                 <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -1445,7 +1479,9 @@
                 <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">dict_obj</span>, <span class="string">&quot;__setitem__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">key</span>, <span class="ident">value</span>])<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
-            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BinaryOperation</span> { <span class="kw-2">ref</span> <span class="ident">op</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">execute_binop</span>(<span class="ident">vm</span>, <span class="ident">op</span>),
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BinaryOperation</span> { <span class="kw-2">ref</span> <span class="ident">op</span>, <span class="ident">inplace</span> } <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">execute_binop</span>(<span class="ident">vm</span>, <span class="ident">op</span>, <span class="kw-2">*</span><span class="ident">inplace</span>)
+            }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">LoadAttr</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">load_attr</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">StoreAttr</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">store_attr</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">DeleteAttr</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">delete_attr</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
@@ -1484,21 +1520,21 @@
                 }
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">SetupLoop</span> { <span class="ident">start</span>, <span class="ident">end</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">Block</span>::<span class="ident">Loop</span> {
+                <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">BlockType</span>::<span class="ident">Loop</span> {
                     <span class="ident">start</span>: <span class="kw-2">*</span><span class="ident">start</span>,
                     <span class="ident">end</span>: <span class="kw-2">*</span><span class="ident">end</span>,
                 });
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">SetupExcept</span> { <span class="ident">handler</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">Block</span>::<span class="ident">TryExcept</span> { <span class="ident">handler</span>: <span class="kw-2">*</span><span class="ident">handler</span> });
+                <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">BlockType</span>::<span class="ident">TryExcept</span> { <span class="ident">handler</span>: <span class="kw-2">*</span><span class="ident">handler</span> });
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">SetupWith</span> { <span class="ident">end</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">context_manager</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
                 <span class="comment">// Call enter:</span>
                 <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="string">&quot;__enter__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">Block</span>::<span class="ident">With</span> {
+                <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">BlockType</span>::<span class="ident">With</span> {
                     <span class="ident">end</span>: <span class="kw-2">*</span><span class="ident">end</span>,
                     <span class="ident">context_manager</span>: <span class="ident">context_manager</span>.<span class="ident">clone</span>(),
                 });
@@ -1507,22 +1543,23 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">CleanupWith</span> { <span class="ident">end</span>: <span class="ident">end1</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>().<span class="ident">unwrap</span>();
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Block</span>::<span class="ident">With</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">BlockType</span>::<span class="ident">With</span> {
                     <span class="ident">end</span>: <span class="ident">end2</span>,
                     <span class="ident">context_manager</span>,
-                } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">block</span>
+                } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">block</span>.<span class="ident">typ</span>
                 {
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">end1</span> <span class="op">==</span> <span class="ident">end2</span>);
+                    <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">end1</span> <span class="op">==</span> <span class="ident">end2</span>);
 
                     <span class="comment">// call exit now with no exception:</span>
-                    <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="ident">context_manager</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-                    <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+                    <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else</span> {
-                    <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Block stack is incorrect, expected a with block&quot;</span>);
+                    <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;Block stack is incorrect, expected a with block&quot;</span>);
                 }
+
+                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">PopBlock</span> <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">pop_block</span>();
+                <span class="self">self</span>.<span class="ident">pop_block</span>().<span class="ident">expect</span>(<span class="string">&quot;no pop to block&quot;</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">GetIter</span> <span class="op">=&gt;</span> {
@@ -1577,7 +1614,7 @@
                     <span class="ident">bytecode</span>::<span class="ident">CallType</span>::<span class="ident">Positional</span>(<span class="ident">count</span>) <span class="op">=&gt;</span> {
                         <span class="kw">let</span> <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_multiple</span>(<span class="kw-2">*</span><span class="ident">count</span>);
                         <span class="ident">PyFuncArgs</span> {
-                            <span class="ident">args</span>: <span class="ident">args</span>,
+                            <span class="ident">args</span>,
                             <span class="ident">kwargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
                         }
                     }
@@ -1641,7 +1678,7 @@
                 <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">argc</span> {
                     <span class="number">1</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">pop_value</span>(),
                     <span class="number">0</span> <span class="op">|</span> <span class="number">2</span> <span class="op">|</span> <span class="number">3</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Not implemented!&quot;</span>),
-                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid paramter for RAISE_VARARGS, must be between 0 to 3&quot;</span>),
+                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid parameter for RAISE_VARARGS, must be between 0 to 3&quot;</span>),
                 };
                 <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">base_exception_type</span>) {
                     <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Exception raised: {:?}&quot;</span>, <span class="ident">exception</span>);
@@ -1659,8 +1696,11 @@
 
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">Break</span> <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unwind_loop</span>(<span class="ident">vm</span>);
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Block</span>::<span class="ident">Loop</span> { <span class="ident">start</span>: <span class="kw">_</span>, <span class="ident">end</span> } <span class="op">=</span> <span class="ident">block</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">BlockType</span>::<span class="ident">Loop</span> { <span class="ident">end</span>, .. } <span class="op">=</span> <span class="ident">block</span>.<span class="ident">typ</span> {
+                    <span class="self">self</span>.<span class="ident">pop_block</span>();
                     <span class="self">self</span>.<span class="ident">jump</span>(<span class="ident">end</span>);
+                } <span class="kw">else</span> {
+                    <span class="macro">unreachable</span><span class="macro">!</span>()
                 }
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
@@ -1670,17 +1710,17 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">Continue</span> <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unwind_loop</span>(<span class="ident">vm</span>);
-                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Block</span>::<span class="ident">Loop</span> { <span class="ident">start</span>, <span class="ident">end</span>: <span class="kw">_</span> } <span class="op">=</span> <span class="ident">block</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">BlockType</span>::<span class="ident">Loop</span> { <span class="ident">start</span>, .. } <span class="op">=</span> <span class="ident">block</span>.<span class="ident">typ</span> {
                     <span class="self">self</span>.<span class="ident">jump</span>(<span class="ident">start</span>);
                 } <span class="kw">else</span> {
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="bool-val">false</span>);
+                    <span class="macro">unreachable</span><span class="macro">!</span>();
                 }
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">PrintExpr</span> <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">expr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                <span class="kw">match</span> <span class="ident">expr</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-                    <span class="ident">PyObjectKind</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> (),
+                <span class="kw">match</span> <span class="ident">expr</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+                    <span class="ident">PyObjectPayload</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> (),
                     <span class="kw">_</span> <span class="op">=&gt;</span> {
                         <span class="kw">let</span> <span class="ident">repr</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">expr</span>)<span class="question-mark">?</span>;
                         <span class="ident">builtins</span>::<span class="ident">builtin_print</span>(
@@ -1696,7 +1736,7 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">LoadBuildClass</span> <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">rustfunc</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
-                    <span class="ident">PyObjectKind</span>::<span class="ident">RustFunction</span> {
+                    <span class="ident">PyObjectPayload</span>::<span class="ident">RustFunction</span> {
                         <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">builtins</span>::<span class="ident">builtin_build_class_</span>),
                     },
                     <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">type_type</span>(),
@@ -1706,8 +1746,8 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">StoreLocals</span> <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">borrow_mut</span>().<span class="ident">kind</span> {
-                    <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> {
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">borrow_mut</span>().<span class="ident">payload</span> {
+                    <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> {
                         <span class="ident">scope</span>.<span class="ident">locals</span> <span class="op">=</span> <span class="ident">locals</span>;
                     }
                     <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;We really expect our scope to be a scope!&quot;</span>),
@@ -1748,7 +1788,7 @@
                         .<span class="ident">iter</span>()
                         .<span class="ident">skip</span>(<span class="kw-2">*</span><span class="ident">before</span>)
                         .<span class="ident">take</span>(<span class="ident">middle</span>)
-                        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">clone</span>())
+                        .<span class="ident">cloned</span>()
                         .<span class="ident">collect</span>();
                     <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">middle_elements</span>);
                     <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">t</span>);
@@ -1767,6 +1807,13 @@
                 <span class="kw">for</span> <span class="ident">element</span> <span class="kw">in</span> <span class="ident">elements</span>.<span class="ident">into_iter</span>().<span class="ident">rev</span>() {
                     <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">element</span>);
                 }
+                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            }
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">FormatValue</span> { <span class="ident">spec</span> } <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
+                <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">spec</span>.<span class="ident">clone</span>());
+                <span class="kw">let</span> <span class="ident">formatted</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>, <span class="string">&quot;__format__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">spec</span>])<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">formatted</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
         }
@@ -1799,16 +1846,13 @@
         <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
         <span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="kw">let</span> <span class="ident">current_path</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">source_path</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">source_path</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">source_pathbuf</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="ident">source_path</span>);
-                <span class="ident">source_pathbuf</span>.<span class="ident">pop</span>();
-                <span class="ident">source_pathbuf</span>
-            }
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="string">&quot;.&quot;</span>),
+        <span class="kw">let</span> <span class="ident">current_path</span> <span class="op">=</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">source_pathbuf</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">source_path</span>);
+            <span class="ident">source_pathbuf</span>.<span class="ident">pop</span>();
+            <span class="ident">source_pathbuf</span>
         };
 
-        <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">import</span>(<span class="ident">vm</span>, <span class="ident">current_path</span>, <span class="kw-2">&amp;</span><span class="ident">module</span>.<span class="ident">to_string</span>(), <span class="ident">symbol</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">import</span>(<span class="ident">vm</span>, <span class="ident">current_path</span>, <span class="ident">module</span>, <span class="ident">symbol</span>)<span class="question-mark">?</span>;
 
         <span class="comment">// Push module on stack:</span>
         <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span>);
@@ -1816,13 +1860,10 @@
     }
 
     <span class="kw">fn</span> <span class="ident">import_star</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="kw">let</span> <span class="ident">current_path</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">source_path</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">source_path</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">source_pathbuf</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="ident">source_path</span>);
-                <span class="ident">source_pathbuf</span>.<span class="ident">pop</span>();
-                <span class="ident">source_pathbuf</span>
-            }
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="string">&quot;.&quot;</span>),
+        <span class="kw">let</span> <span class="ident">current_path</span> <span class="op">=</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">source_pathbuf</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">source_path</span>);
+            <span class="ident">source_pathbuf</span>.<span class="ident">pop</span>();
+            <span class="ident">source_pathbuf</span>
         };
 
         <span class="comment">// Grab all the names from the module and put them in the context</span>
@@ -1830,24 +1871,22 @@
 
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">obj</span>.<span class="ident">get_key_value_pairs</span>().<span class="ident">iter</span>() {
             <span class="ident">vm</span>.<span class="ident">ctx</span>
-                .<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">locals</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">k</span>), <span class="ident">v</span>.<span class="ident">clone</span>());
+                .<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">locals</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">k</span>), <span class="ident">v</span>.<span class="ident">clone</span>());
         }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
     <span class="comment">// Unwind all blocks:</span>
     <span class="kw">fn</span> <span class="ident">unwind_blocks</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-        <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>();
-            <span class="kw">match</span> <span class="ident">block</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">Loop</span> { .. }) <span class="op">=&gt;</span> {}
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">TryExcept</span> { .. }) <span class="op">=&gt;</span> {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>() {
+            <span class="kw">match</span> <span class="ident">block</span>.<span class="ident">typ</span> {
+                <span class="ident">BlockType</span>::<span class="ident">Loop</span> { .. } <span class="op">=&gt;</span> {}
+                <span class="ident">BlockType</span>::<span class="ident">TryExcept</span> { .. } <span class="op">=&gt;</span> {
                     <span class="comment">// TODO: execute finally handler</span>
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">With</span> {
-                    <span class="ident">end</span>: <span class="kw">_</span>,
-                    <span class="ident">context_manager</span>,
-                }) <span class="op">=&gt;</span> {
+                <span class="ident">BlockType</span>::<span class="ident">With</span> {
+                    <span class="ident">context_manager</span>, ..
+                } <span class="op">=&gt;</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>) {
                         <span class="prelude-val">Ok</span>(..) <span class="op">=&gt;</span> {}
                         <span class="prelude-val">Err</span>(<span class="ident">exc</span>) <span class="op">=&gt;</span> {
@@ -1856,30 +1895,31 @@
                         }
                     }
                 }
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">break</span> <span class="prelude-val">None</span>,
             }
         }
+
+        <span class="prelude-val">None</span>
     }
 
     <span class="kw">fn</span> <span class="ident">unwind_loop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">Block</span> {
         <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>();
-            <span class="kw">match</span> <span class="ident">block</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">Loop</span> { <span class="ident">start</span>: <span class="kw">_</span>, <span class="ident">end</span>: <span class="ident">__</span> }) <span class="op">=&gt;</span> <span class="kw">break</span> <span class="ident">block</span>.<span class="ident">unwrap</span>(),
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">TryExcept</span> { .. }) <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_block</span>().<span class="ident">cloned</span>().<span class="ident">expect</span>(<span class="string">&quot;not in a loop&quot;</span>);
+            <span class="kw">match</span> <span class="ident">block</span>.<span class="ident">typ</span> {
+                <span class="ident">BlockType</span>::<span class="ident">Loop</span> { .. } <span class="op">=&gt;</span> <span class="kw">break</span> <span class="ident">block</span>,
+                <span class="ident">BlockType</span>::<span class="ident">TryExcept</span> { .. } <span class="op">=&gt;</span> {
                     <span class="comment">// TODO: execute finally handler</span>
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">With</span> {
-                    <span class="ident">end</span>: <span class="kw">_</span>,
-                    <span class="ident">context_manager</span>,
-                }) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>) {
+                <span class="ident">BlockType</span>::<span class="ident">With</span> {
+                    <span class="ident">context_manager</span>, ..
+                } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>) {
                     <span class="prelude-val">Ok</span>(..) <span class="op">=&gt;</span> {}
                     <span class="prelude-val">Err</span>(<span class="ident">exc</span>) <span class="op">=&gt;</span> {
                         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Exception in with __exit__ {:?}&quot;</span>, <span class="ident">exc</span>);
                     }
                 },
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;No block to break / continue&quot;</span>),
             }
+
+            <span class="self">self</span>.<span class="ident">pop_block</span>();
         }
     }
 
@@ -1889,18 +1929,17 @@
         <span class="ident">exc</span>: <span class="ident">PyObjectRef</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="comment">// unwind block stack on exception and find any handlers:</span>
-        <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>();
-            <span class="kw">match</span> <span class="ident">block</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">TryExcept</span> { <span class="ident">handler</span> }) <span class="op">=&gt;</span> {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>() {
+            <span class="kw">match</span> <span class="ident">block</span>.<span class="ident">typ</span> {
+                <span class="ident">BlockType</span>::<span class="ident">TryExcept</span> { <span class="ident">handler</span> } <span class="op">=&gt;</span> {
                     <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">exc</span>);
                     <span class="self">self</span>.<span class="ident">jump</span>(<span class="ident">handler</span>);
                     <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">With</span> {
+                <span class="ident">BlockType</span>::<span class="ident">With</span> {
                     <span class="ident">end</span>,
                     <span class="ident">context_manager</span>,
-                }) <span class="op">=&gt;</span> {
+                } <span class="op">=&gt;</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">Some</span>(<span class="ident">exc</span>.<span class="ident">clone</span>())) {
                         <span class="prelude-val">Ok</span>(<span class="ident">exit_action</span>) <span class="op">=&gt;</span> {
                             <span class="kw">match</span> <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">exit_action</span>) {
@@ -1925,15 +1964,14 @@
                         }
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">Block</span>::<span class="ident">Loop</span> { .. }) <span class="op">=&gt;</span> {}
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">break</span>,
+                <span class="ident">BlockType</span>::<span class="ident">Loop</span> { .. } <span class="op">=&gt;</span> {}
             }
         }
         <span class="prelude-val">Some</span>(<span class="ident">exc</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">with_exit</span>(
-        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>,
         <span class="ident">context_manager</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
         <span class="ident">exc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
@@ -1959,13 +1997,13 @@
 
     <span class="kw">fn</span> <span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">locals</span>, <span class="ident">name</span>, <span class="ident">obj</span>);
+        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">locals</span>, <span class="ident">name</span>, <span class="ident">obj</span>);
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">delete_name</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">clone</span>(),
+        <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">clone</span>(),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;We really expect our scope to be a scope!&quot;</span>),
         };
 
@@ -2023,28 +2061,40 @@
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>,
         <span class="ident">op</span>: <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>,
+        <span class="ident">inplace</span>: <span class="ident">bool</span>,
     ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">b_ref</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
         <span class="kw">let</span> <span class="ident">a_ref</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subtract</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_sub</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Add</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_add</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Multiply</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_mul</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">MatrixMultiply</span> <span class="op">=&gt;</span> {
-                <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a_ref</span>, <span class="string">&quot;__matmul__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">b_ref</span>])
-            }
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Power</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_pow</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Divide</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_div</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">FloorDivide</span> <span class="op">=&gt;</span> {
-                <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a_ref</span>, <span class="string">&quot;__floordiv__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">b_ref</span>])
-            }
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">subscript</span>(<span class="ident">vm</span>, <span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Modulo</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_modulo</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Lshift</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a_ref</span>, <span class="string">&quot;__lshift__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">b_ref</span>]),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Rshift</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a_ref</span>, <span class="string">&quot;__rshift__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">b_ref</span>]),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Xor</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_xor</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Or</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_or</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">And</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_and</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">op</span> {
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subtract</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_isub</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subtract</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_sub</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Add</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_iadd</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Add</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_add</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Multiply</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_imul</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Multiply</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_mul</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">MatrixMultiply</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_imatmul</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">MatrixMultiply</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_matmul</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Power</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ipow</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Power</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_pow</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Divide</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_itruediv</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Divide</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_truediv</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">FloorDivide</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ifloordiv</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">FloorDivide</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_floordiv</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="comment">// TODO: Subscript should probably have its own op</span>
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">subscript</span>(<span class="ident">vm</span>, <span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Modulo</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_imod</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Modulo</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_mod</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Lshift</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ilshift</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Lshift</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_lshift</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Rshift</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_irshift</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Rshift</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_rshift</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Xor</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ixor</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Xor</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_xor</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Or</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ior</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Or</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_or</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">And</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_iand</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">And</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_and</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
         }<span class="question-mark">?</span>;
 
         <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">value</span>);
@@ -2057,11 +2107,11 @@
         <span class="ident">op</span>: <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>,
     ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Minus</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__neg__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Plus</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__pos__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Invert</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__invert__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Not</span> <span class="op">=&gt;</span> {
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">op</span> {
+            <span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Minus</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__neg__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Plus</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__pos__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Invert</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__invert__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Not</span> <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">a</span>)<span class="question-mark">?</span>;
                 <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="op">!</span><span class="ident">value</span>)
             }
@@ -2134,17 +2184,17 @@
     ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Equal</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_eq</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">NotEqual</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ne</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Less</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_lt</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">LessOrEqual</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_le</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Greater</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_gt</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">GreaterOrEqual</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ge</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Is</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">_is</span>(<span class="ident">a</span>, <span class="ident">b</span>)),
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">IsNot</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">_is_not</span>(<span class="ident">vm</span>, <span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">In</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">_in</span>(<span class="ident">vm</span>, <span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
-            <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">NotIn</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">_not_in</span>(<span class="ident">vm</span>, <span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">op</span> {
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Equal</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_eq</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">NotEqual</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ne</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Less</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_lt</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">LessOrEqual</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_le</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Greater</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_gt</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">GreaterOrEqual</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ge</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Is</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">_is</span>(<span class="ident">a</span>, <span class="ident">b</span>)),
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">IsNot</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">_is_not</span>(<span class="ident">vm</span>, <span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">In</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">_in</span>(<span class="ident">vm</span>, <span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">NotIn</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">_not_in</span>(<span class="ident">vm</span>, <span class="ident">a</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
         };
 
         <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">value</span>);
@@ -2173,37 +2223,25 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">unwrap_constant</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">Constant</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">value</span> {
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Integer</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>.<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>()),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Float</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Complex</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_complex</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Bytes</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Boolean</span> { <span class="kw-2">ref</span> <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="kw-2">ref</span> <span class="ident">code</span> } <span class="op">=&gt;</span> {
-                <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyObjectKind</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span>.<span class="ident">clone</span>() }, <span class="ident">vm</span>.<span class="ident">get_type</span>())
-            }
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Tuple</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(
-                <span class="ident">elements</span>
-                    .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">unwrap_constant</span>(<span class="ident">vm</span>, <span class="ident">value</span>))
-                    .<span class="ident">collect</span>(),
-            ),
-            <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(),
-        }
-    }
-
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_lineno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Location</span> {
         <span class="self">self</span>.<span class="ident">code</span>.<span class="ident">locations</span>[<span class="self">self</span>.<span class="ident">lasti</span>].<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">push_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="ident">Block</span>) {
-        <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">push</span>(<span class="ident">block</span>);
+    <span class="kw">fn</span> <span class="ident">push_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">BlockType</span>) {
+        <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">push</span>(<span class="ident">Block</span> {
+            <span class="ident">typ</span>,
+            <span class="ident">level</span>: <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">len</span>(),
+        });
     }
 
     <span class="kw">fn</span> <span class="ident">pop_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">pop</span>()
+        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">pop</span>()<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">truncate</span>(<span class="ident">block</span>.<span class="ident">level</span>);
+        <span class="prelude-val">Some</span>(<span class="ident">block</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">current_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Block</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">last</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push_value</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) {
@@ -2237,7 +2275,7 @@
         <span class="kw">let</span> <span class="ident">stack_str</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">stack</span>
             .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  &gt; {}&quot;</span>, <span class="ident">elem</span>.<span class="ident">borrow</span>().<span class="ident">str</span>()))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  &gt; {:?}&quot;</span>, <span class="ident">elem</span>.<span class="ident">borrow</span>()))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">join</span>(<span class="string">&quot;&quot;</span>);
         <span class="kw">let</span> <span class="ident">block_str</span> <span class="op">=</span> <span class="self">self</span>
@@ -2246,14 +2284,12 @@
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  &gt; {:?}&quot;</span>, <span class="ident">elem</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">join</span>(<span class="string">&quot;&quot;</span>);
-        <span class="kw">let</span> <span class="ident">local_str</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-            <span class="ident">PyObjectKind</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">borrow</span>().<span class="ident">kind</span> {
-                <span class="ident">PyObjectKind</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> {
+        <span class="kw">let</span> <span class="ident">local_str</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+            <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="kw-2">ref</span> <span class="ident">scope</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">scope</span>.<span class="ident">locals</span>.<span class="ident">borrow</span>().<span class="ident">payload</span> {
+                <span class="ident">PyObjectPayload</span>::<span class="ident">Dict</span> { <span class="kw-2">ref</span> <span class="ident">elements</span> } <span class="op">=&gt;</span> {
                     <span class="ident">objdict</span>::<span class="ident">get_key_value_pairs_from_content</span>(<span class="ident">elements</span>)
                         .<span class="ident">iter</span>()
-                        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> {
-                            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  {} = {}&quot;</span>, <span class="ident">elem</span>.<span class="number">0</span>.<span class="ident">borrow</span>().<span class="ident">str</span>(), <span class="ident">elem</span>.<span class="number">1</span>.<span class="ident">borrow</span>().<span class="ident">str</span>())
-                        })
+                        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  {:?} = {:?}&quot;</span>, <span class="ident">elem</span>.<span class="number">0</span>.<span class="ident">borrow</span>(), <span class="ident">elem</span>.<span class="number">1</span>.<span class="ident">borrow</span>()))
                         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
                         .<span class="ident">join</span>(<span class="string">&quot;&quot;</span>)
                 }
@@ -2271,5 +2307,5 @@
         )
     }
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-files.js"></script><script src="../../source-script.js"></script><script defer src="../../search-index.js"></script></body></html>

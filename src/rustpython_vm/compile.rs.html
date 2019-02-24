@@ -1442,8 +1442,59 @@
 <span id="1442">1442</span>
 <span id="1443">1443</span>
 <span id="1444">1444</span>
-</pre><pre class="rust ">
-<span class="doccomment">//!</span>
+<span id="1445">1445</span>
+<span id="1446">1446</span>
+<span id="1447">1447</span>
+<span id="1448">1448</span>
+<span id="1449">1449</span>
+<span id="1450">1450</span>
+<span id="1451">1451</span>
+<span id="1452">1452</span>
+<span id="1453">1453</span>
+<span id="1454">1454</span>
+<span id="1455">1455</span>
+<span id="1456">1456</span>
+<span id="1457">1457</span>
+<span id="1458">1458</span>
+<span id="1459">1459</span>
+<span id="1460">1460</span>
+<span id="1461">1461</span>
+<span id="1462">1462</span>
+<span id="1463">1463</span>
+<span id="1464">1464</span>
+<span id="1465">1465</span>
+<span id="1466">1466</span>
+<span id="1467">1467</span>
+<span id="1468">1468</span>
+<span id="1469">1469</span>
+<span id="1470">1470</span>
+<span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
+<span id="1477">1477</span>
+<span id="1478">1478</span>
+<span id="1479">1479</span>
+<span id="1480">1480</span>
+<span id="1481">1481</span>
+<span id="1482">1482</span>
+<span id="1483">1483</span>
+<span id="1484">1484</span>
+<span id="1485">1485</span>
+<span id="1486">1486</span>
+<span id="1487">1487</span>
+<span id="1488">1488</span>
+<span id="1489">1489</span>
+<span id="1490">1490</span>
+<span id="1491">1491</span>
+<span id="1492">1492</span>
+<span id="1493">1493</span>
+<span id="1494">1494</span>
+<span id="1495">1495</span>
+<span id="1496">1496</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Take an AST and transform it into bytecode</span>
 <span class="doccomment">//!</span>
@@ -1451,9 +1502,9 @@
 <span class="doccomment">//!   https://github.com/python/cpython/blob/master/Python/compile.c</span>
 <span class="doccomment">//!   https://github.com/micropython/micropython/blob/master/py/compile.c</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">bytecode</span>::{<span class="self">self</span>, <span class="ident">CallType</span>, <span class="ident">CodeObject</span>, <span class="ident">Instruction</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">pyobject</span>::{<span class="ident">PyObject</span>, <span class="ident">PyObjectKind</span>, <span class="ident">PyResult</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>::{<span class="self">self</span>, <span class="ident">CallType</span>, <span class="ident">CodeObject</span>, <span class="ident">Instruction</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">CompileError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyObject</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>};
 <span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex64</span>;
 <span class="kw">use</span> <span class="ident">rustpython_parser</span>::{<span class="ident">ast</span>, <span class="ident">parser</span>};
 
@@ -1462,44 +1513,40 @@
     <span class="ident">nxt_label</span>: <span class="ident">usize</span>,
     <span class="ident">source_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">current_source_location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>,
+    <span class="ident">in_loop</span>: <span class="ident">bool</span>,
 }
 
 <span class="doccomment">/// Compile a given sourcecode into a bytecode object.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">compile</span>(
-    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>,
     <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-    <span class="ident">mode</span>: <span class="ident">Mode</span>,
-    <span class="ident">source_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="ident">mode</span>: <span class="kw-2">&amp;</span><span class="ident">Mode</span>,
+    <span class="ident">source_path</span>: <span class="ident">String</span>,
+    <span class="ident">code_type</span>: <span class="ident">PyObjectRef</span>,
+) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span>, <span class="ident">CompileError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">compiler</span> <span class="op">=</span> <span class="ident">Compiler</span>::<span class="ident">new</span>();
-    <span class="ident">compiler</span>.<span class="ident">source_path</span> <span class="op">=</span> <span class="ident">source_path</span>.<span class="ident">clone</span>();
-    <span class="ident">compiler</span>.<span class="ident">push_new_code_object</span>(<span class="ident">source_path</span>, <span class="string">&quot;&lt;module&gt;&quot;</span>.<span class="ident">to_string</span>());
-    <span class="kw">let</span> <span class="ident">syntax_error</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">exceptions</span>.<span class="ident">syntax_error</span>.<span class="ident">clone</span>();
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mode</span> {
-        <span class="ident">Mode</span>::<span class="ident">Exec</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="ident">source</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast</span>) <span class="op">=&gt;</span> <span class="ident">compiler</span>.<span class="ident">compile_program</span>(<span class="kw-2">&amp;</span><span class="ident">ast</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">msg</span>),
-        },
-        <span class="ident">Mode</span>::<span class="ident">Eval</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">parser</span>::<span class="ident">parse_statement</span>(<span class="ident">source</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">statement</span>) <span class="op">=&gt;</span> <span class="ident">compiler</span>.<span class="ident">compile_statement_eval</span>(<span class="kw-2">&amp;</span><span class="ident">statement</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">msg</span>),
-        },
-        <span class="ident">Mode</span>::<span class="ident">Single</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="ident">source</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">ast</span>) <span class="op">=&gt;</span> <span class="ident">compiler</span>.<span class="ident">compile_program_single</span>(<span class="kw-2">&amp;</span><span class="ident">ast</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">msg</span>),
-        },
-    };
+    <span class="ident">compiler</span>.<span class="ident">source_path</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">source_path</span>);
+    <span class="ident">compiler</span>.<span class="ident">push_new_code_object</span>(<span class="string">&quot;&lt;module&gt;&quot;</span>.<span class="ident">to_string</span>());
 
-    <span class="kw">match</span> <span class="ident">result</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">syntax_error</span>.<span class="ident">clone</span>(), <span class="ident">msg</span>)),
-        <span class="kw">_</span> <span class="op">=&gt;</span> {}
-    }
+    <span class="kw">match</span> <span class="ident">mode</span> {
+        <span class="ident">Mode</span>::<span class="ident">Exec</span> <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="ident">source</span>).<span class="ident">map_err</span>(<span class="ident">CompileError</span>::<span class="ident">Parse</span>)<span class="question-mark">?</span>;
+            <span class="ident">compiler</span>.<span class="ident">compile_program</span>(<span class="kw-2">&amp;</span><span class="ident">ast</span>)
+        }
+        <span class="ident">Mode</span>::<span class="ident">Eval</span> <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">statement</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_statement</span>(<span class="ident">source</span>).<span class="ident">map_err</span>(<span class="ident">CompileError</span>::<span class="ident">Parse</span>)<span class="question-mark">?</span>;
+            <span class="ident">compiler</span>.<span class="ident">compile_statement_eval</span>(<span class="kw-2">&amp;</span><span class="ident">statement</span>)
+        }
+        <span class="ident">Mode</span>::<span class="ident">Single</span> <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="ident">source</span>).<span class="ident">map_err</span>(<span class="ident">CompileError</span>::<span class="ident">Parse</span>)<span class="question-mark">?</span>;
+            <span class="ident">compiler</span>.<span class="ident">compile_program_single</span>(<span class="kw-2">&amp;</span><span class="ident">ast</span>)
+        }
+    }<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">compiler</span>.<span class="ident">pop_code_object</span>();
     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Compilation completed: {:?}&quot;</span>, <span class="ident">code</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">PyObject</span>::<span class="ident">new</span>(
-        <span class="ident">PyObjectKind</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span> },
-        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">code_type</span>(),
+        <span class="ident">PyObjectPayload</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span> },
+        <span class="ident">code_type</span>,
     ))
 }
 
@@ -1524,16 +1571,19 @@
             <span class="ident">nxt_label</span>: <span class="number">0</span>,
             <span class="ident">source_path</span>: <span class="prelude-val">None</span>,
             <span class="ident">current_source_location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">default</span>(),
+            <span class="ident">in_loop</span>: <span class="bool-val">false</span>,
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">push_new_code_object</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">obj_name</span>: <span class="ident">String</span>) {
+    <span class="kw">fn</span> <span class="ident">push_new_code_object</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">obj_name</span>: <span class="ident">String</span>) {
+        <span class="kw">let</span> <span class="ident">line_number</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_source_line_number</span>();
         <span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">push</span>(<span class="ident">CodeObject</span>::<span class="ident">new</span>(
             <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="prelude-val">None</span>,
             <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="prelude-val">None</span>,
-            <span class="ident">source_path</span>.<span class="ident">clone</span>(),
+            <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>(),
+            <span class="ident">line_number</span>,
             <span class="ident">obj_name</span>,
         ));
     }
@@ -1542,7 +1592,7 @@
         <span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_program</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_program</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">size_before</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">len</span>();
         <span class="self">self</span>.<span class="ident">compile_statements</span>(<span class="kw-2">&amp;</span><span class="ident">program</span>.<span class="ident">statements</span>)<span class="question-mark">?</span>;
         <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">size_before</span>);
@@ -1555,9 +1605,9 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_program_single</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_program_single</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">statement</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">program</span>.<span class="ident">statements</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="kw-2">ref</span> <span class="ident">expression</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">statement</span>.<span class="ident">node</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="kw-2">ref</span> <span class="ident">expression</span> } <span class="op">=</span> <span class="ident">statement</span>.<span class="ident">node</span> {
                 <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">PrintExpr</span>);
             } <span class="kw">else</span> {
@@ -1572,24 +1622,30 @@
     }
 
     <span class="comment">// Compile statement in eval mode:</span>
-    <span class="kw">fn</span> <span class="ident">compile_statement_eval</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="kw-2">ref</span> <span class="ident">expression</span> } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">statement</span>.<span class="ident">node</span> {
+    <span class="kw">fn</span> <span class="ident">compile_statement_eval</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="kw-2">ref</span> <span class="ident">expression</span> } <span class="op">=</span> <span class="ident">statement</span>.<span class="ident">node</span> {
             <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
             <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">ReturnValue</span>);
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="string">&quot;Expecting expression, got statement&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="ident">CompileError</span>::<span class="ident">ExpectExpr</span>)
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_statements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span>]) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_statements</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span>],
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">statement</span> <span class="kw">in</span> <span class="ident">statements</span> {
             <span class="self">self</span>.<span class="ident">compile_statement</span>(<span class="ident">statement</span>)<span class="question-mark">?</span>
         }
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_statement</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_statement</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Compiling {:?}&quot;</span>, <span class="ident">statement</span>);
         <span class="self">self</span>.<span class="ident">set_source_location</span>(<span class="kw-2">&amp;</span><span class="ident">statement</span>.<span class="ident">location</span>);
 
@@ -1610,7 +1666,7 @@
                         <span class="kw">_</span> <span class="op">=&gt;</span> {
                             <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">Import</span> {
                                 <span class="ident">name</span>: <span class="ident">module</span>.<span class="ident">clone</span>(),
-                                <span class="ident">symbol</span>: <span class="ident">symbol</span>.<span class="ident">clone</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">clone</span>()),
+                                <span class="ident">symbol</span>: <span class="ident">symbol</span>.<span class="ident">clone</span>(),
                             });
                             <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">StoreName</span> {
                                 <span class="ident">name</span>: <span class="kw">match</span> <span class="ident">alias</span> {
@@ -1672,16 +1728,19 @@
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">start_label</span>);
 
                 <span class="self">self</span>.<span class="ident">compile_test</span>(<span class="ident">test</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">else_label</span>), <span class="ident">EvalContext</span>::<span class="ident">Statement</span>)<span class="question-mark">?</span>;
+
+                <span class="self">self</span>.<span class="ident">in_loop</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="self">self</span>.<span class="ident">compile_statements</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">in_loop</span> <span class="op">=</span> <span class="bool-val">false</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">Jump</span> {
                     <span class="ident">target</span>: <span class="ident">start_label</span>,
                 });
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">else_label</span>);
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">PopBlock</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                     <span class="self">self</span>.<span class="ident">compile_statements</span>(<span class="ident">orelse</span>)<span class="question-mark">?</span>;
                 }
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">end_label</span>);
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">PopBlock</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">With</span> { <span class="ident">items</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">end_label</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_label</span>();
@@ -1710,14 +1769,6 @@
                 <span class="ident">body</span>,
                 <span class="ident">orelse</span>,
             } <span class="op">=&gt;</span> {
-                <span class="comment">// The thing iterated:</span>
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">iter</span> {
-                    <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
-                }
-
-                <span class="comment">// Retrieve iterator</span>
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">GetIter</span>);
-
                 <span class="comment">// Start loop</span>
                 <span class="kw">let</span> <span class="ident">start_label</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_label</span>();
                 <span class="kw">let</span> <span class="ident">else_label</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_label</span>();
@@ -1726,6 +1777,15 @@
                     <span class="ident">start</span>: <span class="ident">start_label</span>,
                     <span class="ident">end</span>: <span class="ident">end_label</span>,
                 });
+
+                <span class="comment">// The thing iterated:</span>
+                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">iter</span> {
+                    <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">i</span>)<span class="question-mark">?</span>;
+                }
+
+                <span class="comment">// Retrieve Iterator</span>
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">GetIter</span>);
+
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">start_label</span>);
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">ForIter</span> { <span class="ident">target</span>: <span class="ident">else_label</span> });
 
@@ -1733,16 +1793,19 @@
                 <span class="self">self</span>.<span class="ident">compile_store</span>(<span class="ident">target</span>)<span class="question-mark">?</span>;
 
                 <span class="comment">// Body of loop:</span>
+                <span class="self">self</span>.<span class="ident">in_loop</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 <span class="self">self</span>.<span class="ident">compile_statements</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">in_loop</span> <span class="op">=</span> <span class="bool-val">false</span>;
+
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">Jump</span> {
                     <span class="ident">target</span>: <span class="ident">start_label</span>,
                 });
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">else_label</span>);
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">PopBlock</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                     <span class="self">self</span>.<span class="ident">compile_statements</span>(<span class="ident">orelse</span>)<span class="question-mark">?</span>;
                 }
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">end_label</span>);
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">PopBlock</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Raise</span> { <span class="ident">exception</span>, <span class="ident">cause</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">exception</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> {
@@ -1877,7 +1940,7 @@
 
                 <span class="self">self</span>.<span class="ident">prepare_decorators</span>(<span class="ident">decorator_list</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
-                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span> },
+                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span> },
                 });
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
                     <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> {
@@ -1886,7 +1949,7 @@
                 });
 
                 <span class="comment">// Turn code object into function object:</span>
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">MakeFunction</span> { <span class="ident">flags</span>: <span class="ident">flags</span> });
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">MakeFunction</span> { <span class="ident">flags</span> });
                 <span class="self">self</span>.<span class="ident">apply_decorators</span>(<span class="ident">decorator_list</span>);
 
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">StoreName</span> {
@@ -1902,12 +1965,14 @@
             } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">prepare_decorators</span>(<span class="ident">decorator_list</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadBuildClass</span>);
+                <span class="kw">let</span> <span class="ident">line_number</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_source_line_number</span>();
                 <span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">push</span>(<span class="ident">CodeObject</span>::<span class="ident">new</span>(
                     <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;__locals__&quot;</span>)],
                     <span class="prelude-val">None</span>,
                     <span class="macro">vec</span><span class="macro">!</span>[],
                     <span class="prelude-val">None</span>,
-                    <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>(),
+                    <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>(),
+                    <span class="ident">line_number</span>,
                     <span class="ident">name</span>.<span class="ident">clone</span>(),
                 ));
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadName</span> {
@@ -1922,7 +1987,7 @@
 
                 <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_code_object</span>();
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
-                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span> },
+                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span> },
                 });
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
                     <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> {
@@ -1945,7 +2010,7 @@
                     <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">base</span>)<span class="question-mark">?</span>;
                 }
 
-                <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">keywords</span>.<span class="ident">is_empty</span>() {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kwarg_names</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
                     <span class="kw">for</span> <span class="ident">keyword</span> <span class="kw">in</span> <span class="ident">keywords</span> {
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">keyword</span>.<span class="ident">name</span> {
@@ -2004,9 +2069,15 @@
                 <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">end_label</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Break</span> <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">in_loop</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CompileError</span>::<span class="ident">InvalidBreak</span>);
+                }
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">Break</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Continue</span> <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">in_loop</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CompileError</span>::<span class="ident">InvalidContinue</span>);
+                }
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">Continue</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Return</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
@@ -2037,7 +2108,7 @@
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assign</span> { <span class="ident">targets</span>, <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
 
-                <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">targets</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+                <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">targets</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                     <span class="kw">if</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span> <span class="op">!=</span> <span class="ident">targets</span>.<span class="ident">len</span>() {
                         <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">Duplicate</span>);
                     }
@@ -2049,7 +2120,7 @@
                 <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
 
                 <span class="comment">// Perform operation:</span>
-                <span class="self">self</span>.<span class="ident">compile_op</span>(<span class="ident">op</span>);
+                <span class="self">self</span>.<span class="ident">compile_op</span>(<span class="ident">op</span>, <span class="bool-val">true</span>);
                 <span class="self">self</span>.<span class="ident">compile_store</span>(<span class="ident">target</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Delete</span> { <span class="ident">targets</span> } <span class="op">=&gt;</span> {
@@ -2072,7 +2143,7 @@
                             <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">DeleteSubscript</span>);
                         }
                         <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Invalid delete statement&quot;</span>));
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CompileError</span>::<span class="ident">Delete</span>(<span class="ident">target</span>.<span class="ident">name</span>()));
                         }
                     }
                 }
@@ -2086,10 +2157,11 @@
 
     <span class="kw">fn</span> <span class="ident">enter_function</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>,
+        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
         <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Parameters</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">have_kwargs</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">defaults</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span>;
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>, <span class="ident">CompileError</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">in_loop</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">let</span> <span class="ident">have_kwargs</span> <span class="op">=</span> <span class="op">!</span><span class="ident">args</span>.<span class="ident">defaults</span>.<span class="ident">is_empty</span>();
         <span class="kw">if</span> <span class="ident">have_kwargs</span> {
             <span class="comment">// Construct a tuple:</span>
             <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">defaults</span>.<span class="ident">len</span>();
@@ -2102,31 +2174,36 @@
             });
         }
 
+        <span class="kw">let</span> <span class="ident">line_number</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_source_line_number</span>();
         <span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">push</span>(<span class="ident">CodeObject</span>::<span class="ident">new</span>(
             <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>.<span class="ident">vararg</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>.<span class="ident">kwonlyargs</span>.<span class="ident">clone</span>(),
             <span class="ident">args</span>.<span class="ident">kwarg</span>.<span class="ident">clone</span>(),
-            <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>(),
-            <span class="ident">name</span>.<span class="ident">clone</span>(),
+            <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>(),
+            <span class="ident">line_number</span>,
+            <span class="ident">name</span>.<span class="ident">to_string</span>(),
         ));
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>::<span class="ident">empty</span>();
         <span class="kw">if</span> <span class="ident">have_kwargs</span> {
-            <span class="ident">flags</span> <span class="op">=</span> <span class="ident">flags</span> <span class="op">|</span> <span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>::<span class="ident">HAS_DEFAULTS</span>;
+            <span class="ident">flags</span> <span class="op">|=</span> <span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>::<span class="ident">HAS_DEFAULTS</span>;
         }
 
         <span class="prelude-val">Ok</span>(<span class="ident">flags</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">prepare_decorators</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">decorator_list</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expression</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">prepare_decorators</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">decorator_list</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>],
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">decorator</span> <span class="kw">in</span> <span class="ident">decorator_list</span> {
             <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">decorator</span>)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">apply_decorators</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">decorator_list</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expression</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">apply_decorators</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">decorator_list</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>]) {
         <span class="comment">// Apply decorators:</span>
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="ident">decorator_list</span> {
             <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">CallFunction</span> {
@@ -2135,7 +2212,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_store</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_store</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">target</span> {
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">StoreName</span> {
@@ -2160,7 +2237,7 @@
                 <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">element</span>) <span class="kw">in</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Starred</span> { .. } <span class="op">=</span> <span class="ident">element</span> {
                         <span class="kw">if</span> <span class="ident">seen_star</span> {
-                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;two starred expressions in assignment&quot;</span>.<span class="ident">to_string</span>());
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CompileError</span>::<span class="ident">StarArgs</span>);
                         } <span class="kw">else</span> {
                             <span class="ident">seen_star</span> <span class="op">=</span> <span class="bool-val">true</span>;
                             <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">UnpackEx</span> {
@@ -2186,13 +2263,14 @@
                 }
             }
             <span class="kw">_</span> <span class="op">=&gt;</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot store value into: {:?}&quot;</span>, <span class="ident">target</span>));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CompileError</span>::<span class="ident">Assign</span>(<span class="ident">target</span>.<span class="ident">name</span>()));
             }
         }
+
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">op</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Operator</span>) {
+    <span class="kw">fn</span> <span class="ident">compile_op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">op</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Operator</span>, <span class="ident">inplace</span>: <span class="ident">bool</span>) {
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
             <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">Add</span> <span class="op">=&gt;</span> <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Add</span>,
             <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">Sub</span> <span class="op">=&gt;</span> <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subtract</span>,
@@ -2208,7 +2286,7 @@
             <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">BitXor</span> <span class="op">=&gt;</span> <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Xor</span>,
             <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">BitAnd</span> <span class="op">=&gt;</span> <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">And</span>,
         };
-        <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BinaryOperation</span> { <span class="ident">op</span>: <span class="ident">i</span> });
+        <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BinaryOperation</span> { <span class="ident">op</span>: <span class="ident">i</span>, <span class="ident">inplace</span> });
     }
 
     <span class="kw">fn</span> <span class="ident">compile_test</span>(
@@ -2217,7 +2295,7 @@
         <span class="ident">true_label</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Label</span><span class="op">&gt;</span>,
         <span class="ident">false_label</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Label</span><span class="op">&gt;</span>,
         <span class="ident">context</span>: <span class="ident">EvalContext</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="comment">// Compile expression for test, and jump to label if false</span>
         <span class="kw">match</span> <span class="ident">expression</span> {
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">BoolOp</span> { <span class="ident">a</span>, <span class="ident">op</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">op</span> {
@@ -2225,7 +2303,7 @@
                     <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">false_label</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="self">self</span>.<span class="ident">new_label</span>());
                     <span class="self">self</span>.<span class="ident">compile_test</span>(<span class="ident">a</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">f</span>), <span class="ident">context</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.<span class="ident">compile_test</span>(<span class="ident">b</span>, <span class="ident">true_label</span>, <span class="ident">false_label</span>, <span class="ident">context</span>)<span class="question-mark">?</span>;
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">None</span> <span class="op">=</span> <span class="ident">false_label</span> {
+                    <span class="kw">if</span> <span class="ident">false_label</span>.<span class="ident">is_none</span>() {
                         <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">f</span>);
                     }
                 }
@@ -2233,7 +2311,7 @@
                     <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">true_label</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="self">self</span>.<span class="ident">new_label</span>());
                     <span class="self">self</span>.<span class="ident">compile_test</span>(<span class="ident">a</span>, <span class="prelude-val">Some</span>(<span class="ident">t</span>), <span class="prelude-val">None</span>, <span class="ident">context</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.<span class="ident">compile_test</span>(<span class="ident">b</span>, <span class="ident">true_label</span>, <span class="ident">false_label</span>, <span class="ident">context</span>)<span class="question-mark">?</span>;
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">None</span> <span class="op">=</span> <span class="ident">true_label</span> {
+                    <span class="kw">if</span> <span class="ident">true_label</span>.<span class="ident">is_none</span>() {
                         <span class="self">self</span>.<span class="ident">set_label</span>(<span class="ident">t</span>);
                     }
                 }
@@ -2271,7 +2349,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expression</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expression</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Compiling {:?}&quot;</span>, <span class="ident">expression</span>);
         <span class="kw">match</span> <span class="ident">expression</span> {
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> {
@@ -2283,21 +2361,22 @@
                 <span class="self">self</span>.<span class="ident">compile_test</span>(<span class="ident">expression</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="ident">EvalContext</span>::<span class="ident">Expression</span>)<span class="question-mark">?</span>
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Binop</span> { <span class="ident">a</span>, <span class="ident">op</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">a</span>)<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">b</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
 
                 <span class="comment">// Perform operation:</span>
-                <span class="self">self</span>.<span class="ident">compile_op</span>(<span class="ident">op</span>);
+                <span class="self">self</span>.<span class="ident">compile_op</span>(<span class="ident">op</span>, <span class="bool-val">false</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Subscript</span> { <span class="ident">a</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">a</span>)<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">b</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BinaryOperation</span> {
                     <span class="ident">op</span>: <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span>,
+                    <span class="ident">inplace</span>: <span class="bool-val">false</span>,
                 });
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Unop</span> { <span class="ident">op</span>, <span class="ident">a</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">a</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
 
                 <span class="comment">// Perform operation:</span>
                 <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
@@ -2310,14 +2389,14 @@
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">i</span>);
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Attribute</span> { <span class="ident">value</span>, <span class="ident">name</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">value</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadAttr</span> {
                     <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_string</span>(),
                 });
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Compare</span> { <span class="ident">a</span>, <span class="ident">op</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">a</span>)<span class="question-mark">?</span>;
-                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">b</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
 
                 <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
                     <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Equal</span> <span class="op">=&gt;</span> <span class="ident">bytecode</span>::<span class="ident">ComparisonOperator</span>::<span class="ident">Equal</span>,
@@ -2350,7 +2429,7 @@
                 <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">len</span>();
                 <span class="kw">let</span> <span class="ident">must_unpack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">gather_elements</span>(<span class="ident">elements</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildList</span> {
-                    <span class="ident">size</span>: <span class="ident">size</span>,
+                    <span class="ident">size</span>,
                     <span class="ident">unpack</span>: <span class="ident">must_unpack</span>,
                 });
             }
@@ -2358,7 +2437,7 @@
                 <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">len</span>();
                 <span class="kw">let</span> <span class="ident">must_unpack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">gather_elements</span>(<span class="ident">elements</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildTuple</span> {
-                    <span class="ident">size</span>: <span class="ident">size</span>,
+                    <span class="ident">size</span>,
                     <span class="ident">unpack</span>: <span class="ident">must_unpack</span>,
                 });
             }
@@ -2366,7 +2445,7 @@
                 <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">len</span>();
                 <span class="kw">let</span> <span class="ident">must_unpack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">gather_elements</span>(<span class="ident">elements</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildSet</span> {
-                    <span class="ident">size</span>: <span class="ident">size</span>,
+                    <span class="ident">size</span>,
                     <span class="ident">unpack</span>: <span class="ident">must_unpack</span>,
                 });
             }
@@ -2377,7 +2456,7 @@
                     <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
                 }
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildMap</span> {
-                    <span class="ident">size</span>: <span class="ident">size</span>,
+                    <span class="ident">size</span>,
                     <span class="ident">unpack</span>: <span class="bool-val">false</span>,
                 });
             }
@@ -2386,7 +2465,7 @@
                 <span class="kw">for</span> <span class="ident">element</span> <span class="kw">in</span> <span class="ident">elements</span> {
                     <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">element</span>)<span class="question-mark">?</span>;
                 }
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildSlice</span> { <span class="ident">size</span>: <span class="ident">size</span> });
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildSlice</span> { <span class="ident">size</span> });
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Yield</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">mark_generator</span>();
@@ -2423,11 +2502,7 @@
                 });
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
-                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> {
-                        <span class="ident">value</span>: <span class="ident">value</span>.<span class="ident">to_string</span>(),
-                    },
-                });
+                <span class="self">self</span>.<span class="ident">compile_string</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Bytes</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
@@ -2448,13 +2523,13 @@
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">ReturnValue</span>);
                 <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_code_object</span>();
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
-                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span> },
+                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span> },
                 });
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
                     <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> { <span class="ident">value</span>: <span class="ident">name</span> },
                 });
                 <span class="comment">// Turn code object into function object:</span>
-                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">MakeFunction</span> { <span class="ident">flags</span>: <span class="ident">flags</span> });
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">MakeFunction</span> { <span class="ident">flags</span> });
             }
             <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Comprehension</span> { <span class="ident">kind</span>, <span class="ident">generators</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">compile_comprehension</span>(<span class="ident">kind</span>, <span class="ident">generators</span>)<span class="question-mark">?</span>;
@@ -2481,9 +2556,9 @@
     <span class="kw">fn</span> <span class="ident">compile_call</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">function</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>,
-        <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expression</span><span class="op">&gt;</span>,
-        <span class="ident">keywords</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Keyword</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>],
+        <span class="ident">keywords</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Keyword</span>],
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">function</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">keywords</span>.<span class="ident">len</span>();
 
@@ -2499,7 +2574,7 @@
             });
 
             <span class="comment">// Create an optional map with kw-args:</span>
-            <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">keywords</span>.<span class="ident">is_empty</span>() {
                 <span class="kw">for</span> <span class="ident">keyword</span> <span class="kw">in</span> <span class="ident">keywords</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">keyword</span>.<span class="ident">name</span> {
                         <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
@@ -2535,7 +2610,7 @@
             }
         } <span class="kw">else</span> {
             <span class="comment">// Keyword arguments:</span>
-            <span class="kw">if</span> <span class="ident">keywords</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">keywords</span>.<span class="ident">is_empty</span>() {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kwarg_names</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
                 <span class="kw">for</span> <span class="ident">keyword</span> <span class="kw">in</span> <span class="ident">keywords</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">keyword</span>.<span class="ident">name</span> {
@@ -2568,7 +2643,7 @@
 
     <span class="comment">// Given a vector of expr / star expr generate code which gives either</span>
     <span class="comment">// a list of expressions on the stack, or a list of tuples.</span>
-    <span class="kw">fn</span> <span class="ident">gather_elements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">elements</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expression</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">gather_elements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">elements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>]) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="comment">// First determine if we have starred elements:</span>
         <span class="kw">let</span> <span class="ident">has_stars</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Starred</span> { .. } <span class="op">=</span> <span class="ident">e</span> {
@@ -2598,10 +2673,10 @@
     <span class="kw">fn</span> <span class="ident">compile_comprehension</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">kind</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>,
-        <span class="ident">generators</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Comprehension</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="ident">generators</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Comprehension</span>],
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
         <span class="comment">// We must have at least one generator:</span>
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">generators</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">generators</span>.<span class="ident">is_empty</span>());
 
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span> {
             <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">GeneratorExpression</span> { .. } <span class="op">=&gt;</span> <span class="string">&quot;&lt;genexpr&gt;&quot;</span>,
@@ -2611,13 +2686,15 @@
         }
         .<span class="ident">to_string</span>();
 
+        <span class="kw">let</span> <span class="ident">line_number</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_source_line_number</span>();
         <span class="comment">// Create magnificent function &lt;listcomp&gt;:</span>
         <span class="self">self</span>.<span class="ident">code_object_stack</span>.<span class="ident">push</span>(<span class="ident">CodeObject</span>::<span class="ident">new</span>(
             <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;.0&quot;</span>.<span class="ident">to_string</span>()],
             <span class="prelude-val">None</span>,
             <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="prelude-val">None</span>,
-            <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>(),
+            <span class="self">self</span>.<span class="ident">source_path</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>(),
+            <span class="ident">line_number</span>,
             <span class="ident">name</span>.<span class="ident">clone</span>(),
         ));
 
@@ -2646,8 +2723,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">loop_labels</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
         <span class="kw">for</span> <span class="ident">generator</span> <span class="kw">in</span> <span class="ident">generators</span> {
-            <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">loop_labels</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span>;
-            <span class="kw">if</span> <span class="ident">first</span> {
+            <span class="kw">if</span> <span class="ident">loop_labels</span>.<span class="ident">is_empty</span>() {
                 <span class="comment">// Load iterator onto stack (passed as first argument):</span>
                 <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadName</span> {
                     <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;.0&quot;</span>),
@@ -2732,7 +2808,7 @@
 
         <span class="comment">// List comprehension code:</span>
         <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
-            <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span>: <span class="ident">code</span> },
+            <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">Code</span> { <span class="ident">code</span> },
         });
 
         <span class="comment">// List comprehension function name:</span>
@@ -2755,6 +2831,29 @@
         <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">CallFunction</span> {
             <span class="ident">typ</span>: <span class="ident">CallType</span>::<span class="ident">Positional</span>(<span class="number">1</span>),
         });
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn</span> <span class="ident">compile_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">string</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">StringGroup</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">CompileError</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident">string</span> {
+            <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Joined</span> { <span class="ident">values</span> } <span class="op">=&gt;</span> {
+                <span class="kw">for</span> <span class="ident">value</span> <span class="kw">in</span> <span class="ident">values</span> {
+                    <span class="self">self</span>.<span class="ident">compile_string</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
+                }
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">BuildString</span> { <span class="ident">size</span>: <span class="ident">values</span>.<span class="ident">len</span>() })
+            }
+            <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">LoadConst</span> {
+                    <span class="ident">value</span>: <span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="ident">String</span> {
+                        <span class="ident">value</span>: <span class="ident">value</span>.<span class="ident">to_string</span>(),
+                    },
+                });
+            }
+            <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">FormattedValue</span> { <span class="ident">value</span>, <span class="ident">spec</span> } <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">compile_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">Instruction</span>::<span class="ident">FormatValue</span> { <span class="ident">spec</span>: <span class="ident">spec</span>.<span class="ident">clone</span>() });
+            }
+        }
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -2788,6 +2887,10 @@
         <span class="self">self</span>.<span class="ident">current_source_location</span> <span class="op">=</span> <span class="ident">location</span>.<span class="ident">clone</span>();
     }
 
+    <span class="kw">fn</span> <span class="ident">get_source_line_number</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="ident">current_source_location</span>.<span class="ident">get_row</span>()
+    }
+
     <span class="kw">fn</span> <span class="ident">mark_generator</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">current_code_object</span>().<span class="ident">is_generator</span> <span class="op">=</span> <span class="bool-val">true</span>;
     }
@@ -2795,14 +2898,15 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">bytecode</span>::<span class="ident">CodeObject</span>;
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Compiler</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>::<span class="ident">CodeObject</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>::<span class="ident">Constant</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">parser</span>;
     <span class="kw">fn</span> <span class="ident">compile_exec</span>(<span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">CodeObject</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">compiler</span> <span class="op">=</span> <span class="ident">Compiler</span>::<span class="ident">new</span>();
-        <span class="ident">compiler</span>.<span class="ident">push_new_code_object</span>(<span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>, <span class="string">&quot;&lt;module&gt;&quot;</span>.<span class="ident">to_string</span>());
+        <span class="ident">compiler</span>.<span class="ident">source_path</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&quot;source_path&quot;</span>.<span class="ident">to_string</span>());
+        <span class="ident">compiler</span>.<span class="ident">push_new_code_object</span>(<span class="string">&quot;&lt;module&gt;&quot;</span>.<span class="ident">to_string</span>());
         <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
         <span class="ident">compiler</span>.<span class="ident">compile_program</span>(<span class="kw-2">&amp;</span><span class="ident">ast</span>).<span class="ident">unwrap</span>();
         <span class="ident">compiler</span>.<span class="ident">pop_code_object</span>()
@@ -2887,5 +2991,5 @@
         );
     }
 }
-</pre>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-files.js"></script><script src="../../source-script.js"></script><script defer src="../../search-index.js"></script></body></html>

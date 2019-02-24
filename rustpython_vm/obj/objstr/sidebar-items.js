@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""],["subscript",""]]});
+initSidebarItems({"fn":[["borrow_value",""],["get_value",""],["init",""],["subscript",""]]});
