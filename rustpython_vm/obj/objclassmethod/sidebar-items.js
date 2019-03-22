@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["init",""]],"struct":[["PyClassMethod",""]],"type":[["PyClassMethodRef",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_module_inits",""]],"mod":[["io",""]],"type":[["StdlibInitFunc",""]]});
+initSidebarItems({"fn":[["get_module_inits",""]],"mod":[["io",""],["socket",""]],"type":[["StdlibInitFunc",""]]});

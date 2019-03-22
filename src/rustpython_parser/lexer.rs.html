@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `parser/src/lexer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lexer.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `parser/src/lexer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lexer.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1449,14 +1449,6 @@
 <span id="1449">1449</span>
 <span id="1450">1450</span>
 <span id="1451">1451</span>
-<span id="1452">1452</span>
-<span id="1453">1453</span>
-<span id="1454">1454</span>
-<span id="1455">1455</span>
-<span id="1456">1456</span>
-<span id="1457">1457</span>
-<span id="1458">1458</span>
-<span id="1459">1459</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module takes care of lexing python source text. This means source</span>
 <span class="doccomment">//! code is translated into separate tokens.</span>
@@ -1515,6 +1507,7 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">LexicalError</span> {
     <span class="ident">StringError</span>,
     <span class="ident">NestingError</span>,
+    <span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="ident">char</span> },
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>)]</span>
@@ -2147,7 +2140,9 @@
 
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
                 <span class="prelude-val">Some</span>(<span class="string">&#39;0&#39;</span>..=<span class="string">&#39;9&#39;</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">lex_number</span>()),
-                <span class="prelude-val">Some</span>(<span class="string">&#39;_&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;a&#39;</span>..=<span class="string">&#39;z&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;A&#39;</span>..=<span class="string">&#39;Z&#39;</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">lex_identifier</span>()),
+                <span class="prelude-val">Some</span>(<span class="string">&#39;_&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;a&#39;</span>..=<span class="string">&#39;z&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;A&#39;</span>..=<span class="string">&#39;Z&#39;</span>) <span class="op">=&gt;</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">lex_identifier</span>());
+                }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;#&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="self">self</span>.<span class="ident">lex_comment</span>();
                     <span class="kw">continue</span>;
@@ -2176,16 +2171,13 @@
                 <span class="prelude-val">Some</span>(<span class="string">&#39;+&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PlusEqual</span>, <span class="ident">tok_end</span>)));
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Plus</span>, <span class="ident">tok_end</span>)));
-                        }
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PlusEqual</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Plus</span>, <span class="ident">tok_end</span>)));
                     }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;*&#39;</span>) <span class="op">=&gt;</span> {
@@ -2249,61 +2241,49 @@
                 <span class="prelude-val">Some</span>(<span class="string">&#39;%&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PercentEqual</span>, <span class="ident">tok_end</span>)));
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Percent</span>, <span class="ident">tok_end</span>)));
-                        }
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PercentEqual</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Percent</span>, <span class="ident">tok_end</span>)));
                     }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;|&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">VbarEqual</span>, <span class="ident">tok_end</span>)));
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Vbar</span>, <span class="ident">tok_end</span>)));
-                        }
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">VbarEqual</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Vbar</span>, <span class="ident">tok_end</span>)));
                     }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;^&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumflexEqual</span>, <span class="ident">tok_end</span>)));
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumFlex</span>, <span class="ident">tok_end</span>)));
-                        }
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumflexEqual</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumFlex</span>, <span class="ident">tok_end</span>)));
                     }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;&amp;&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AmperEqual</span>, <span class="ident">tok_end</span>)));
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Amper</span>, <span class="ident">tok_end</span>)));
-                        }
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AmperEqual</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Amper</span>, <span class="ident">tok_end</span>)));
                     }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;-&#39;</span>) <span class="op">=&gt;</span> {
@@ -2329,16 +2309,13 @@
                 <span class="prelude-val">Some</span>(<span class="string">&#39;@&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AtEqual</span>, <span class="ident">tok_end</span>)));
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">At</span>, <span class="ident">tok_end</span>)));
-                        }
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AtEqual</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">At</span>, <span class="ident">tok_end</span>)));
                     }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;!&#39;</span>) <span class="op">=&gt;</span> {
@@ -2468,8 +2445,15 @@
                 <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Dot</span>, <span class="ident">tok_end</span>)));
+                    <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>), <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>)) <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chr0</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chr1</span>) {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Ellipsis</span>, <span class="ident">tok_end</span>)));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Dot</span>, <span class="ident">tok_end</span>)));
+                    }
                 }
                 <span class="prelude-val">Some</span>(<span class="string">&#39;\n&#39;</span>) <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
@@ -2493,7 +2477,7 @@
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
                 <span class="kw">_</span> <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Not impl {:?}&quot;</span>, <span class="ident">c</span>)
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">LexicalError</span>::<span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="ident">c</span>.<span class="ident">unwrap</span>() }));
                 } <span class="comment">// Ignore all the rest..</span>
             }
         }
@@ -2918,4 +2902,4 @@ token.
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_parser";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-files.js"></script><script src="../../source-script.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_parser";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

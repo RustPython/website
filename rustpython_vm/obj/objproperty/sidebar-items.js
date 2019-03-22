@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PropertyBuilder",""],["PyProperty","Fully fledged property"],["PyReadOnlyProperty","Read-only property, doesn't have set or delete"]],"type":[["PyPropertyRef",""],["PyReadOnlyPropertyRef",""]]});

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `wasm/lib/src/convert.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>convert.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `wasm/lib/src/convert.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>convert.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -190,45 +190,135 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm_class</span>::{<span class="ident">AccessibleVM</span>, <span class="ident">WASMVirtualMachine</span>};
-<span class="kw">use</span> <span class="ident">js_sys</span>::{<span class="ident">Array</span>, <span class="ident">ArrayBuffer</span>, <span class="ident">Object</span>, <span class="ident">Reflect</span>, <span class="ident">Uint8Array</span>};
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::{<span class="ident">objbytes</span>, <span class="ident">objtype</span>};
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{<span class="self">self</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>};
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">VirtualMachine</span>;
+<span class="kw">use</span> <span class="ident">js_sys</span>::{<span class="ident">Array</span>, <span class="ident">ArrayBuffer</span>, <span class="ident">Object</span>, <span class="ident">Promise</span>, <span class="ident">Reflect</span>, <span class="ident">Uint8Array</span>};
+<span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">cast</span>::<span class="ident">ToPrimitive</span>;
 <span class="kw">use</span> <span class="ident">wasm_bindgen</span>::{<span class="ident">closure</span>::<span class="ident">Closure</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">JsCast</span>};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">py_str_err</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">py_err</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-    <span class="ident">vm</span>.<span class="ident">to_pystr</span>(<span class="kw-2">&amp;</span><span class="ident">py_err</span>)
-        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Error, and error getting error message&quot;</span>.<span class="ident">into</span>())
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::{<span class="ident">objbytes</span>, <span class="ident">objint</span>, <span class="ident">objsequence</span>, <span class="ident">objtype</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{<span class="ident">AttributeProtocol</span>, <span class="ident">DictProtocol</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">VirtualMachine</span>;
+
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">browser_module</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm_class</span>::{<span class="ident">AccessibleVM</span>, <span class="ident">WASMVirtualMachine</span>};
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">py_err_to_js_err</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">py_err</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">JsValue</span> {
+    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">map_exceptions</span> {
+        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">py_exc</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>:<span class="ident">expr</span>, { $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">py_exc_ty</span>:<span class="ident">expr</span> <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">js_err_new</span>:<span class="ident">expr</span>),<span class="kw-2">*</span>$(,)<span class="question-mark">?</span> }) <span class="op">=&gt;</span> {
+            $(<span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">py_exc</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">py_exc_ty</span>) {
+                <span class="ident">JsValue</span>::<span class="ident">from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">js_err_new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>))
+            } <span class="kw">else</span>)<span class="op">*</span> {
+                <span class="ident">JsValue</span>::<span class="ident">from</span>(<span class="ident">js_sys</span>::<span class="ident">Error</span>::<span class="ident">new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">msg</span>))
+            }
+        };
+    }
+    <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">py_err</span>
+        .<span class="ident">get_attr</span>(<span class="string">&quot;msg&quot;</span>)
+        .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">msg</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">to_pystr</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>).<span class="ident">ok</span>())
+    {
+        <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="ident">msg</span>,
+        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">js_sys</span>::<span class="ident">Error</span>::<span class="ident">new</span>(<span class="string">&quot;error getting error&quot;</span>).<span class="ident">into</span>(),
+    };
+    <span class="kw">let</span> <span class="ident">js_err</span> <span class="op">=</span> <span class="macro">map_exceptions</span><span class="macro">!</span>(<span class="ident">py_err</span>,<span class="op">&amp;</span> <span class="ident">msg</span>, {
+        <span class="comment">// TypeError is sort of a catch-all for &quot;this value isn&#39;t what I thought it was like&quot;</span>
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">type_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">TypeError</span>::<span class="ident">new</span>,
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">TypeError</span>::<span class="ident">new</span>,
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">index_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">TypeError</span>::<span class="ident">new</span>,
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">key_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">TypeError</span>::<span class="ident">new</span>,
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">attribute_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">TypeError</span>::<span class="ident">new</span>,
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">name_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">ReferenceError</span>::<span class="ident">new</span>,
+        <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">syntax_error</span> <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">SyntaxError</span>::<span class="ident">new</span>,
+    });
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tb</span>) <span class="op">=</span> <span class="ident">py_err</span>.<span class="ident">get_attr</span>(<span class="string">&quot;__traceback__&quot;</span>) {
+        <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">tb</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">list_type</span>()) {
+            <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">objsequence</span>::<span class="ident">get_elements</span>(<span class="kw-2">&amp;</span><span class="ident">tb</span>).<span class="ident">to_vec</span>();
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">top</span>) <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">get</span>(<span class="number">0</span>) {
+                <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">top</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">tuple_type</span>()) {
+                    <span class="kw">let</span> <span class="ident">element</span> <span class="op">=</span> <span class="ident">objsequence</span>::<span class="ident">get_elements</span>(<span class="kw-2">&amp;</span><span class="ident">top</span>);
+
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lineno</span>) <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">to_int</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">element</span>[<span class="number">1</span>], <span class="number">10</span>)
+                        .<span class="ident">ok</span>()
+                        .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">lineno</span><span class="op">|</span> <span class="ident">lineno</span>.<span class="ident">to_u32</span>())
+                    {
+                        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Reflect</span>::<span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="ident">js_err</span>, <span class="kw-2">&amp;</span><span class="string">&quot;row&quot;</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span><span class="ident">lineno</span>.<span class="ident">into</span>());
+                    }
+                }
+            }
+        }
+    }
+    <span class="ident">js_err</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">js_err</span>: <span class="ident">JsValue</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">js_err</span>: <span class="ident">JsValue</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">js_err</span>.<span class="ident">unchecked_into</span>::<span class="op">&lt;</span><span class="ident">js_sys</span>::<span class="ident">Error</span><span class="op">&gt;</span>().<span class="ident">to_string</span>();
     <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">msg</span>.<span class="ident">into</span>())
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">py_to_js</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">py_obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">JsValue</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">py_to_js</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">py_obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">JsValue</span> {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">wasm_id</span>) <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">wasm_id</span> {
         <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">function_type</span>()) {
             <span class="kw">let</span> <span class="ident">wasm_vm</span> <span class="op">=</span> <span class="ident">WASMVirtualMachine</span> {
                 <span class="ident">id</span>: <span class="ident">wasm_id</span>.<span class="ident">clone</span>(),
             };
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">py_obj</span>);
+            <span class="kw">let</span> <span class="ident">weak_py_obj</span> <span class="op">=</span> <span class="ident">wasm_vm</span>.<span class="ident">push_held_rc</span>(<span class="ident">py_obj</span>).<span class="ident">unwrap</span>();
+
             <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span>
                 <span class="kw">move</span> <span class="op">|</span><span class="ident">args</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Array</span><span class="op">&gt;</span>, <span class="ident">kwargs</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Object</span><span class="op">&gt;</span><span class="op">|</span> <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">JsValue</span>, <span class="ident">JsValue</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">py_obj</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">wasm_vm</span>.<span class="ident">assert_valid</span>() {
-                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">py_obj</span>.<span class="ident">clone</span>().<span class="ident">expect</span>(<span class="string">&quot;py_obj to be valid if VM is valid&quot;</span>),
+                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">weak_py_obj</span>
+                            .<span class="ident">upgrade</span>()
+                            .<span class="ident">expect</span>(<span class="string">&quot;weak_py_obj to be valid if VM is valid&quot;</span>),
                         <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
-                            <span class="ident">py_obj</span> <span class="op">=</span> <span class="prelude-val">None</span>;
                             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>);
                         }
                     };
                     <span class="kw">let</span> <span class="ident">acc_vm</span> <span class="op">=</span> <span class="ident">AccessibleVM</span>::<span class="ident">from</span>(<span class="ident">wasm_vm</span>.<span class="ident">clone</span>());
-                    <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">acc_vm</span>
+                    <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="ident">acc_vm</span>
                         .<span class="ident">upgrade</span>()
                         .<span class="ident">expect</span>(<span class="string">&quot;acc. VM to be invalid when WASM vm is valid&quot;</span>);
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">py_func_args</span> <span class="op">=</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::<span class="ident">PyFuncArgs</span>::<span class="ident">default</span>();
+                    <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">stored_vm</span>.<span class="ident">vm</span>;
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">py_func_args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span>::<span class="ident">default</span>();
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">args</span>) <span class="op">=</span> <span class="ident">args</span> {
                         <span class="kw">for</span> <span class="ident">arg</span> <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">values</span>() {
                             <span class="ident">py_func_args</span>.<span class="ident">args</span>.<span class="ident">push</span>(<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">arg</span><span class="question-mark">?</span>));
@@ -249,12 +339,20 @@
                 <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">FnMut</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Array</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Object</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">JsValue</span>, <span class="ident">JsValue</span><span class="op">&gt;&gt;</span>);
             <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">closure</span>.<span class="ident">as_ref</span>().<span class="ident">clone</span>();
 
-            <span class="comment">// TODO: Come up with a way of managing closure handles</span>
+            <span class="comment">// stores pretty much nothing, it&#39;s fine to leak this because if it gets dropped</span>
+            <span class="comment">// the error message is worse</span>
             <span class="ident">closure</span>.<span class="ident">forget</span>();
 
             <span class="kw">return</span> <span class="ident">func</span>;
         }
     }
+    <span class="comment">// the browser module might not be injected</span>
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">promise_type</span>) <span class="op">=</span> <span class="ident">browser_module</span>::<span class="ident">import_promise_type</span>(<span class="ident">vm</span>) {
+        <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="kw-2">&amp;</span><span class="ident">promise_type</span>) {
+            <span class="kw">return</span> <span class="ident">browser_module</span>::<span class="ident">get_promise_value</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>).<span class="ident">into</span>();
+        }
+    }
+
     <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">bytes_type</span>())
         <span class="op">||</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">bytearray_type</span>())
     {
@@ -266,18 +364,8 @@
         }
         <span class="ident">arr</span>.<span class="ident">into</span>()
     } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="ident">dumps</span> <span class="op">=</span> <span class="ident">rustpython_vm</span>::<span class="ident">import</span>::<span class="ident">import</span>(
-            <span class="ident">vm</span>,
-            <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>::<span class="ident">default</span>(),
-            <span class="string">&quot;json&quot;</span>,
-            <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="string">&quot;dumps&quot;</span>.<span class="ident">into</span>()),
-        )
-        .<span class="ident">expect</span>(<span class="string">&quot;Couldn&#39;t get json.dumps function&quot;</span>);
-        <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">dumps</span>, <span class="ident">pyobject</span>::<span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">py_obj</span>], <span class="macro">vec</span><span class="macro">!</span>[])) {
-            <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_pystr</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>).<span class="ident">unwrap</span>();
-                <span class="ident">js_sys</span>::<span class="ident">JSON</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">json</span>).<span class="ident">unwrap_or</span>(<span class="ident">JsValue</span>::<span class="ident">UNDEFINED</span>)
-            }
+        <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">serialize</span>(<span class="kw-2">&amp;</span><span class="ident">py_obj</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">json</span>) <span class="op">=&gt;</span> <span class="ident">js_sys</span>::<span class="ident">JSON</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">json</span>).<span class="ident">unwrap_or</span>(<span class="ident">JsValue</span>::<span class="ident">UNDEFINED</span>),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">JsValue</span>::<span class="ident">UNDEFINED</span>,
         }
     }
@@ -293,14 +381,20 @@
     })
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pyresult_to_jsresult</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">result</span>: <span class="ident">PyResult</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">JsValue</span>, <span class="ident">JsValue</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pyresult_to_jsresult</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">result</span>: <span class="ident">PyResult</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">JsValue</span>, <span class="ident">JsValue</span><span class="op">&gt;</span> {
     <span class="ident">result</span>
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="ident">py_to_js</span>(<span class="ident">vm</span>, <span class="ident">value</span>))
-        .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">py_str_err</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">err</span>).<span class="ident">into</span>())
+        .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">py_err_to_js_err</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">err</span>))
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">js_to_py</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">js_val</span>: <span class="ident">JsValue</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">js_to_py</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">js_val</span>: <span class="ident">JsValue</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">if</span> <span class="ident">js_val</span>.<span class="ident">is_object</span>() {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">promise</span>) <span class="op">=</span> <span class="ident">js_val</span>.<span class="ident">dyn_ref</span>::<span class="op">&lt;</span><span class="ident">Promise</span><span class="op">&gt;</span>() {
+            <span class="comment">// the browser module might not be injected</span>
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">promise_type</span>) <span class="op">=</span> <span class="ident">browser_module</span>::<span class="ident">import_promise_type</span>(<span class="ident">vm</span>) {
+                <span class="kw">return</span> <span class="ident">browser_module</span>::<span class="ident">PyPromise</span>::<span class="ident">new_obj</span>(<span class="ident">promise_type</span>, <span class="ident">promise</span>.<span class="ident">clone</span>());
+            }
+        }
         <span class="kw">if</span> <span class="ident">Array</span>::<span class="ident">is_array</span>(<span class="kw-2">&amp;</span><span class="ident">js_val</span>) {
             <span class="kw">let</span> <span class="ident">js_arr</span>: <span class="ident">Array</span> <span class="op">=</span> <span class="ident">js_val</span>.<span class="ident">into</span>();
             <span class="kw">let</span> <span class="ident">elems</span> <span class="op">=</span> <span class="ident">js_arr</span>
@@ -327,15 +421,14 @@
             <span class="kw">for</span> <span class="ident">pair</span> <span class="kw">in</span> <span class="ident">object_entries</span>(<span class="kw-2">&amp;</span><span class="ident">Object</span>::<span class="ident">from</span>(<span class="ident">js_val</span>)) {
                 <span class="kw">let</span> (<span class="ident">key</span>, <span class="ident">val</span>) <span class="op">=</span> <span class="ident">pair</span>.<span class="ident">expect</span>(<span class="string">&quot;iteration over object to not fail&quot;</span>);
                 <span class="kw">let</span> <span class="ident">py_val</span> <span class="op">=</span> <span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">val</span>);
-                <span class="ident">vm</span>.<span class="ident">ctx</span>
-                    .<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>, <span class="kw-2">&amp;</span><span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">js_sys</span>::<span class="ident">JsString</span>::<span class="ident">from</span>(<span class="ident">key</span>)), <span class="ident">py_val</span>);
+                <span class="ident">dict</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">js_sys</span>::<span class="ident">JsString</span>::<span class="ident">from</span>(<span class="ident">key</span>)), <span class="ident">py_val</span>);
             }
             <span class="ident">dict</span>
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">js_val</span>.<span class="ident">is_function</span>() {
         <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">js_sys</span>::<span class="ident">Function</span>::<span class="ident">from</span>(<span class="ident">js_val</span>);
-        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(
-            <span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span><span class="op">|</span> <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+        <span class="ident">vm</span>.<span class="ident">ctx</span>
+            .<span class="ident">new_rustfunc</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span><span class="op">|</span> <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
                 <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">clone</span>();
                 <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="ident">Object</span>::<span class="ident">new</span>();
                 <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">kwargs</span> {
@@ -349,8 +442,7 @@
                 <span class="ident">func</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="ident">this</span>, <span class="kw-2">&amp;</span><span class="ident">js_args</span>)
                     .<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">val</span>))
                     .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>))
-            },
-        )
+            })
     } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">js_val</span>.<span class="ident">dyn_ref</span>::<span class="op">&lt;</span><span class="ident">js_sys</span>::<span class="ident">Error</span><span class="op">&gt;</span>() {
         <span class="kw">let</span> <span class="ident">exc_type</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">err</span>.<span class="ident">name</span>()).<span class="ident">as_str</span>() {
             <span class="string">&quot;TypeError&quot;</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">type_error</span>,
@@ -364,24 +456,12 @@
         <span class="comment">// Because `JSON.stringify(undefined)` returns undefined</span>
         <span class="ident">vm</span>.<span class="ident">get_none</span>()
     } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="ident">loads</span> <span class="op">=</span> <span class="ident">rustpython_vm</span>::<span class="ident">import</span>::<span class="ident">import</span>(
-            <span class="ident">vm</span>,
-            <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>::<span class="ident">default</span>(),
-            <span class="string">&quot;json&quot;</span>,
-            <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="string">&quot;loads&quot;</span>.<span class="ident">into</span>()),
-        )
-        .<span class="ident">expect</span>(<span class="string">&quot;json.loads function to be available&quot;</span>);
-
         <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">js_sys</span>::<span class="ident">JSON</span>::<span class="ident">stringify</span>(<span class="kw-2">&amp;</span><span class="ident">js_val</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">json</span>) <span class="op">=&gt;</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">json</span>),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">vm</span>.<span class="ident">get_none</span>(),
         };
-        <span class="kw">let</span> <span class="ident">py_json</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">json</span>);
-
-        <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">loads</span>, <span class="ident">pyobject</span>::<span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">py_json</span>], <span class="macro">vec</span><span class="macro">!</span>[]))
-            <span class="comment">// can safely unwrap because we know it&#39;s valid JSON</span>
-            .<span class="ident">unwrap</span>()
+        <span class="ident">vm</span>.<span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="ident">json</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">get_none</span>())
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_wasm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-files.js"></script><script src="../../source-script.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_wasm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

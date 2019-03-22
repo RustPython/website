@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/builtins.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builtins.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/builtins.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builtins.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -835,35 +835,40 @@
 <span id="835">835</span>
 <span id="836">836</span>
 <span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Builtin function definitions.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Implements functions listed here: https://docs.python.org/3/library/builtins.html</span>
 
-<span class="comment">// use std::ops::Deref;</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">char</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Write</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
+
+<span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">Signed</span>, <span class="ident">ToPrimitive</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">compile</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">import</span>::<span class="ident">import_module</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objint</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objiter</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>::{<span class="self">self</span>, <span class="ident">PyStringRef</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>;
 
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">Scope</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::{<span class="ident">Args</span>, <span class="ident">OptionalArg</span>, <span class="ident">PyFuncArgs</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">AttributeProtocol</span>, <span class="ident">IdProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyFuncArgs</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>,
-    <span class="ident">PyResult</span>, <span class="ident">Scope</span>, <span class="ident">TypeProtocol</span>,
+    <span class="ident">AttributeProtocol</span>, <span class="ident">DictProtocol</span>, <span class="ident">IdProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>,
 };
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">stdlib</span>::<span class="ident">io</span>::<span class="ident">io_open</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
-<span class="kw">use</span> <span class="ident">num_traits</span>::{<span class="ident">Signed</span>, <span class="ident">ToPrimitive</span>};
-
-<span class="kw">fn</span> <span class="ident">get_locals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">get_locals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_dict</span>();
     <span class="comment">// TODO: implement dict_iter_items?</span>
     <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_locals</span>();
@@ -874,23 +879,11 @@
     <span class="ident">d</span>
 }
 
-<span class="kw">fn</span> <span class="ident">dir_locals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">dir_locals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="ident">get_locals</span>(<span class="ident">vm</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">dir_object</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="comment">// Gather all members here:</span>
-    <span class="kw">let</span> <span class="ident">attributes</span> <span class="op">=</span> <span class="ident">objtype</span>::<span class="ident">get_attributes</span>(<span class="ident">obj</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">attributes</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">n</span>, <span class="ident">_o</span>)<span class="op">|</span> <span class="ident">n</span>).<span class="ident">collect</span>();
-
-    <span class="comment">// Sort members:</span>
-    <span class="ident">members</span>.<span class="ident">sort</span>();
-
-    <span class="kw">let</span> <span class="ident">members_pystr</span> <span class="op">=</span> <span class="ident">members</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">m</span>)).<span class="ident">collect</span>();
-    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">members_pystr</span>)
-}
-
-<span class="kw">fn</span> <span class="ident">builtin_abs</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_abs</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">x</span>, <span class="prelude-val">None</span>)]);
     <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">x</span>.<span class="ident">clone</span>(), <span class="string">&quot;__abs__&quot;</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">attrib</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">attrib</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[], <span class="macro">vec</span><span class="macro">!</span>[])),
@@ -898,7 +891,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_all</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_all</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">iterable</span>, <span class="prelude-val">None</span>)]);
     <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">extract_elements</span>(<span class="ident">iterable</span>)<span class="question-mark">?</span>;
     <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
@@ -910,21 +903,23 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_any</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_any</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">iterable</span>, <span class="prelude-val">None</span>)]);
-    <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">extract_elements</span>(<span class="ident">iterable</span>)<span class="question-mark">?</span>;
-    <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
+    <span class="kw">let</span> <span class="ident">iterator</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_iter</span>(<span class="ident">vm</span>, <span class="ident">iterable</span>)<span class="question-mark">?</span>;
+
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_next_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">iterator</span>)<span class="question-mark">?</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">item</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">result</span> {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>));
         }
     }
+
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>))
 }
 
 <span class="comment">// builtin_ascii</span>
 
-<span class="kw">fn</span> <span class="ident">builtin_bin</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_bin</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">number</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
 
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">number</span>);
@@ -939,13 +934,13 @@
 
 <span class="comment">// builtin_breakpoint</span>
 
-<span class="kw">fn</span> <span class="ident">builtin_callable</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_callable</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>)]);
     <span class="kw">let</span> <span class="ident">is_callable</span> <span class="op">=</span> <span class="ident">obj</span>.<span class="ident">typ</span>().<span class="ident">has_attr</span>(<span class="string">&quot;__call__&quot;</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="ident">is_callable</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_chr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_chr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">i</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
 
     <span class="kw">let</span> <span class="ident">code_point</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">i</span>).<span class="ident">to_u32</span>().<span class="ident">unwrap</span>();
@@ -958,7 +953,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">txt</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_compile</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_compile</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
@@ -995,7 +990,7 @@
     })
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_delattr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_delattr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
@@ -1004,35 +999,36 @@
     <span class="ident">vm</span>.<span class="ident">del_attr</span>(<span class="ident">obj</span>, <span class="ident">attr</span>.<span class="ident">clone</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_dir</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_dir</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">is_empty</span>() {
         <span class="prelude-val">Ok</span>(<span class="ident">dir_locals</span>(<span class="ident">vm</span>))
     } <span class="kw">else</span> {
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">into_iter</span>().<span class="ident">next</span>().<span class="ident">unwrap</span>();
-        <span class="prelude-val">Ok</span>(<span class="ident">dir_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">obj</span>))
+        <span class="kw">let</span> <span class="ident">seq</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="string">&quot;__dir__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">sorted</span> <span class="op">=</span> <span class="ident">builtin_sorted</span>(<span class="ident">vm</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">seq</span>], <span class="macro">vec</span><span class="macro">!</span>[]))<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">sorted</span>)
     }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_divmod</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_divmod</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">x</span>, <span class="prelude-val">None</span>), (<span class="ident">y</span>, <span class="prelude-val">None</span>)]);
     <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">x</span>.<span class="ident">clone</span>(), <span class="string">&quot;__divmod__&quot;</span>) {
-        <span class="prelude-val">Ok</span>(<span class="ident">attrib</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">attrib</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[])),
+        <span class="prelude-val">Ok</span>(<span class="ident">attrib</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">attrib</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()]),
         <span class="prelude-val">Err</span>(..) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unsupported operand type(s) for divmod&quot;</span>.<span class="ident">to_string</span>())),
     }
 }
 
 <span class="doccomment">/// Implements `eval`.</span>
 <span class="doccomment">/// See also: https://docs.python.org/3/library/functions.html#eval</span>
-<span class="kw">fn</span> <span class="ident">builtin_eval</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_eval</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
         <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">source</span>, <span class="prelude-val">None</span>)],
-        <span class="ident">optional</span> <span class="op">=</span> [
-            (<span class="ident">_globals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>())),
-            (<span class="ident">locals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))
-        ]
+        <span class="ident">optional</span> <span class="op">=</span> [(<span class="ident">globals</span>, <span class="prelude-val">None</span>), (<span class="ident">locals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))]
     );
+
+    <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">make_scope</span>(<span class="ident">vm</span>, <span class="ident">globals</span>, <span class="ident">locals</span>)<span class="question-mark">?</span>;
 
     <span class="comment">// Determine code object:</span>
     <span class="kw">let</span> <span class="ident">code_obj</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">code_type</span>()) {
@@ -1052,24 +1048,21 @@
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;code argument must be str or code object&quot;</span>.<span class="ident">to_string</span>()));
     };
 
-    <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">make_scope</span>(<span class="ident">vm</span>, <span class="ident">locals</span>);
-
     <span class="comment">// Run the source:</span>
     <span class="ident">vm</span>.<span class="ident">run_code_obj</span>(<span class="ident">code_obj</span>.<span class="ident">clone</span>(), <span class="ident">scope</span>)
 }
 
 <span class="doccomment">/// Implements `exec`</span>
 <span class="doccomment">/// https://docs.python.org/3/library/functions.html#exec</span>
-<span class="kw">fn</span> <span class="ident">builtin_exec</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_exec</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
         <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">source</span>, <span class="prelude-val">None</span>)],
-        <span class="ident">optional</span> <span class="op">=</span> [
-            (<span class="ident">_globals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>())),
-            (<span class="ident">locals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))
-        ]
+        <span class="ident">optional</span> <span class="op">=</span> [(<span class="ident">globals</span>, <span class="prelude-val">None</span>), (<span class="ident">locals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))]
     );
+
+    <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">make_scope</span>(<span class="ident">vm</span>, <span class="ident">globals</span>, <span class="ident">locals</span>)<span class="question-mark">?</span>;
 
     <span class="comment">// Determine code object:</span>
     <span class="kw">let</span> <span class="ident">code_obj</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
@@ -1089,35 +1082,49 @@
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;source argument must be str or code object&quot;</span>.<span class="ident">to_string</span>()));
     };
 
-    <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">make_scope</span>(<span class="ident">vm</span>, <span class="ident">locals</span>);
-
     <span class="comment">// Run the code:</span>
     <span class="ident">vm</span>.<span class="ident">run_code_obj</span>(<span class="ident">code_obj</span>, <span class="ident">scope</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">make_scope</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">locals</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="comment">// handle optional global and locals</span>
-    <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">locals</span>) <span class="op">=</span> <span class="ident">locals</span> {
-        <span class="ident">locals</span>.<span class="ident">clone</span>()
-    } <span class="kw">else</span> {
-        <span class="ident">vm</span>.<span class="ident">new_dict</span>()
+<span class="kw">fn</span> <span class="ident">make_scope</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">globals</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="ident">locals</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">Scope</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">dict_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>();
+    <span class="kw">let</span> <span class="ident">globals</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">globals</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">arg</span>) <span class="op">=&gt;</span> {
+            <span class="kw">if</span> <span class="ident">arg</span>.<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">get_none</span>()) {
+                <span class="prelude-val">None</span>
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">vm</span>.<span class="ident">isinstance</span>(<span class="ident">arg</span>, <span class="kw-2">&amp;</span><span class="ident">dict_type</span>)<span class="question-mark">?</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">arg</span>)
+            } <span class="kw">else</span> {
+                <span class="kw">let</span> <span class="ident">arg_typ</span> <span class="op">=</span> <span class="ident">arg</span>.<span class="ident">typ</span>();
+                <span class="kw">let</span> <span class="ident">actual_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_pystr</span>(<span class="kw-2">&amp;</span><span class="ident">arg_typ</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">expected_type_name</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_pystr</span>(<span class="kw-2">&amp;</span><span class="ident">dict_type</span>)<span class="question-mark">?</span>;
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;globals must be a {}, not {}&quot;</span>,
+                    <span class="ident">expected_type_name</span>, <span class="ident">actual_type</span>
+                )));
+            }
+        }
+        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
     };
 
-    <span class="comment">// TODO: handle optional globals</span>
-    <span class="comment">// Construct new scope:</span>
-    <span class="kw">let</span> <span class="ident">scope_inner</span> <span class="op">=</span> <span class="ident">Scope</span> {
-        <span class="ident">locals</span>,
-        <span class="ident">parent</span>: <span class="prelude-val">None</span>,
+    <span class="kw">let</span> <span class="ident">current_scope</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">current_scope</span>();
+    <span class="kw">let</span> <span class="ident">globals</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">globals</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">clone</span>(),
+        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">current_scope</span>.<span class="ident">globals</span>.<span class="ident">clone</span>(),
+    };
+    <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">locals</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">dict</span>.<span class="ident">clone</span>()),
+        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">current_scope</span>.<span class="ident">get_only_locals</span>(),
     };
 
-    <span class="ident">PyObject</span> {
-        <span class="ident">payload</span>: <span class="ident">PyObjectPayload</span>::<span class="ident">Scope</span> { <span class="ident">scope</span>: <span class="ident">scope_inner</span> },
-        <span class="ident">typ</span>: <span class="prelude-val">None</span>,
-    }
-    .<span class="ident">into_ref</span>()
+    <span class="prelude-val">Ok</span>(<span class="ident">Scope</span>::<span class="ident">new</span>(<span class="ident">locals</span>, <span class="ident">globals</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_format</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_format</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
@@ -1130,31 +1137,41 @@
     <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="ident">obj</span>, <span class="string">&quot;__format__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">format_spec</span>])
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_getattr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(
-        <span class="ident">vm</span>,
-        <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>), (<span class="ident">attr</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]
-    );
-    <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="ident">attr</span>.<span class="ident">clone</span>())
+<span class="kw">fn</span> <span class="ident">catch_attr_exception</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">ex</span>: <span class="ident">PyObjectRef</span>, <span class="ident">default</span>: <span class="ident">T</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">ex</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">attribute_error</span>) {
+        <span class="prelude-val">Ok</span>(<span class="ident">default</span>)
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">ex</span>)
+    }
 }
 
-<span class="comment">// builtin_globals</span>
-
-<span class="kw">fn</span> <span class="ident">builtin_hasattr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(
-        <span class="ident">vm</span>,
-        <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>), (<span class="ident">attr</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]
-    );
-    <span class="kw">let</span> <span class="ident">has_attr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="ident">attr</span>.<span class="ident">clone</span>()) {
-        <span class="prelude-val">Ok</span>(..) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-        <span class="prelude-val">Err</span>(..) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-    };
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_bool</span>(<span class="ident">has_attr</span>))
+<span class="kw">fn</span> <span class="ident">builtin_getattr</span>(
+    <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
+    <span class="ident">attr</span>: <span class="ident">PyStringRef</span>,
+    <span class="ident">default</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="ident">attr</span>);
+    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="ident">default</span>) <span class="op">=</span> <span class="ident">default</span> {
+        <span class="ident">ret</span>.<span class="ident">or_else</span>(<span class="op">|</span><span class="ident">ex</span><span class="op">|</span> <span class="ident">catch_attr_exception</span>(<span class="ident">ex</span>, <span class="ident">default</span>, <span class="ident">vm</span>))
+    } <span class="kw">else</span> {
+        <span class="ident">ret</span>
+    }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_hash</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_globals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">_args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">current_scope</span>().<span class="ident">globals</span>.<span class="ident">clone</span>())
+}
+
+<span class="kw">fn</span> <span class="ident">builtin_hasattr</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">attr</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">ex</span>) <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="ident">attr</span>) {
+        <span class="ident">catch_attr_exception</span>(<span class="ident">ex</span>, <span class="bool-val">false</span>, <span class="ident">vm</span>)
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">builtin_hash</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>)]);
 
     <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="ident">obj</span>, <span class="string">&quot;__hash__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])
@@ -1162,7 +1179,7 @@
 
 <span class="comment">// builtin_help</span>
 
-<span class="kw">fn</span> <span class="ident">builtin_hex</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_hex</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">number</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
 
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">number</span>);
@@ -1175,7 +1192,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">s</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_id</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_id</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>)]);
 
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_int</span>(<span class="ident">obj</span>.<span class="ident">get_id</span>()))
@@ -1183,30 +1200,34 @@
 
 <span class="comment">// builtin_input</span>
 
-<span class="kw">fn</span> <span class="ident">builtin_isinstance</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>), (<span class="ident">typ</span>, <span class="prelude-val">None</span>)]);
+<span class="kw">fn</span> <span class="ident">builtin_isinstance</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>), (<span class="ident">typ</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">get_type</span>()))]
+    );
 
-    <span class="kw">let</span> <span class="ident">isinstance</span> <span class="op">=</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">obj</span>, <span class="ident">typ</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_bool</span>(<span class="ident">isinstance</span>))
+    <span class="kw">let</span> <span class="ident">isinstance</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">isinstance</span>(<span class="ident">obj</span>, <span class="ident">typ</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="ident">isinstance</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_issubclass</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="number">2</span> {
-        <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;issubclass expects exactly two parameters&quot;</span>);
-    }
+<span class="kw">fn</span> <span class="ident">builtin_issubclass</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">subclass</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">get_type</span>())), (<span class="ident">cls</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">get_type</span>()))]
+    );
 
-    <span class="kw">let</span> <span class="ident">cls1</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">args</span>[<span class="number">0</span>];
-    <span class="kw">let</span> <span class="ident">cls2</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">args</span>[<span class="number">1</span>];
-
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_bool</span>(<span class="ident">objtype</span>::<span class="ident">issubclass</span>(<span class="ident">cls1</span>, <span class="ident">cls2</span>)))
+    <span class="kw">let</span> <span class="ident">issubclass</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">issubclass</span>(<span class="ident">subclass</span>, <span class="ident">cls</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_bool</span>(<span class="ident">issubclass</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_iter</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_iter</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">iter_target</span>, <span class="prelude-val">None</span>)]);
     <span class="ident">objiter</span>::<span class="ident">get_iter</span>(<span class="ident">vm</span>, <span class="ident">iter_target</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_len</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_len</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>)]);
     <span class="kw">let</span> <span class="ident">len_method_name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>;
     <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="ident">len_method_name</span>) {
@@ -1219,12 +1240,12 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_locals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_locals</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_locals</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_max</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_max</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> {
         <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">clone</span>()
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
@@ -1251,16 +1272,14 @@
     <span class="comment">// TODO: this key function looks pretty duplicate. Maybe we can create</span>
     <span class="comment">// a local function?</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x_key</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">key_func</span> {
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[]);
-        <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="ident">args</span>)<span class="question-mark">?</span>
+        <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>.<span class="ident">clone</span>()])<span class="question-mark">?</span>
     } <span class="kw">else</span> {
         <span class="ident">x</span>.<span class="ident">clone</span>()
     };
 
     <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="ident">candidates_iter</span> {
         <span class="kw">let</span> <span class="ident">y_key</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">key_func</span> {
-            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[]);
-            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="ident">args</span>)<span class="question-mark">?</span>
+            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()])<span class="question-mark">?</span>
         } <span class="kw">else</span> {
             <span class="ident">y</span>.<span class="ident">clone</span>()
         };
@@ -1275,7 +1294,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">x</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_min</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_min</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> {
         <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">clone</span>()
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
@@ -1301,16 +1320,14 @@
     <span class="comment">// TODO: this key function looks pretty duplicate. Maybe we can create</span>
     <span class="comment">// a local function?</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x_key</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">key_func</span> {
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[]);
-        <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="ident">args</span>)<span class="question-mark">?</span>
+        <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>.<span class="ident">clone</span>()])<span class="question-mark">?</span>
     } <span class="kw">else</span> {
         <span class="ident">x</span>.<span class="ident">clone</span>()
     };
 
     <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="ident">candidates_iter</span> {
         <span class="kw">let</span> <span class="ident">y_key</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">key_func</span> {
-            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[]);
-            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="ident">args</span>)<span class="question-mark">?</span>
+            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">f</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()])<span class="question-mark">?</span>
         } <span class="kw">else</span> {
             <span class="ident">y</span>.<span class="ident">clone</span>()
         };
@@ -1325,7 +1342,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">x</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_next</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_next</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
@@ -1348,7 +1365,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_oct</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_oct</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">number</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
 
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">number</span>);
@@ -1361,7 +1378,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">s</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_ord</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_ord</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">string</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]);
     <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">string</span>);
     <span class="kw">let</span> <span class="ident">string_len</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">chars</span>().<span class="ident">count</span>();
@@ -1379,7 +1396,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_pow</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_pow</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
@@ -1388,7 +1405,7 @@
     );
     <span class="kw">let</span> <span class="ident">pow_method_name</span> <span class="op">=</span> <span class="string">&quot;__pow__&quot;</span>;
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">x</span>.<span class="ident">clone</span>(), <span class="ident">pow_method_name</span>) {
-        <span class="prelude-val">Ok</span>(<span class="ident">attrib</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">attrib</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[])),
+        <span class="prelude-val">Ok</span>(<span class="ident">attrib</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">attrib</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>.<span class="ident">clone</span>()]),
         <span class="prelude-val">Err</span>(..) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unsupported operand type(s) for pow&quot;</span>.<span class="ident">to_string</span>())),
     };
     <span class="comment">//Check if the 3rd argument is defined and perform modulus on the result</span>
@@ -1398,7 +1415,7 @@
         <span class="prelude-val">Some</span>(<span class="ident">mod_value</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">mod_method_name</span> <span class="op">=</span> <span class="string">&quot;__mod__&quot;</span>;
             <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">result</span>.<span class="ident">expect</span>(<span class="string">&quot;result not defined&quot;</span>).<span class="ident">clone</span>(), <span class="ident">mod_method_name</span>) {
-                <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">value</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mod_value</span>.<span class="ident">clone</span>()], <span class="macro">vec</span><span class="macro">!</span>[])),
+                <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">value</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mod_value</span>.<span class="ident">clone</span>()]),
                 <span class="prelude-val">Err</span>(..) <span class="op">=&gt;</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unsupported operand type(s) for mod&quot;</span>.<span class="ident">to_string</span>()))
                 }
@@ -1408,79 +1425,47 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builtin_print</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;print called with {:?}&quot;</span>, <span class="ident">args</span>);
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">FromArgs</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrintOptions</span> {
+    <span class="ident">sep</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>,
+    <span class="ident">end</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>,
+    <span class="ident">flush</span>: <span class="ident">bool</span>,
+}
 
-    <span class="comment">// Handle &#39;sep&#39; kwarg:</span>
-    <span class="kw">let</span> <span class="ident">sep_arg</span> <span class="op">=</span> <span class="ident">args</span>
-        .<span class="ident">get_optional_kwarg</span>(<span class="string">&quot;sep&quot;</span>)
-        .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">obj</span><span class="op">|</span> <span class="op">!</span><span class="ident">obj</span>.<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">get_none</span>()));
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">obj</span>) <span class="op">=</span> <span class="ident">sep_arg</span> {
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;sep must be None or a string, not {}&quot;</span>,
-                <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">typ</span>())
-            )));
-        }
-    }
-    <span class="kw">let</span> <span class="ident">sep_str</span> <span class="op">=</span> <span class="ident">sep_arg</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">obj</span><span class="op">|</span> <span class="ident">objstr</span>::<span class="ident">borrow_value</span>(<span class="ident">obj</span>));
-
-    <span class="comment">// Handle &#39;end&#39; kwarg:</span>
-    <span class="kw">let</span> <span class="ident">end_arg</span> <span class="op">=</span> <span class="ident">args</span>
-        .<span class="ident">get_optional_kwarg</span>(<span class="string">&quot;end&quot;</span>)
-        .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">obj</span><span class="op">|</span> <span class="op">!</span><span class="ident">obj</span>.<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">get_none</span>()));
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">obj</span>) <span class="op">=</span> <span class="ident">end_arg</span> {
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;end must be None or a string, not {}&quot;</span>,
-                <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">typ</span>())
-            )));
-        }
-    }
-    <span class="kw">let</span> <span class="ident">end_str</span> <span class="op">=</span> <span class="ident">end_arg</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">obj</span><span class="op">|</span> <span class="ident">objstr</span>::<span class="ident">borrow_value</span>(<span class="ident">obj</span>));
-
-    <span class="comment">// Handle &#39;flush&#39; kwarg:</span>
-    <span class="kw">let</span> <span class="ident">flush</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">flush</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">get_optional_kwarg</span>(<span class="string">&quot;flush&quot;</span>) {
-        <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">flush</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>()
-    } <span class="kw">else</span> {
-        <span class="bool-val">false</span>
-    };
-
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builtin_print</span>(<span class="ident">objects</span>: <span class="ident">Args</span>, <span class="ident">options</span>: <span class="ident">PrintOptions</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">stdout</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">stdout</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stdout_lock</span> <span class="op">=</span> <span class="ident">stdout</span>.<span class="ident">lock</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">first</span> <span class="op">=</span> <span class="bool-val">true</span>;
-    <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">args</span> {
+    <span class="kw">for</span> <span class="ident">object</span> <span class="kw">in</span> <span class="ident">objects</span> {
         <span class="kw">if</span> <span class="ident">first</span> {
             <span class="ident">first</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">sep_str</span>) <span class="op">=</span> <span class="ident">sep_str</span> {
-            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">sep_str</span>).<span class="ident">unwrap</span>();
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">sep</span>) <span class="op">=</span> <span class="ident">options</span>.<span class="ident">sep</span> {
+            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">sep</span>.<span class="ident">value</span>).<span class="ident">unwrap</span>();
         } <span class="kw">else</span> {
             <span class="macro">write</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>, <span class="string">&quot; &quot;</span>).<span class="ident">unwrap</span>();
         }
-        <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">borrow_value</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>);
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">object</span>)<span class="question-mark">?</span>.<span class="ident">value</span>;
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">s</span>).<span class="ident">unwrap</span>();
     }
 
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">end_str</span>) <span class="op">=</span> <span class="ident">end_str</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">end_str</span>).<span class="ident">unwrap</span>();
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">end</span>) <span class="op">=</span> <span class="ident">options</span>.<span class="ident">end</span> {
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">end</span>.<span class="ident">value</span>).<span class="ident">unwrap</span>();
     } <span class="kw">else</span> {
         <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">stdout_lock</span>).<span class="ident">unwrap</span>();
     }
 
-    <span class="kw">if</span> <span class="ident">flush</span> {
+    <span class="kw">if</span> <span class="ident">options</span>.<span class="ident">flush</span> {
         <span class="ident">stdout_lock</span>.<span class="ident">flush</span>().<span class="ident">unwrap</span>();
     }
 
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
+    <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_repr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>)]);
-    <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="ident">obj</span>)
+<span class="kw">fn</span> <span class="ident">builtin_repr</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span> {
+    <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_reversed</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_reversed</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>)]);
 
     <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">get_method</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="string">&quot;__reversed__&quot;</span>) {
@@ -1494,7 +1479,7 @@
 }
 <span class="comment">// builtin_reversed</span>
 
-<span class="kw">fn</span> <span class="ident">builtin_round</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_round</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(
         <span class="ident">vm</span>,
         <span class="ident">args</span>,
@@ -1508,25 +1493,33 @@
     } <span class="kw">else</span> {
         <span class="comment">// without a parameter, the result type is coerced to int</span>
         <span class="kw">let</span> <span class="ident">rounded</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="ident">number</span>, <span class="string">&quot;__round__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">rounded</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">rounded</span>).<span class="ident">clone</span>()))
     }
 }
 
-<span class="kw">fn</span> <span class="ident">builtin_setattr</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(
-        <span class="ident">vm</span>,
-        <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">obj</span>, <span class="prelude-val">None</span>), (<span class="ident">attr</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>())), (<span class="ident">value</span>, <span class="prelude-val">None</span>)]
-    );
-    <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">attr</span>);
-    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="ident">obj</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">value</span>.<span class="ident">clone</span>());
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
+<span class="kw">fn</span> <span class="ident">builtin_setattr</span>(
+    <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
+    <span class="ident">attr</span>: <span class="ident">PyStringRef</span>,
+    <span class="ident">value</span>: <span class="ident">PyObjectRef</span>,
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="ident">attr</span>.<span class="ident">into_object</span>(), <span class="ident">value</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="comment">// builtin_slice</span>
-<span class="comment">// builtin_sorted</span>
 
-<span class="kw">fn</span> <span class="ident">builtin_sum</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">builtin_sorted</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">iterable</span>, <span class="prelude-val">None</span>)]);
+    <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">extract_elements</span>(<span class="ident">iterable</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">lst</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">items</span>);
+
+    <span class="ident">args</span>.<span class="ident">shift</span>();
+    <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">lst</span>, <span class="string">&quot;sort&quot;</span>, <span class="ident">args</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(<span class="ident">lst</span>)
+}
+
+<span class="kw">fn</span> <span class="ident">builtin_sum</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">iterable</span>, <span class="prelude-val">None</span>)]);
     <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">extract_elements</span>(<span class="ident">iterable</span>)<span class="question-mark">?</span>;
 
@@ -1538,8 +1531,27 @@
     <span class="prelude-val">Ok</span>(<span class="ident">sum</span>)
 }
 
+<span class="comment">// Should be renamed to builtin___import__?</span>
+<span class="kw">fn</span> <span class="ident">builtin_import</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="macro">arg_check</span><span class="macro">!</span>(
+        <span class="ident">vm</span>,
+        <span class="ident">args</span>,
+        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">name</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))],
+        <span class="ident">optional</span> <span class="op">=</span> [
+            (<span class="ident">_globals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>())),
+            (<span class="ident">_locals</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()))
+        ]
+    );
+    <span class="kw">let</span> <span class="ident">current_path</span> <span class="op">=</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">source_pathbuf</span> <span class="op">=</span> <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">current_frame</span>().<span class="ident">code</span>.<span class="ident">source_path</span>);
+        <span class="ident">source_pathbuf</span>.<span class="ident">pop</span>();
+        <span class="ident">source_pathbuf</span>
+    };
+
+    <span class="ident">import_module</span>(<span class="ident">vm</span>, <span class="ident">current_path</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">name</span>))
+}
+
 <span class="comment">// builtin_vars</span>
-<span class="comment">// builtin___import__</span>
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">py_mod</span> <span class="op">=</span> <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;__builtins__&quot;</span>, {
@@ -1570,6 +1582,7 @@
         <span class="string">&quot;filter&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">filter_type</span>(),
         <span class="string">&quot;format&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_format</span>),
         <span class="string">&quot;getattr&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_getattr</span>),
+        <span class="string">&quot;globals&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_globals</span>),
         <span class="string">&quot;hasattr&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_hasattr</span>),
         <span class="string">&quot;hash&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_hash</span>),
         <span class="string">&quot;hex&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_hex</span>),
@@ -1598,6 +1611,7 @@
         <span class="string">&quot;round&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_round</span>),
         <span class="string">&quot;set&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">set_type</span>(),
         <span class="string">&quot;setattr&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_setattr</span>),
+        <span class="string">&quot;sorted&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_sorted</span>),
         <span class="string">&quot;slice&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">slice_type</span>(),
         <span class="string">&quot;staticmethod&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">staticmethod_type</span>(),
         <span class="string">&quot;str&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">str_type</span>(),
@@ -1606,6 +1620,7 @@
         <span class="string">&quot;tuple&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">tuple_type</span>(),
         <span class="string">&quot;type&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">type_type</span>(),
         <span class="string">&quot;zip&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">zip_type</span>(),
+        <span class="string">&quot;__import__&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_import</span>),
 
         <span class="comment">// Constants</span>
         <span class="string">&quot;NotImplemented&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">not_implemented</span>.<span class="ident">clone</span>(),
@@ -1628,6 +1643,7 @@
         <span class="string">&quot;StopIteration&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">stop_iteration</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;ZeroDivisionError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">zero_division_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;KeyError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">key_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;OSError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">os_error</span>.<span class="ident">clone</span>(),
     });
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
@@ -1636,7 +1652,7 @@
     <span class="ident">py_mod</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builtin_build_class_</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">VirtualMachine</span>, <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builtin_build_class_</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">let</span> <span class="ident">function</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">shift</span>();
     <span class="kw">let</span> <span class="ident">name_arg</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">shift</span>();
     <span class="kw">let</span> <span class="ident">bases</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">clone</span>();
@@ -1653,25 +1669,15 @@
     <span class="kw">let</span> <span class="ident">bases</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">new_tuple</span>(<span class="ident">bases</span>);
 
     <span class="comment">// Prepare uses full __getattribute__ resolution chain.</span>
-    <span class="kw">let</span> <span class="ident">prepare_name</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;__prepare__&quot;</span>.<span class="ident">to_string</span>());
-    <span class="kw">let</span> <span class="ident">prepare</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">metaclass</span>.<span class="ident">clone</span>(), <span class="ident">prepare_name</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">namespace</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(
-        <span class="ident">prepare</span>,
-        <span class="ident">PyFuncArgs</span> {
-            <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">name_arg</span>.<span class="ident">clone</span>(), <span class="ident">bases</span>.<span class="ident">clone</span>()],
-            <span class="ident">kwargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-        },
-    )<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">prepare</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">metaclass</span>.<span class="ident">clone</span>(), <span class="string">&quot;__prepare__&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">namespace</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">prepare</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">name_arg</span>.<span class="ident">clone</span>(), <span class="ident">bases</span>.<span class="ident">clone</span>()])<span class="question-mark">?</span>;
 
-    <span class="ident">vm</span>.<span class="ident">invoke</span>(
-        <span class="ident">function</span>,
-        <span class="ident">PyFuncArgs</span> {
-            <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">namespace</span>.<span class="ident">clone</span>()],
-            <span class="ident">kwargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-        },
-    )<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">cells</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_dict</span>();
 
-    <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">metaclass</span>, <span class="string">&quot;__call__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">name_arg</span>, <span class="ident">bases</span>, <span class="ident">namespace</span>])
+    <span class="ident">vm</span>.<span class="ident">invoke_with_locals</span>(<span class="ident">function</span>, <span class="ident">cells</span>.<span class="ident">clone</span>(), <span class="ident">namespace</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">metaclass</span>, <span class="string">&quot;__call__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">name_arg</span>, <span class="ident">bases</span>, <span class="ident">namespace</span>])<span class="question-mark">?</span>;
+    <span class="ident">cells</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>, <span class="string">&quot;__class__&quot;</span>, <span class="ident">class</span>.<span class="ident">clone</span>());
+    <span class="prelude-val">Ok</span>(<span class="ident">class</span>)
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-files.js"></script><script src="../../source-script.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

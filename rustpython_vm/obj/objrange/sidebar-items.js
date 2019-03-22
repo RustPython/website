@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["RangeType",""]]});
+initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyRange",""]]});

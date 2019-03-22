@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["io_open",""],["mk_module",""]]});
+initSidebarItems({"fn":[["io_open",""],["make_module",""]]});

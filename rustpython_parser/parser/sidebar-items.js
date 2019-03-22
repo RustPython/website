@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["FStringError",""]],"fn":[["parse_expression","Parses a python expression"],["parse_fstring",""],["parse_program",""],["parse_statement",""]]});
+initSidebarItems({"fn":[["parse_expression","Parses a python expression"],["parse_program",""],["parse_statement",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyNone",""]],"type":[["PyNoneRef",""]]});

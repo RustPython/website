@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""],["make_float",""]]});
+initSidebarItems({"fn":[["get_value",""],["init",""],["make_float",""]],"struct":[["PyFloat",""]],"type":[["PyFloatRef",""]]});

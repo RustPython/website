@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""],["tuple_contains",""],["tuple_index",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyTuple",""]],"type":[["PyTupleRef",""]]});

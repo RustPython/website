@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""],["to_int",""]]});
+initSidebarItems({"fn":[["get_value",""],["init",""],["to_int",""]],"struct":[["PyInt",""]],"type":[["PyIntRef",""]]});

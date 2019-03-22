@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_mut_value",""],["get_value",""],["init",""]]});
+initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyBytes",""]]});

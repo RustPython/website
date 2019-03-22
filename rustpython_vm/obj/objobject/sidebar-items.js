@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["create_object",""],["init",""],["new_instance",""]]});
+initSidebarItems({"fn":[["get_attributes",""],["init",""],["new_instance",""],["object_dir",""]],"struct":[["PyInstance",""]],"type":[["PyInstanceRef",""]]});

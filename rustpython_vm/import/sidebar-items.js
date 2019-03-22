@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["import",""],["import_module",""]]});
+initSidebarItems({"fn":[["import_module",""]]});

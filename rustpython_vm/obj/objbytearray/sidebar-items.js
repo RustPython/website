@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init","Fill bytearray class methods dictionary."]]});
+initSidebarItems({"fn":[["get_mut_value",""],["get_value",""],["init","Fill bytearray class methods dictionary."]],"struct":[["PyByteArray",""]]});
