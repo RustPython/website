@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""],["new_memory_view",""]],"struct":[["PyMemoryView",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyMemoryView",""]],"type":[["PyMemoryViewRef",""]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Mode",""]],"fn":[["compile","Compile a given sourcecode into a bytecode object."]]});

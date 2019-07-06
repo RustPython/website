@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PyZip",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyZip",""]],"type":[["PyZipRef",""]]});

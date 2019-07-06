@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PyFilter",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyFilter","filter(function or None, iterable) --> filter object"]],"type":[["PyFilterRef",""]]});

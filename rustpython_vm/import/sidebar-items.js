@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["import_module",""]]});
+initSidebarItems({"fn":[["import_builtin",""],["import_codeobj",""],["import_file",""],["import_frozen",""],["init_importlib",""],["remove_importlib_frames",""]]});

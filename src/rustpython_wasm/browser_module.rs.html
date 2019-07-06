@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `wasm/lib/src/browser_module.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>browser_module.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `wasm/lib/src/browser_module.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>browser_module.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_wasm/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -339,9 +339,54 @@
 <span id="339">339</span>
 <span id="340">340</span>
 <span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
-
 <span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">Future</span>;
 <span class="kw">use</span> <span class="ident">js_sys</span>::<span class="ident">Promise</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">cast</span>::<span class="ident">ToPrimitive</span>;
@@ -349,15 +394,17 @@
 <span class="kw">use</span> <span class="ident">wasm_bindgen</span>::<span class="ident">JsCast</span>;
 <span class="kw">use</span> <span class="ident">wasm_bindgen_futures</span>::{<span class="ident">future_to_promise</span>, <span class="ident">JsFuture</span>};
 
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">import</span>::<span class="ident">import_module</span>;
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::{<span class="ident">objint</span>, <span class="ident">objstr</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">function</span>::{<span class="ident">OptionalArg</span>, <span class="ident">PyFuncArgs</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">import</span>::<span class="ident">import_file</span>;
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::{
+    <span class="ident">objdict</span>::<span class="ident">PyDictRef</span>, <span class="ident">objint</span>::<span class="ident">PyIntRef</span>, <span class="ident">objstr</span>::<span class="ident">PyStringRef</span>, <span class="ident">objtype</span>::<span class="ident">PyClassRef</span>,
+};
 <span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">AttributeProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>, <span class="ident">TypeProtocol</span>,
+    <span class="ident">PyCallable</span>, <span class="ident">PyClassImpl</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>,
 };
 <span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">VirtualMachine</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">convert</span>, <span class="ident">vm_class</span>::<span class="ident">AccessibleVM</span>, <span class="ident">wasm_builtins</span>::<span class="ident">window</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">convert</span>, <span class="ident">vm_class</span>::<span class="ident">weak_vm</span>, <span class="ident">wasm_builtins</span>::<span class="ident">window</span>};
 
 <span class="kw">enum</span> <span class="ident">FetchResponseFormat</span> {
     <span class="ident">Json</span>,
@@ -383,27 +430,38 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">browser_fetch</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">url</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]);
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">FromArgs</span>)]</span>
+<span class="kw">struct</span> <span class="ident">FetchArgs</span> {
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">keyword_only</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">response_format</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">keyword_only</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">method</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">keyword_only</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">headers</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyDictRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">keyword_only</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">body</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">keyword_only</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">content_type</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>,
+}
 
-    <span class="kw">let</span> <span class="ident">promise_type</span> <span class="op">=</span> <span class="ident">import_promise_type</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
-
-    <span class="kw">let</span> <span class="ident">response_format</span> <span class="op">=</span>
-        <span class="ident">args</span>.<span class="ident">get_optional_kwarg_with_type</span>(<span class="string">&quot;response_format&quot;</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>(), <span class="ident">vm</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">method</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">get_optional_kwarg_with_type</span>(<span class="string">&quot;method&quot;</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>(), <span class="ident">vm</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">get_optional_kwarg_with_type</span>(<span class="string">&quot;headers&quot;</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>(), <span class="ident">vm</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">get_optional_kwarg</span>(<span class="string">&quot;body&quot;</span>);
-    <span class="kw">let</span> <span class="ident">content_type</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">get_optional_kwarg_with_type</span>(<span class="string">&quot;content_type&quot;</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>(), <span class="ident">vm</span>)<span class="question-mark">?</span>;
+<span class="kw">fn</span> <span class="ident">browser_fetch</span>(<span class="ident">url</span>: <span class="ident">PyStringRef</span>, <span class="ident">args</span>: <span class="ident">FetchArgs</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">let</span> <span class="ident">FetchArgs</span> {
+        <span class="ident">response_format</span>,
+        <span class="ident">method</span>,
+        <span class="ident">headers</span>,
+        <span class="ident">body</span>,
+        <span class="ident">content_type</span>,
+    } <span class="op">=</span> <span class="ident">args</span>;
 
     <span class="kw">let</span> <span class="ident">response_format</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">response_format</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">FetchResponseFormat</span>::<span class="ident">from_str</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>))<span class="question-mark">?</span>,
+        <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">FetchResponseFormat</span>::<span class="ident">from_str</span>(<span class="ident">vm</span>, <span class="ident">s</span>.<span class="ident">as_str</span>())<span class="question-mark">?</span>,
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">FetchResponseFormat</span>::<span class="ident">Text</span>,
     };
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">web_sys</span>::<span class="ident">RequestInit</span>::<span class="ident">new</span>();
 
     <span class="kw">match</span> <span class="ident">method</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">opts</span>.<span class="ident">method</span>(<span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>)),
+        <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">opts</span>.<span class="ident">method</span>(<span class="ident">s</span>.<span class="ident">as_str</span>()),
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">opts</span>.<span class="ident">method</span>(<span class="string">&quot;GET&quot;</span>),
     };
 
@@ -411,15 +469,15 @@
         <span class="ident">opts</span>.<span class="ident">body</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">convert</span>::<span class="ident">py_to_js</span>(<span class="ident">vm</span>, <span class="ident">body</span>)));
     }
 
-    <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">web_sys</span>::<span class="ident">Request</span>::<span class="ident">new_with_str_and_init</span>(<span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">url</span>), <span class="kw-2">&amp;</span><span class="ident">opts</span>)
+    <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">web_sys</span>::<span class="ident">Request</span>::<span class="ident">new_with_str_and_init</span>(<span class="ident">url</span>.<span class="ident">as_str</span>(), <span class="kw-2">&amp;</span><span class="ident">opts</span>)
         .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>, <span class="ident">err</span>))<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">headers</span>) <span class="op">=</span> <span class="ident">headers</span> {
         <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">headers</span>();
-        <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>::<span class="ident">get_key_value_pairs</span>(<span class="kw-2">&amp;</span><span class="ident">headers</span>) {
-            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)<span class="question-mark">?</span>.<span class="ident">value</span>;
-            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>)<span class="question-mark">?</span>.<span class="ident">value</span>;
-            <span class="ident">h</span>.<span class="ident">set</span>(<span class="ident">key</span>, <span class="ident">value</span>)
+        <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">headers</span> {
+            <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>)<span class="question-mark">?</span>;
+            <span class="ident">h</span>.<span class="ident">set</span>(<span class="ident">key</span>.<span class="ident">as_str</span>(), <span class="ident">value</span>.<span class="ident">as_str</span>())
                 .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>, <span class="ident">err</span>))<span class="question-mark">?</span>;
         }
     }
@@ -427,7 +485,7 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">content_type</span>) <span class="op">=</span> <span class="ident">content_type</span> {
         <span class="ident">request</span>
             .<span class="ident">headers</span>()
-            .<span class="ident">set</span>(<span class="string">&quot;Content-Type&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">content_type</span>))
+            .<span class="ident">set</span>(<span class="string">&quot;Content-Type&quot;</span>, <span class="ident">content_type</span>.<span class="ident">as_str</span>())
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>, <span class="ident">err</span>))<span class="question-mark">?</span>;
     }
 
@@ -443,12 +501,10 @@
         })
         .<span class="ident">and_then</span>(<span class="ident">JsFuture</span>::<span class="ident">from</span>);
 
-    <span class="prelude-val">Ok</span>(<span class="ident">PyPromise</span>::<span class="ident">new_obj</span>(<span class="ident">promise_type</span>, <span class="ident">future_to_promise</span>(<span class="ident">future</span>)))
+    <span class="prelude-val">Ok</span>(<span class="ident">PyPromise</span>::<span class="ident">from_future</span>(<span class="ident">future</span>).<span class="ident">into_ref</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">browser_request_animation_frame</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">func</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">function_type</span>()))]);
-
+<span class="kw">fn</span> <span class="ident">browser_request_animation_frame</span>(<span class="ident">func</span>: <span class="ident">PyCallable</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cell</span>::<span class="ident">RefCell</span>, <span class="ident">rc</span>::<span class="ident">Rc</span>};
 
     <span class="comment">// this basic setup for request_animation_frame taken from:</span>
@@ -457,18 +513,16 @@
     <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>));
     <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">clone</span>();
 
-    <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">clone</span>();
-
-    <span class="kw">let</span> <span class="ident">acc_vm</span> <span class="op">=</span> <span class="ident">AccessibleVM</span>::<span class="ident">from</span>(<span class="ident">vm</span>);
+    <span class="kw">let</span> <span class="ident">weak_vm</span> <span class="op">=</span> <span class="ident">weak_vm</span>(<span class="ident">vm</span>);
 
     <span class="kw-2">*</span><span class="ident">g</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Closure</span>::<span class="ident">wrap</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">time</span>: <span class="ident">f64</span><span class="op">|</span> {
-        <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="ident">acc_vm</span>
+        <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="ident">weak_vm</span>
             .<span class="ident">upgrade</span>()
             .<span class="ident">expect</span>(<span class="string">&quot;that the vm is valid from inside of request_animation_frame&quot;</span>);
         <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">stored_vm</span>.<span class="ident">vm</span>;
         <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="ident">time</span>)];
-        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">func</span>, <span class="ident">args</span>);
+        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">func</span>.<span class="ident">into_object</span>(), <span class="ident">args</span>);
 
         <span class="kw">let</span> <span class="ident">closure</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">borrow_mut</span>().<span class="ident">take</span>();
         <span class="ident">drop</span>(<span class="ident">closure</span>);
@@ -483,10 +537,8 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">id</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">browser_cancel_animation_frame</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">id</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()))]);
-
-    <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="ident">id</span>).<span class="ident">to_i32</span>().<span class="ident">ok_or_else</span>(<span class="op">||</span> {
+<span class="kw">fn</span> <span class="ident">browser_cancel_animation_frame</span>(<span class="ident">id</span>: <span class="ident">PyIntRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">id</span>.<span class="ident">as_bigint</span>().<span class="ident">to_i32</span>().<span class="ident">ok_or_else</span>(<span class="op">||</span> {
         <span class="ident">vm</span>.<span class="ident">new_exception</span>(
             <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span>.<span class="ident">clone</span>(),
             <span class="string">&quot;Integer too large to convert to i32 for animationFrame id&quot;</span>.<span class="ident">into</span>(),
@@ -500,186 +552,228 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
 }
 
+<span class="attribute">#[<span class="ident">pyclass</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;Promise&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PyPromise</span> {
     <span class="ident">value</span>: <span class="ident">Promise</span>,
 }
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyPromiseRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">PyPromise</span><span class="op">&gt;</span>;
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">PyPromise</span> {
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">vm</span>.<span class="ident">class</span>(<span class="ident">BROWSER_NAME</span>, <span class="string">&quot;Promise&quot;</span>)
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+        <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;browser&quot;</span>, <span class="string">&quot;Promise&quot;</span>)
     }
 }
 
+<span class="attribute">#[<span class="ident">pyimpl</span>]</span>
 <span class="kw">impl</span> <span class="ident">PyPromise</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_obj</span>(<span class="ident">promise_type</span>: <span class="ident">PyObjectRef</span>, <span class="ident">value</span>: <span class="ident">Promise</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-        <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">PyPromise</span> { <span class="ident">value</span> }, <span class="ident">promise_type</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">Promise</span>) <span class="op">-&gt;</span> <span class="ident">PyPromise</span> {
+        <span class="ident">PyPromise</span> { <span class="ident">value</span> }
     }
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_promise_value</span>(<span class="ident">obj</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">Promise</span> {
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">promise</span>) <span class="op">=</span> <span class="ident">obj</span>.<span class="ident">payload</span>::<span class="op">&lt;</span><span class="ident">PyPromise</span><span class="op">&gt;</span>() {
-        <span class="kw">return</span> <span class="ident">promise</span>.<span class="ident">value</span>.<span class="ident">clone</span>();
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_future</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">future</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">PyPromise</span>
+    <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">JsValue</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">JsValue</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    {
+        <span class="ident">PyPromise</span>::<span class="ident">new</span>(<span class="ident">future_to_promise</span>(<span class="ident">future</span>))
     }
-    <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Inner error getting promise&quot;</span>)
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">import_promise_type</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="kw">match</span> <span class="ident">import_module</span>(<span class="ident">vm</span>, <span class="ident">PathBuf</span>::<span class="ident">default</span>(), <span class="ident">BROWSER_NAME</span>)<span class="question-mark">?</span>.<span class="ident">get_attr</span>(<span class="string">&quot;Promise&quot;</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">promise</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">promise</span>),
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;No Promise&quot;</span>.<span class="ident">to_string</span>())),
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Promise</span> {
+        <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>()
     }
-}
 
-<span class="kw">fn</span> <span class="ident">promise_then</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="kw">let</span> <span class="ident">promise_type</span> <span class="op">=</span> <span class="ident">import_promise_type</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
-    <span class="macro">arg_check</span><span class="macro">!</span>(
-        <span class="ident">vm</span>,
-        <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [
-            (<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">promise_type</span>.<span class="ident">clone</span>())),
-            (<span class="ident">on_fulfill</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">function_type</span>()))
-        ],
-        <span class="ident">optional</span> <span class="op">=</span> [(<span class="ident">on_reject</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">function_type</span>()))]
-    );
+    <span class="attribute">#[<span class="ident">pymethod</span>]</span>
+    <span class="kw">fn</span> <span class="ident">then</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">on_fulfill</span>: <span class="ident">PyCallable</span>,
+        <span class="ident">on_reject</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyCallable</span><span class="op">&gt;</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">PyPromiseRef</span> {
+        <span class="kw">let</span> <span class="ident">weak_vm</span> <span class="op">=</span> <span class="ident">weak_vm</span>(<span class="ident">vm</span>);
 
-    <span class="kw">let</span> <span class="ident">on_fulfill</span> <span class="op">=</span> <span class="ident">on_fulfill</span>.<span class="ident">clone</span>();
-    <span class="kw">let</span> <span class="ident">on_reject</span> <span class="op">=</span> <span class="ident">on_reject</span>.<span class="ident">cloned</span>();
-
-    <span class="kw">let</span> <span class="ident">acc_vm</span> <span class="op">=</span> <span class="ident">AccessibleVM</span>::<span class="ident">from</span>(<span class="ident">vm</span>);
-
-    <span class="kw">let</span> <span class="ident">promise</span> <span class="op">=</span> <span class="ident">get_promise_value</span>(<span class="ident">zelf</span>);
-
-    <span class="kw">let</span> <span class="ident">ret_future</span> <span class="op">=</span> <span class="ident">JsFuture</span>::<span class="ident">from</span>(<span class="ident">promise</span>).<span class="ident">then</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">res</span><span class="op">|</span> {
-        <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">acc_vm</span>
-            .<span class="ident">upgrade</span>()
-            .<span class="ident">expect</span>(<span class="string">&quot;that the vm is valid when the promise resolves&quot;</span>);
-        <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">stored_vm</span>.<span class="ident">vm</span>;
-        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">res</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">val</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">val</span>);
-                <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">on_fulfill</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">val</span>], <span class="macro">vec</span><span class="macro">!</span>[]))
-            }
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">on_reject</span>) <span class="op">=</span> <span class="ident">on_reject</span> {
-                    <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>);
-                    <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">on_reject</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">err</span>], <span class="macro">vec</span><span class="macro">!</span>[]))
-                } <span class="kw">else</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>);
-                }
-            }
-        };
-        <span class="ident">convert</span>::<span class="ident">pyresult_to_jsresult</span>(<span class="ident">vm</span>, <span class="ident">ret</span>)
-    });
-
-    <span class="kw">let</span> <span class="ident">ret_promise</span> <span class="op">=</span> <span class="ident">future_to_promise</span>(<span class="ident">ret_future</span>);
-
-    <span class="prelude-val">Ok</span>(<span class="ident">PyPromise</span>::<span class="ident">new_obj</span>(<span class="ident">promise_type</span>, <span class="ident">ret_promise</span>))
-}
-
-<span class="kw">fn</span> <span class="ident">promise_catch</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="kw">let</span> <span class="ident">promise_type</span> <span class="op">=</span> <span class="ident">import_promise_type</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
-    <span class="macro">arg_check</span><span class="macro">!</span>(
-        <span class="ident">vm</span>,
-        <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [
-            (<span class="ident">zelf</span>, <span class="prelude-val">Some</span>(<span class="ident">promise_type</span>.<span class="ident">clone</span>())),
-            (<span class="ident">on_reject</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">function_type</span>()))
-        ]
-    );
-
-    <span class="kw">let</span> <span class="ident">on_reject</span> <span class="op">=</span> <span class="ident">on_reject</span>.<span class="ident">clone</span>();
-
-    <span class="kw">let</span> <span class="ident">acc_vm</span> <span class="op">=</span> <span class="ident">AccessibleVM</span>::<span class="ident">from</span>(<span class="ident">vm</span>);
-
-    <span class="kw">let</span> <span class="ident">promise</span> <span class="op">=</span> <span class="ident">get_promise_value</span>(<span class="ident">zelf</span>);
-
-    <span class="kw">let</span> <span class="ident">ret_future</span> <span class="op">=</span> <span class="ident">JsFuture</span>::<span class="ident">from</span>(<span class="ident">promise</span>).<span class="ident">then</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">res</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">res</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">val</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">val</span>),
-        <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="ident">acc_vm</span>
+        <span class="kw">let</span> <span class="ident">ret_future</span> <span class="op">=</span> <span class="ident">JsFuture</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>()).<span class="ident">then</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">res</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">weak_vm</span>
                 .<span class="ident">upgrade</span>()
                 .<span class="ident">expect</span>(<span class="string">&quot;that the vm is valid when the promise resolves&quot;</span>);
             <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">stored_vm</span>.<span class="ident">vm</span>;
-            <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>);
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">on_reject</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">err</span>], <span class="macro">vec</span><span class="macro">!</span>[]));
-            <span class="ident">convert</span>::<span class="ident">pyresult_to_jsresult</span>(<span class="ident">vm</span>, <span class="ident">res</span>)
+            <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">res</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">val</span>) <span class="op">=&gt;</span> {
+                    <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">val</span>.<span class="ident">is_null</span>() {
+                        <span class="macro">vec</span><span class="macro">!</span>[]
+                    } <span class="kw">else</span> {
+                        <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">val</span>)]
+                    };
+                    <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">on_fulfill</span>.<span class="ident">into_object</span>(), <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="ident">args</span>, <span class="macro">vec</span><span class="macro">!</span>[]))
+                }
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="ident">on_reject</span>) <span class="op">=</span> <span class="ident">on_reject</span> {
+                        <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>);
+                        <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">on_reject</span>.<span class="ident">into_object</span>(), <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">err</span>], <span class="macro">vec</span><span class="macro">!</span>[]))
+                    } <span class="kw">else</span> {
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>);
+                    }
+                }
+            };
+            <span class="ident">convert</span>::<span class="ident">pyresult_to_jsresult</span>(<span class="ident">vm</span>, <span class="ident">ret</span>)
+        });
+
+        <span class="ident">PyPromise</span>::<span class="ident">from_future</span>(<span class="ident">ret_future</span>).<span class="ident">into_ref</span>(<span class="ident">vm</span>)
+    }
+
+    <span class="attribute">#[<span class="ident">pymethod</span>]</span>
+    <span class="kw">fn</span> <span class="ident">catch</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">on_reject</span>: <span class="ident">PyCallable</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyPromiseRef</span> {
+        <span class="kw">let</span> <span class="ident">weak_vm</span> <span class="op">=</span> <span class="ident">weak_vm</span>(<span class="ident">vm</span>);
+
+        <span class="kw">let</span> <span class="ident">ret_future</span> <span class="op">=</span> <span class="ident">JsFuture</span>::<span class="ident">from</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>()).<span class="ident">then</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">res</span><span class="op">|</span> {
+            <span class="ident">res</span>.<span class="ident">or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="ident">weak_vm</span>
+                    .<span class="ident">upgrade</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;that the vm is valid when the promise resolves&quot;</span>);
+                <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">stored_vm</span>.<span class="ident">vm</span>;
+                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>);
+                <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">on_reject</span>.<span class="ident">into_object</span>(), <span class="ident">PyFuncArgs</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">err</span>], <span class="macro">vec</span><span class="macro">!</span>[]));
+                <span class="ident">convert</span>::<span class="ident">pyresult_to_jsresult</span>(<span class="ident">vm</span>, <span class="ident">res</span>)
+            })
+        });
+
+        <span class="ident">PyPromise</span>::<span class="ident">from_future</span>(<span class="ident">ret_future</span>).<span class="ident">into_ref</span>(<span class="ident">vm</span>)
+    }
+}
+
+<span class="attribute">#[<span class="ident">pyclass</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Document</span> {
+    <span class="ident">doc</span>: <span class="ident">web_sys</span>::<span class="ident">Document</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">Document</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+        <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;browser&quot;</span>, <span class="string">&quot;Document&quot;</span>)
+    }
+}
+
+<span class="attribute">#[<span class="ident">pyimpl</span>]</span>
+<span class="kw">impl</span> <span class="ident">Document</span> {
+    <span class="attribute">#[<span class="ident">pymethod</span>]</span>
+    <span class="kw">fn</span> <span class="ident">query</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">query</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">let</span> <span class="ident">elem</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">doc</span>
+            .<span class="ident">query_selector</span>(<span class="kw-2">&amp;</span><span class="ident">query</span>.<span class="ident">value</span>)
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>, <span class="ident">err</span>))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">elem</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">elem</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">elem</span>) <span class="op">=&gt;</span> <span class="ident">Element</span> { <span class="ident">elem</span> }.<span class="ident">into_ref</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>(),
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">get_none</span>(),
+        };
+        <span class="prelude-val">Ok</span>(<span class="ident">elem</span>)
+    }
+}
+
+<span class="attribute">#[<span class="ident">pyclass</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Element</span> {
+    <span class="ident">elem</span>: <span class="ident">web_sys</span>::<span class="ident">Element</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">Element</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+        <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;browser&quot;</span>, <span class="string">&quot;Element&quot;</span>)
+    }
+}
+
+<span class="attribute">#[<span class="ident">pyimpl</span>]</span>
+<span class="kw">impl</span> <span class="ident">Element</span> {
+    <span class="attribute">#[<span class="ident">pymethod</span>]</span>
+    <span class="kw">fn</span> <span class="ident">get_attr</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">attr</span>: <span class="ident">PyStringRef</span>,
+        <span class="ident">default</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">elem</span>.<span class="ident">get_attribute</span>(<span class="kw-2">&amp;</span><span class="ident">attr</span>.<span class="ident">value</span>) {
+            <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">s</span>),
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">default</span>.<span class="ident">into_option</span>().<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">vm</span>.<span class="ident">get_none</span>()),
         }
-    });
+    }
 
-    <span class="kw">let</span> <span class="ident">ret_promise</span> <span class="op">=</span> <span class="ident">future_to_promise</span>(<span class="ident">ret_future</span>);
-
-    <span class="prelude-val">Ok</span>(<span class="ident">PyPromise</span>::<span class="ident">new_obj</span>(<span class="ident">promise_type</span>, <span class="ident">ret_promise</span>))
+    <span class="attribute">#[<span class="ident">pymethod</span>]</span>
+    <span class="kw">fn</span> <span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attr</span>: <span class="ident">PyStringRef</span>, <span class="ident">value</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">elem</span>
+            .<span class="ident">set_attribute</span>(<span class="kw-2">&amp;</span><span class="ident">attr</span>.<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>.<span class="ident">value</span>)
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>))
+    }
 }
 
-<span class="kw">fn</span> <span class="ident">browser_alert</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">message</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]);
+<span class="kw">fn</span> <span class="ident">browser_load_module</span>(<span class="ident">module</span>: <span class="ident">PyStringRef</span>, <span class="ident">path</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">let</span> <span class="ident">weak_vm</span> <span class="op">=</span> <span class="ident">weak_vm</span>(<span class="ident">vm</span>);
 
-    <span class="ident">window</span>()
-        .<span class="ident">alert_with_message</span>(<span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">message</span>))
-        .<span class="ident">expect</span>(<span class="string">&quot;alert() not to fail&quot;</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">web_sys</span>::<span class="ident">RequestInit</span>::<span class="ident">new</span>();
+    <span class="ident">opts</span>.<span class="ident">method</span>(<span class="string">&quot;GET&quot;</span>);
 
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
+    <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">web_sys</span>::<span class="ident">Request</span>::<span class="ident">new_with_str_and_init</span>(<span class="ident">path</span>.<span class="ident">as_str</span>(), <span class="kw-2">&amp;</span><span class="ident">opts</span>)
+        .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_py_typeerror</span>(<span class="ident">vm</span>, <span class="ident">err</span>))<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">window</span> <span class="op">=</span> <span class="ident">window</span>();
+    <span class="kw">let</span> <span class="ident">request_prom</span> <span class="op">=</span> <span class="ident">window</span>.<span class="ident">fetch_with_request</span>(<span class="kw-2">&amp;</span><span class="ident">request</span>);
+
+    <span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">JsFuture</span>::<span class="ident">from</span>(<span class="ident">request_prom</span>)
+        .<span class="ident">and_then</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">val</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">val</span>
+                .<span class="ident">dyn_into</span>::<span class="op">&lt;</span><span class="ident">web_sys</span>::<span class="ident">Response</span><span class="op">&gt;</span>()
+                .<span class="ident">expect</span>(<span class="string">&quot;val to be of type Response&quot;</span>);
+            <span class="ident">response</span>.<span class="ident">text</span>()
+        })
+        .<span class="ident">and_then</span>(<span class="ident">JsFuture</span>::<span class="ident">from</span>)
+        .<span class="ident">and_then</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">text</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">stored_vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">weak_vm</span>
+                .<span class="ident">upgrade</span>()
+                .<span class="ident">expect</span>(<span class="string">&quot;that the vm is valid when the promise resolves&quot;</span>);
+            <span class="kw">let</span> <span class="ident">vm</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">stored_vm</span>.<span class="ident">vm</span>;
+            <span class="kw">let</span> <span class="ident">resp_text</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">as_string</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">import_file</span>(<span class="ident">vm</span>, <span class="ident">module</span>.<span class="ident">as_str</span>(), <span class="string">&quot;WEB&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">resp_text</span>);
+            <span class="kw">match</span> <span class="ident">res</span> {
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">JsValue</span>::<span class="ident">null</span>()),
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">convert</span>::<span class="ident">py_err_to_js_err</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">err</span>)),
+            }
+        });
+
+    <span class="prelude-val">Ok</span>(<span class="ident">PyPromise</span>::<span class="ident">from_future</span>(<span class="ident">future</span>).<span class="ident">into_ref</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">browser_confirm</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">message</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]);
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>;
 
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">window</span>()
-        .<span class="ident">confirm_with_message</span>(<span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">message</span>))
-        .<span class="ident">expect</span>(<span class="string">&quot;confirm() not to fail&quot;</span>);
+    <span class="kw">let</span> <span class="ident">promise</span> <span class="op">=</span> <span class="ident">PyPromise</span>::<span class="ident">make_class</span>(<span class="ident">ctx</span>);
 
-    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="ident">result</span>))
-}
+    <span class="kw">let</span> <span class="ident">document_class</span> <span class="op">=</span> <span class="ident">Document</span>::<span class="ident">make_class</span>(<span class="ident">ctx</span>);
 
-<span class="kw">fn</span> <span class="ident">browser_prompt</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(
-        <span class="ident">vm</span>,
-        <span class="ident">args</span>,
-        <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">message</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))],
-        <span class="ident">optional</span> <span class="op">=</span> [(<span class="ident">default</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]
+    <span class="kw">let</span> <span class="ident">document</span> <span class="op">=</span> <span class="ident">PyObject</span>::<span class="ident">new</span>(
+        <span class="ident">Document</span> {
+            <span class="ident">doc</span>: <span class="ident">window</span>().<span class="ident">document</span>().<span class="ident">expect</span>(<span class="string">&quot;Document missing from window&quot;</span>),
+        },
+        <span class="ident">document_class</span>.<span class="ident">clone</span>(),
+        <span class="prelude-val">None</span>,
     );
 
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">default</span>) <span class="op">=</span> <span class="ident">default</span> {
-        <span class="ident">window</span>().<span class="ident">prompt_with_message_and_default</span>(
-            <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">message</span>),
-            <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">default</span>),
-        )
-    } <span class="kw">else</span> {
-        <span class="ident">window</span>().<span class="ident">prompt_with_message</span>(<span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">message</span>))
-    };
+    <span class="kw">let</span> <span class="ident">element</span> <span class="op">=</span> <span class="ident">Element</span>::<span class="ident">make_class</span>(<span class="ident">ctx</span>);
 
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">result</span>.<span class="ident">expect</span>(<span class="string">&quot;prompt() not to fail&quot;</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">result</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">result</span>),
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">get_none</span>(),
-    };
-
-    <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
-}
-
-<span class="kw">const</span> <span class="ident">BROWSER_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;browser&quot;</span>;
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="ident">promise</span> <span class="op">=</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;Promise&quot;</span>, <span class="ident">ctx</span>.<span class="ident">object</span>(), {
-        <span class="string">&quot;then&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">promise_then</span>),
-        <span class="string">&quot;catch&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">promise_catch</span>)
-    });
-
-    <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="ident">BROWSER_NAME</span>, {
+    <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="string">&quot;browser&quot;</span>, {
         <span class="string">&quot;fetch&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_fetch</span>),
         <span class="string">&quot;request_animation_frame&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_request_animation_frame</span>),
         <span class="string">&quot;cancel_animation_frame&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_cancel_animation_frame</span>),
         <span class="string">&quot;Promise&quot;</span> <span class="op">=&gt;</span> <span class="ident">promise</span>,
-        <span class="string">&quot;alert&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_alert</span>),
-        <span class="string">&quot;confirm&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_confirm</span>),
-        <span class="string">&quot;prompt&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_prompt</span>),
+        <span class="string">&quot;Document&quot;</span> <span class="op">=&gt;</span> <span class="ident">document_class</span>,
+        <span class="string">&quot;document&quot;</span> <span class="op">=&gt;</span> <span class="ident">document</span>,
+        <span class="string">&quot;Element&quot;</span> <span class="op">=&gt;</span> <span class="ident">element</span>,
+        <span class="string">&quot;load_module&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">browser_load_module</span>),
     })
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">setup_browser_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
     <span class="ident">vm</span>.<span class="ident">stdlib_inits</span>
         .<span class="ident">borrow_mut</span>()
-        .<span class="ident">insert</span>(<span class="ident">BROWSER_NAME</span>.<span class="ident">to_string</span>(), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">make_module</span>));
+        .<span class="ident">insert</span>(<span class="string">&quot;_browser&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">make_module</span>));
+    <span class="ident">vm</span>.<span class="ident">frozen</span>.<span class="ident">borrow_mut</span>().<span class="ident">insert</span>(
+        <span class="string">&quot;browser&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="macro">py_compile_bytecode</span><span class="macro">!</span>(<span class="ident">file</span> <span class="op">=</span> <span class="string">&quot;src/browser.py&quot;</span>),
+    );
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_wasm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

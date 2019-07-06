@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["FormatAlign",""],["FormatGrouping",""],["FormatParseError",""],["FormatPart",""],["FormatSign",""],["FormatType",""]],"struct":[["FormatSpec",""],["FormatString",""]]});
+initSidebarItems({"enum":[["FormatAlign",""],["FormatGrouping",""],["FormatParseError",""],["FormatPart",""],["FormatPreconversor",""],["FormatSign",""],["FormatType",""]],"fn":[["get_num_digits",""]],"struct":[["FormatSpec",""],["FormatString",""]]});

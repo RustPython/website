@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PySlice",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PySlice",""]],"type":[["PySliceRef",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""]]});
+initSidebarItems({"fn":[["init",""]]});

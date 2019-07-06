@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["init",""]],"struct":[["PyNamespace","A simple attribute-based namespace."]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["eval_py","Evaluate Python code"],["setup_console_error",""]],"mod":[["browser_module",""],["convert",""],["vm_class",""],["wasm_builtins","Builtin function specific to WASM build."]]});
+initSidebarItems({"fn":[["eval_py","Evaluate Python code"],["setup_console_error",""]],"mod":[["browser_module",""],["convert",""],["js_module",""],["vm_class",""],["wasm_builtins","Builtin function specific to WASM build."]]});

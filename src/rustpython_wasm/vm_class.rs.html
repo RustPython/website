@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `wasm/lib/src/vm_class.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>vm_class.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `wasm/lib/src/vm_class.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>vm_class.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_wasm/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -326,27 +326,6 @@
 <span id="326">326</span>
 <span id="327">327</span>
 <span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -355,40 +334,51 @@
 <span class="kw">use</span> <span class="ident">js_sys</span>::{<span class="ident">Object</span>, <span class="ident">Reflect</span>, <span class="ident">SyntaxError</span>, <span class="ident">TypeError</span>};
 <span class="kw">use</span> <span class="ident">wasm_bindgen</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">compile</span>;
+<span class="kw">use</span> <span class="ident">rustpython_compiler</span>::{<span class="ident">compile</span>, <span class="ident">error</span>::<span class="ident">CompileErrorType</span>};
 <span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">frame</span>::{<span class="ident">NameProtocol</span>, <span class="ident">Scope</span>};
 <span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">import</span>;
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{<span class="ident">PyObject</span>, <span class="ident">PyObjectPayload</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>};
 <span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">browser_module</span>::<span class="ident">setup_browser_module</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">convert</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">js_module</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">wasm_builtins</span>;
-
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HeldRcInner</span> {}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">HeldRcInner</span> <span class="kw">for</span> <span class="ident">T</span> {}
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">StoredVirtualMachine</span> {
     <span class="kw">pub</span> <span class="ident">vm</span>: <span class="ident">VirtualMachine</span>,
     <span class="kw">pub</span> <span class="ident">scope</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Scope</span><span class="op">&gt;</span>,
     <span class="doccomment">/// you can put a Rc in here, keep it as a Weak, and it&#39;ll be held only for</span>
     <span class="doccomment">/// as long as the StoredVM is alive</span>
-    <span class="ident">held_rcs</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">HeldRcInner</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">held_objects</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">StoredVirtualMachine</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">id</span>: <span class="ident">String</span>, <span class="ident">inject_browser_module</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">StoredVirtualMachine</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vm</span> <span class="op">=</span> <span class="ident">VirtualMachine</span>::<span class="ident">new</span>();
-        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_scope</span>();
+        <span class="ident">vm</span>.<span class="ident">wasm_id</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>);
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_scope_with_builtins</span>();
+
+        <span class="ident">js_module</span>::<span class="ident">setup_js_module</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>);
         <span class="kw">if</span> <span class="ident">inject_browser_module</span> {
+            <span class="ident">vm</span>.<span class="ident">stdlib_inits</span>.<span class="ident">borrow_mut</span>().<span class="ident">insert</span>(
+                <span class="string">&quot;_window&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="ident">Box</span>::<span class="ident">new</span>(<span class="op">|</span><span class="ident">vm</span><span class="op">|</span> {
+                    <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="string">&quot;_window&quot;</span>, {
+                        <span class="string">&quot;window&quot;</span> <span class="op">=&gt;</span> <span class="ident">js_module</span>::<span class="ident">PyJsValue</span>::<span class="ident">new</span>(<span class="ident">wasm_builtins</span>::<span class="ident">window</span>()).<span class="ident">into_ref</span>(<span class="ident">vm</span>),
+                    })
+                }),
+            );
             <span class="ident">setup_browser_module</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>);
         }
-        <span class="ident">vm</span>.<span class="ident">wasm_id</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>);
+
+        <span class="ident">import</span>::<span class="ident">init_importlib</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="bool-val">false</span>);
+
         <span class="ident">StoredVirtualMachine</span> {
             <span class="ident">vm</span>,
             <span class="ident">scope</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">scope</span>),
-            <span class="ident">held_rcs</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Vec</span>::<span class="ident">new</span>()),
+            <span class="ident">held_objects</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Vec</span>::<span class="ident">new</span>()),
         }
     }
 }
@@ -397,9 +387,26 @@
 <span class="comment">// probably gets compiled down to a normal-ish static varible, like Atomic* types do:</span>
 <span class="comment">// https://rustwasm.github.io/2018/10/24/multithreading-rust-and-wasm.html#atomic-instructions</span>
 <span class="macro">thread_local</span><span class="macro">!</span> {
-    <span class="kw">static</span> <span class="ident">STORED_VMS</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">StoredVirtualMachine</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
-        <span class="ident">RefCell</span>::<span class="ident">default</span>();
-    <span class="kw">static</span> <span class="ident">ACTIVE_VMS</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">VirtualMachine</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">RefCell</span>::<span class="ident">default</span>();
+    <span class="kw">static</span> <span class="ident">STORED_VMS</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">StoredVirtualMachine</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RefCell</span>::<span class="ident">default</span>();
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_vm_id</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+    <span class="ident">vm</span>.<span class="ident">wasm_id</span>
+        .<span class="ident">as_ref</span>()
+        .<span class="ident">expect</span>(<span class="string">&quot;VirtualMachine inside of WASM crate should have wasm_id set&quot;</span>)
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stored_vm_from_wasm</span>(<span class="ident">wasm_vm</span>: <span class="kw-2">&amp;</span><span class="ident">WASMVirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">StoredVirtualMachine</span><span class="op">&gt;</span> {
+    <span class="ident">STORED_VMS</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> {
+        <span class="ident">cell</span>.<span class="ident">borrow</span>()
+            .<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">wasm_vm</span>.<span class="ident">id</span>)
+            .<span class="ident">expect</span>(<span class="string">&quot;VirtualMachine is not valid&quot;</span>)
+            .<span class="ident">clone</span>()
+    })
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">weak_vm</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">StoredVirtualMachine</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">get_vm_id</span>(<span class="ident">vm</span>);
+    <span class="ident">STORED_VMS</span>
+        .<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="ident">cell</span>.<span class="ident">borrow</span>().<span class="ident">get</span>(<span class="ident">id</span>).<span class="ident">expect</span>(<span class="string">&quot;VirtualMachine is not valid&quot;</span>)))
 }
 
 <span class="attribute">#[<span class="ident">wasm_bindgen</span>(<span class="ident">js_name</span> <span class="op">=</span> <span class="ident">vmStore</span>)]</span>
@@ -459,44 +466,6 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">AccessibleVM</span> {
-    <span class="ident">weak</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">StoredVirtualMachine</span><span class="op">&gt;</span>,
-    <span class="ident">id</span>: <span class="ident">String</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">AccessibleVM</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_id</span>(<span class="ident">id</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="ident">AccessibleVM</span> {
-        <span class="kw">let</span> <span class="ident">weak</span> <span class="op">=</span> <span class="ident">STORED_VMS</span>
-            .<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="ident">cell</span>.<span class="ident">borrow</span>().<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>).<span class="ident">expect</span>(<span class="string">&quot;WASM VM to be valid&quot;</span>)));
-        <span class="ident">AccessibleVM</span> { <span class="ident">weak</span>, <span class="ident">id</span> }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">upgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">StoredVirtualMachine</span><span class="op">&gt;&gt;</span> {
-        <span class="self">self</span>.<span class="ident">weak</span>.<span class="ident">upgrade</span>()
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">WASMVirtualMachine</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">AccessibleVM</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">vm</span>: <span class="ident">WASMVirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">AccessibleVM</span> {
-        <span class="ident">AccessibleVM</span>::<span class="ident">from_id</span>(<span class="ident">vm</span>.<span class="ident">id</span>)
-    }
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WASMVirtualMachine</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">AccessibleVM</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">WASMVirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">AccessibleVM</span> {
-        <span class="ident">AccessibleVM</span>::<span class="ident">from_id</span>(<span class="ident">vm</span>.<span class="ident">id</span>.<span class="ident">clone</span>())
-    }
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">AccessibleVM</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">AccessibleVM</span> {
-        <span class="ident">AccessibleVM</span>::<span class="ident">from_id</span>(
-            <span class="ident">vm</span>.<span class="ident">wasm_id</span>
-                .<span class="ident">clone</span>()
-                .<span class="ident">expect</span>(<span class="string">&quot;VM passed to from::&lt;VirtualMachine&gt;() to have wasm_id be Some()&quot;</span>),
-        )
-    }
-}
-
 <span class="attribute">#[<span class="ident">wasm_bindgen</span>(<span class="ident">js_name</span> <span class="op">=</span> <span class="ident">VirtualMachine</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WASMVirtualMachine</span> {
@@ -528,13 +497,13 @@
         <span class="ident">STORED_VMS</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="ident">cell</span>.<span class="ident">borrow</span>().<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>))
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">push_held_rc</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">HeldRcInner</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">push_held_rc</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">rc</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">JsValue</span><span class="op">&gt;</span> {
+        <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">PyObject</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">PyObjectPayload</span><span class="op">&gt;&gt;</span>, <span class="ident">JsValue</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">stored_vm</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">weak</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">rc</span>);
-            <span class="ident">stored_vm</span>.<span class="ident">held_rcs</span>.<span class="ident">borrow_mut</span>().<span class="ident">push</span>(<span class="ident">rc</span>);
+            <span class="kw">let</span> <span class="ident">weak</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>);
+            <span class="ident">stored_vm</span>.<span class="ident">held_objects</span>.<span class="ident">borrow_mut</span>().<span class="ident">push</span>(<span class="ident">obj</span>);
             <span class="ident">weak</span>
         })
     }
@@ -574,15 +543,15 @@
             <span class="kw">fn</span> <span class="ident">error</span>() <span class="op">-&gt;</span> <span class="ident">JsValue</span> {
                 <span class="ident">TypeError</span>::<span class="ident">new</span>(<span class="string">&quot;Unknown stdout option, please pass a function or &#39;console&#39;&quot;</span>).<span class="ident">into</span>()
             }
-            <span class="kw">let</span> <span class="ident">print_fn</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&gt;</span> <span class="op">=</span>
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">stdout</span>.<span class="ident">as_string</span>() {
-                    <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">as_str</span>() {
-                        <span class="string">&quot;console&quot;</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">wasm_builtins</span>::<span class="ident">builtin_print_console</span>),
-                        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>()),
-                    }
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">stdout</span>.<span class="ident">is_function</span>() {
-                    <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">js_sys</span>::<span class="ident">Function</span>::<span class="ident">from</span>(<span class="ident">stdout</span>);
-                    <span class="ident">Box</span>::<span class="ident">new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span><span class="op">|</span> <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+            <span class="kw">let</span> <span class="ident">print_fn</span>: <span class="ident">PyObjectRef</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">stdout</span>.<span class="ident">as_string</span>() {
+                <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">as_str</span>() {
+                    <span class="string">&quot;console&quot;</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">wasm_builtins</span>::<span class="ident">builtin_print_console</span>),
+                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>()),
+                }
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">stdout</span>.<span class="ident">is_function</span>() {
+                <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">js_sys</span>::<span class="ident">Function</span>::<span class="ident">from</span>(<span class="ident">stdout</span>);
+                <span class="ident">vm</span>.<span class="ident">ctx</span>
+                    .<span class="ident">new_rustfunc</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span><span class="op">|</span> <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
                         <span class="ident">func</span>.<span class="ident">call1</span>(
                             <span class="kw-2">&amp;</span><span class="ident">JsValue</span>::<span class="ident">UNDEFINED</span>,
                             <span class="kw-2">&amp;</span><span class="ident">wasm_builtins</span>::<span class="ident">format_print_args</span>(<span class="ident">vm</span>, <span class="ident">args</span>)<span class="question-mark">?</span>.<span class="ident">into</span>(),
@@ -590,16 +559,15 @@
                         .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">convert</span>::<span class="ident">js_to_py</span>(<span class="ident">vm</span>, <span class="ident">err</span>))<span class="question-mark">?</span>;
                         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
                     })
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">stdout</span>.<span class="ident">is_undefined</span>() <span class="op">||</span> <span class="ident">stdout</span>.<span class="ident">is_null</span>() {
-                    <span class="kw">fn</span> <span class="ident">noop</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">_args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-                        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
-                    }
-                    <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">noop</span>)
-                } <span class="kw">else</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>());
-                };
-            <span class="kw">let</span> <span class="ident">rustfunc</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">print_fn</span>);
-            <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">builtins</span>, <span class="string">&quot;print&quot;</span>, <span class="ident">rustfunc</span>);
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">stdout</span>.<span class="ident">is_undefined</span>() <span class="op">||</span> <span class="ident">stdout</span>.<span class="ident">is_null</span>() {
+                <span class="kw">fn</span> <span class="ident">noop</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">_args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+                    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
+                }
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">noop</span>)
+            } <span class="kw">else</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>());
+            };
+            <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">builtins</span>, <span class="string">&quot;print&quot;</span>, <span class="ident">print_fn</span>).<span class="ident">unwrap</span>();
             <span class="prelude-val">Ok</span>(())
         })<span class="question-mark">?</span>
     }
@@ -616,12 +584,12 @@
 
             <span class="kw">let</span> <span class="ident">mod_name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">clone</span>();
 
-            <span class="kw">let</span> <span class="ident">stdlib_init_fn</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">py_mod</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_module</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">ctx</span>.<span class="ident">new_dict</span>());
+            <span class="kw">let</span> <span class="ident">stdlib_init_fn</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_module</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_dict</span>());
                 <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">module_items</span>.<span class="ident">clone</span>() {
-                    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">py_mod</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="ident">value</span>);
+                    <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>, <span class="ident">key</span>, <span class="ident">value</span>).<span class="ident">unwrap</span>();
                 }
-                <span class="ident">py_mod</span>
+                <span class="ident">module</span>
             };
 
             <span class="ident">vm</span>.<span class="ident">stdlib_inits</span>
@@ -639,40 +607,30 @@
                  <span class="kw-2">ref</span> <span class="ident">vm</span>, <span class="kw-2">ref</span> <span class="ident">scope</span>, ..
              }<span class="op">|</span> {
                 <span class="ident">source</span>.<span class="ident">push</span>(<span class="string">&#39;\n&#39;</span>);
-                <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span>
-                    <span class="ident">compile</span>::<span class="ident">compile</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">mode</span>, <span class="string">&quot;&lt;wasm&gt;&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">code_type</span>());
+                <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">compile</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">mode</span>, <span class="string">&quot;&lt;wasm&gt;&quot;</span>.<span class="ident">to_string</span>());
                 <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">code</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
                     <span class="kw">let</span> <span class="ident">js_err</span> <span class="op">=</span> <span class="ident">SyntaxError</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Error parsing Python code: {}&quot;</span>, <span class="ident">err</span>));
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">rustpython_vm</span>::<span class="ident">error</span>::<span class="ident">CompileError</span>::<span class="ident">Parse</span>(<span class="kw-2">ref</span> <span class="ident">parse_error</span>) <span class="op">=</span> <span class="ident">err</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">CompileErrorType</span>::<span class="ident">Parse</span>(<span class="kw-2">ref</span> <span class="ident">parse_error</span>) <span class="op">=</span> <span class="ident">err</span>.<span class="ident">error</span> {
                         <span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">error</span>::<span class="ident">ParseError</span>;
                         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ParseError</span>::<span class="ident">EOF</span>(<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">loc</span>))
                         <span class="op">|</span> <span class="ident">ParseError</span>::<span class="ident">ExtraToken</span>((<span class="kw-2">ref</span> <span class="ident">loc</span>, ..))
                         <span class="op">|</span> <span class="ident">ParseError</span>::<span class="ident">InvalidToken</span>(<span class="kw-2">ref</span> <span class="ident">loc</span>)
                         <span class="op">|</span> <span class="ident">ParseError</span>::<span class="ident">UnrecognizedToken</span>((<span class="kw-2">ref</span> <span class="ident">loc</span>, ..), <span class="kw">_</span>) <span class="op">=</span> <span class="ident">parse_error</span>
                         {
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Reflect</span>::<span class="ident">set</span>(
-                                <span class="kw-2">&amp;</span><span class="ident">js_err</span>,
-                                <span class="kw-2">&amp;</span><span class="string">&quot;row&quot;</span>.<span class="ident">into</span>(),
-                                <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">get_row</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>(),
-                            );
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Reflect</span>::<span class="ident">set</span>(
-                                <span class="kw-2">&amp;</span><span class="ident">js_err</span>,
-                                <span class="kw-2">&amp;</span><span class="string">&quot;col&quot;</span>.<span class="ident">into</span>(),
-                                <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">get_column</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>(),
-                            );
+                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+                                <span class="ident">Reflect</span>::<span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="ident">js_err</span>, <span class="kw-2">&amp;</span><span class="string">&quot;row&quot;</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">row</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>());
+                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+                                <span class="ident">Reflect</span>::<span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="ident">js_err</span>, <span class="kw-2">&amp;</span><span class="string">&quot;col&quot;</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">column</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>());
                         }
                         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ParseError</span>::<span class="ident">ExtraToken</span>((<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">loc</span>))
                         <span class="op">|</span> <span class="ident">ParseError</span>::<span class="ident">UnrecognizedToken</span>((<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">ref</span> <span class="ident">loc</span>), <span class="kw">_</span>) <span class="op">=</span> <span class="ident">parse_error</span>
                         {
-                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Reflect</span>::<span class="ident">set</span>(
-                                <span class="kw-2">&amp;</span><span class="ident">js_err</span>,
-                                <span class="kw-2">&amp;</span><span class="string">&quot;endrow&quot;</span>.<span class="ident">into</span>(),
-                                <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">get_row</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>(),
-                            );
+                            <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+                                <span class="ident">Reflect</span>::<span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="ident">js_err</span>, <span class="kw-2">&amp;</span><span class="string">&quot;endrow&quot;</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">row</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>());
                             <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Reflect</span>::<span class="ident">set</span>(
                                 <span class="kw-2">&amp;</span><span class="ident">js_err</span>,
                                 <span class="kw-2">&amp;</span><span class="string">&quot;endcol&quot;</span>.<span class="ident">into</span>(),
-                                <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">get_column</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>(),
+                                <span class="kw-2">&amp;</span>(<span class="ident">loc</span>.<span class="ident">column</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>(),
                             );
                         }
                     }

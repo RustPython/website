@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/frame.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>frame.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/frame.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>frame.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1236,34 +1236,173 @@
 <span id="1236">1236</span>
 <span id="1237">1237</span>
 <span id="1238">1238</span>
+<span id="1239">1239</span>
+<span id="1240">1240</span>
+<span id="1241">1241</span>
+<span id="1242">1242</span>
+<span id="1243">1243</span>
+<span id="1244">1244</span>
+<span id="1245">1245</span>
+<span id="1246">1246</span>
+<span id="1247">1247</span>
+<span id="1248">1248</span>
+<span id="1249">1249</span>
+<span id="1250">1250</span>
+<span id="1251">1251</span>
+<span id="1252">1252</span>
+<span id="1253">1253</span>
+<span id="1254">1254</span>
+<span id="1255">1255</span>
+<span id="1256">1256</span>
+<span id="1257">1257</span>
+<span id="1258">1258</span>
+<span id="1259">1259</span>
+<span id="1260">1260</span>
+<span id="1261">1261</span>
+<span id="1262">1262</span>
+<span id="1263">1263</span>
+<span id="1264">1264</span>
+<span id="1265">1265</span>
+<span id="1266">1266</span>
+<span id="1267">1267</span>
+<span id="1268">1268</span>
+<span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
+<span id="1338">1338</span>
+<span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
+<span id="1343">1343</span>
+<span id="1344">1344</span>
+<span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
+<span id="1350">1350</span>
+<span id="1351">1351</span>
+<span id="1352">1352</span>
+<span id="1353">1353</span>
+<span id="1354">1354</span>
+<span id="1355">1355</span>
+<span id="1356">1356</span>
+<span id="1357">1357</span>
+<span id="1358">1358</span>
+<span id="1359">1359</span>
+<span id="1360">1360</span>
+<span id="1361">1361</span>
+<span id="1362">1362</span>
+<span id="1363">1363</span>
+<span id="1364">1364</span>
+<span id="1365">1365</span>
+<span id="1366">1366</span>
+<span id="1367">1367</span>
+<span id="1368">1368</span>
+<span id="1369">1369</span>
+<span id="1370">1370</span>
+<span id="1371">1371</span>
+<span id="1372">1372</span>
+<span id="1373">1373</span>
+<span id="1374">1374</span>
+<span id="1375">1375</span>
+<span id="1376">1376</span>
+<span id="1377">1377</span>
+<span id="1378">1378</span>
+<span id="1379">1379</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
-<span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">BigInt</span>;
-
-<span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">ast</span>;
-
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">builtins</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">bytecode</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbuiltinfunc</span>::<span class="ident">PyBuiltinFunction</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objcode</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>::<span class="ident">PyDict</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objint</span>::<span class="ident">PyInt</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objcode</span>::<span class="ident">PyCodeRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objdict</span>::{<span class="ident">PyDict</span>, <span class="ident">PyDictRef</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objiter</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objlist</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objslice</span>::<span class="ident">PySlice</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>::<span class="ident">PyString</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtuple</span>::<span class="ident">PyTuple</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>::<span class="ident">PyClassRef</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
-    <span class="ident">DictProtocol</span>, <span class="ident">IdProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>, <span class="ident">TryFromObject</span>,
+    <span class="ident">IdProtocol</span>, <span class="ident">ItemProtocol</span>, <span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>, <span class="ident">TryFromObject</span>,
     <span class="ident">TypeProtocol</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span class="kw">use</span> <span class="ident">indexmap</span>::<span class="ident">IndexMap</span>;
+<span class="kw">use</span> <span class="ident">itertools</span>::<span class="ident">Itertools</span>;
 
 <span class="comment">/*
  * So a scope is a linked list of scopes.
@@ -1318,8 +1457,8 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Scope</span> {
-    <span class="ident">locals</span>: <span class="ident">RcList</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">globals</span>: <span class="ident">PyObjectRef</span>,
+    <span class="ident">locals</span>: <span class="ident">RcList</span><span class="op">&lt;</span><span class="ident">PyDictRef</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">globals</span>: <span class="ident">PyDictRef</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Scope</span> {
@@ -1330,7 +1469,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Scope</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">locals</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>, <span class="ident">globals</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">locals</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyDictRef</span><span class="op">&gt;</span>, <span class="ident">globals</span>: <span class="ident">PyDictRef</span>) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
         <span class="kw">let</span> <span class="ident">locals</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">locals</span> {
             <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=&gt;</span> <span class="ident">RcList</span>::<span class="ident">new</span>().<span class="ident">insert</span>(<span class="ident">dict</span>),
             <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">RcList</span>::<span class="ident">new</span>(),
@@ -1338,66 +1477,100 @@
         <span class="ident">Scope</span> { <span class="ident">locals</span>, <span class="ident">globals</span> }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_locals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_builtins</span>(
+        <span class="ident">locals</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyDictRef</span><span class="op">&gt;</span>,
+        <span class="ident">globals</span>: <span class="ident">PyDictRef</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">globals</span>.<span class="ident">contains_key</span>(<span class="string">&quot;__builtins__&quot;</span>, <span class="ident">vm</span>) {
+            <span class="ident">globals</span>
+                .<span class="ident">clone</span>()
+                .<span class="ident">set_item</span>(<span class="string">&quot;__builtins__&quot;</span>, <span class="ident">vm</span>.<span class="ident">builtins</span>.<span class="ident">clone</span>(), <span class="ident">vm</span>)
+                .<span class="ident">unwrap</span>();
+        }
+        <span class="ident">Scope</span>::<span class="ident">new</span>(<span class="ident">locals</span>, <span class="ident">globals</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_locals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyDictRef</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">iter</span>().<span class="ident">next</span>() {
             <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=&gt;</span> <span class="ident">dict</span>.<span class="ident">clone</span>(),
             <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">clone</span>(),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_only_locals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_only_locals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyDictRef</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">iter</span>().<span class="ident">next</span>().<span class="ident">cloned</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">child_scope_with_locals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">locals</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_child_scope_with_locals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">locals</span>: <span class="ident">PyDictRef</span>) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
         <span class="ident">Scope</span> {
             <span class="ident">locals</span>: <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">clone</span>().<span class="ident">insert</span>(<span class="ident">locals</span>),
             <span class="ident">globals</span>: <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">clone</span>(),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">child_scope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
-        <span class="self">self</span>.<span class="ident">child_scope_with_locals</span>(<span class="ident">ctx</span>.<span class="ident">new_dict</span>())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_child_scope</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">Scope</span> {
+        <span class="self">self</span>.<span class="ident">new_child_scope_with_locals</span>(<span class="ident">ctx</span>.<span class="ident">new_dict</span>())
     }
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NameProtocol</span> {
     <span class="kw">fn</span> <span class="ident">load_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>;
     <span class="kw">fn</span> <span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>);
-    <span class="kw">fn</span> <span class="ident">delete_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>);
+    <span class="kw">fn</span> <span class="ident">delete_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>;
     <span class="kw">fn</span> <span class="ident">load_cell</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">store_cell</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>);
+    <span class="kw">fn</span> <span class="ident">load_global</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">store_global</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">NameProtocol</span> <span class="kw">for</span> <span class="ident">Scope</span> {
     <span class="kw">fn</span> <span class="ident">load_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">dict</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">iter</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">name</span>) {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">dict</span>.<span class="ident">get_item_option</span>(<span class="ident">name</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>);
             }
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">get_item</span>(<span class="ident">name</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">get_item_option</span>(<span class="ident">name</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>() {
             <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>);
         }
 
-        <span class="ident">vm</span>.<span class="ident">builtins</span>.<span class="ident">get_item</span>(<span class="ident">name</span>)
+        <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">vm</span>.<span class="ident">builtins</span>.<span class="ident">clone</span>(), <span class="ident">name</span>).<span class="ident">ok</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">load_cell</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">load_cell</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">dict</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">locals</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">dict</span>.<span class="ident">get_item</span>(<span class="ident">name</span>) {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">dict</span>.<span class="ident">get_item_option</span>(<span class="ident">name</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>);
             }
         }
         <span class="prelude-val">None</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>) {
-        <span class="self">self</span>.<span class="ident">get_locals</span>().<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>, <span class="ident">key</span>, <span class="ident">value</span>)
+    <span class="kw">fn</span> <span class="ident">store_cell</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>) {
+        <span class="self">self</span>.<span class="ident">locals</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">nth</span>(<span class="number">1</span>)
+            .<span class="ident">expect</span>(<span class="string">&quot;no outer scope for non-local&quot;</span>)
+            .<span class="ident">set_item</span>(<span class="ident">name</span>, <span class="ident">value</span>, <span class="ident">vm</span>)
+            .<span class="ident">unwrap</span>();
     }
 
-    <span class="kw">fn</span> <span class="ident">delete_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-        <span class="self">self</span>.<span class="ident">get_locals</span>().<span class="ident">del_item</span>(<span class="ident">key</span>)
+    <span class="kw">fn</span> <span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>) {
+        <span class="self">self</span>.<span class="ident">get_locals</span>().<span class="ident">set_item</span>(<span class="ident">key</span>, <span class="ident">value</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>();
+    }
+
+    <span class="kw">fn</span> <span class="ident">delete_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+        <span class="self">self</span>.<span class="ident">get_locals</span>().<span class="ident">del_item</span>(<span class="ident">key</span>, <span class="ident">vm</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">load_global</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">get_item_option</span>(<span class="ident">name</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>()
+    }
+
+    <span class="kw">fn</span> <span class="ident">store_global</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>) {
+        <span class="self">self</span>.<span class="ident">globals</span>.<span class="ident">set_item</span>(<span class="ident">name</span>, <span class="ident">value</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>();
     }
 }
 
@@ -1422,7 +1595,10 @@
         <span class="ident">end</span>: <span class="ident">bytecode</span>::<span class="ident">Label</span>,
         <span class="ident">context_manager</span>: <span class="ident">PyObjectRef</span>,
     },
+    <span class="ident">ExceptHandler</span>,
 }
+
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FrameRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">Frame</span><span class="op">&gt;</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Frame</span> {
     <span class="kw">pub</span> <span class="ident">code</span>: <span class="ident">bytecode</span>::<span class="ident">CodeObject</span>,
@@ -1434,7 +1610,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">Frame</span> {
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">frame_type</span>()
     }
 }
@@ -1445,11 +1621,11 @@
     <span class="ident">Yield</span>(<span class="ident">PyObjectRef</span>),
 }
 
-<span class="comment">// A valid execution result, or an exception</span>
+<span class="doccomment">/// A valid execution result, or an exception</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FrameResult</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ExecutionResult</span><span class="op">&gt;</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span>;
 
 <span class="kw">impl</span> <span class="ident">Frame</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">code</span>: <span class="ident">PyObjectRef</span>, <span class="ident">scope</span>: <span class="ident">Scope</span>) <span class="op">-&gt;</span> <span class="ident">Frame</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">code</span>: <span class="ident">PyCodeRef</span>, <span class="ident">scope</span>: <span class="ident">Scope</span>) <span class="op">-&gt;</span> <span class="ident">Frame</span> {
         <span class="comment">//populate the globals and locals</span>
         <span class="comment">//TODO: This is wrong, check https://github.com/nedbat/byterun/blob/31e6c4a8212c35b5157919abff43a7daa0f377c6/byterun/pyvm2.py#L95</span>
         <span class="comment">/*
@@ -1462,7 +1638,7 @@
         <span class="comment">// locals.extend(callargs);</span>
 
         <span class="ident">Frame</span> {
-            <span class="ident">code</span>: <span class="ident">objcode</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">code</span>),
+            <span class="ident">code</span>: <span class="ident">code</span>.<span class="ident">code</span>.<span class="ident">clone</span>(),
             <span class="ident">stack</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[]),
             <span class="ident">blocks</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>[]),
             <span class="comment">// save the callargs as locals</span>
@@ -1487,9 +1663,11 @@
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">value</span>)) <span class="op">=&gt;</span> {
                     <span class="kw">break</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>);
                 }
+                <span class="comment">// Instruction raised an exception</span>
                 <span class="prelude-val">Err</span>(<span class="ident">exception</span>) <span class="op">=&gt;</span> {
-                    <span class="comment">// unwind block stack on exception and find any handlers.</span>
-                    <span class="comment">// Add an entry in the traceback:</span>
+                    <span class="comment">// 1. Extract traceback from exception&#39;s &#39;__traceback__&#39; attr.</span>
+                    <span class="comment">// 2. Add new entry with current execution position (filename, lineno, code_object) to traceback.</span>
+                    <span class="comment">// 3. Unwind block stack till appropriate handler is found.</span>
                     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">objtype</span>::<span class="ident">isinstance</span>(
                         <span class="kw-2">&amp;</span><span class="ident">exception</span>,
                         <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">base_exception_type</span>
@@ -1498,13 +1676,12 @@
                         .<span class="ident">get_attribute</span>(<span class="ident">exception</span>.<span class="ident">clone</span>(), <span class="string">&quot;__traceback__&quot;</span>)
                         .<span class="ident">unwrap</span>();
                     <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Adding to traceback: {:?} {:?}&quot;</span>, <span class="ident">traceback</span>, <span class="ident">lineno</span>);
-                    <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[
+                    <span class="kw">let</span> <span class="ident">raise_location</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[
                         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">filename</span>.<span class="ident">clone</span>()),
-                        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">lineno</span>.<span class="ident">get_row</span>()),
+                        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">lineno</span>.<span class="ident">row</span>()),
                         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">run_obj_name</span>.<span class="ident">clone</span>()),
                     ]);
-                    <span class="ident">objlist</span>::<span class="ident">PyListRef</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">traceback</span>)<span class="question-mark">?</span>.<span class="ident">append</span>(<span class="ident">pos</span>, <span class="ident">vm</span>);
-                    <span class="comment">// exception.__trace</span>
+                    <span class="ident">objlist</span>::<span class="ident">PyListRef</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">traceback</span>)<span class="question-mark">?</span>.<span class="ident">append</span>(<span class="ident">raise_location</span>, <span class="ident">vm</span>);
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">unwind_exception</span>(<span class="ident">vm</span>, <span class="ident">exception</span>) {
                         <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
                         <span class="prelude-val">Some</span>(<span class="ident">exception</span>) <span class="op">=&gt;</span> {
@@ -1518,13 +1695,24 @@
         }
     }
 
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">throw</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+        <span class="ident">exception</span>: <span class="ident">PyObjectRef</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ExecutionResult</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">unwind_exception</span>(<span class="ident">vm</span>, <span class="ident">exception</span>) {
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">run</span>(<span class="ident">vm</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">exception</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">exception</span>),
+        }
+    }
+
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fetch_instruction</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">Instruction</span> {
         <span class="kw">let</span> <span class="ident">ins2</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">code</span>.<span class="ident">instructions</span>[<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">lasti</span>.<span class="ident">borrow</span>()];
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">lasti</span>.<span class="ident">borrow_mut</span>() <span class="op">+=</span> <span class="number">1</span>;
         <span class="ident">ins2</span>
     }
 
-    <span class="comment">// Execute a single instruction:</span>
+    <span class="doccomment">/// Execute a single instruction.</span>
     <span class="kw">fn</span> <span class="ident">execute_instruction</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">instruction</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fetch_instruction</span>();
         {
@@ -1547,11 +1735,21 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">Import</span> {
                 <span class="kw-2">ref</span> <span class="ident">name</span>,
-                <span class="kw-2">ref</span> <span class="ident">symbol</span>,
-            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">import</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">symbol</span>),
-            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">ImportStar</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">import_star</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
-            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">LoadName</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">load_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
-            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">StoreName</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">store_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
+                <span class="kw-2">ref</span> <span class="ident">symbols</span>,
+                <span class="kw-2">ref</span> <span class="ident">level</span>,
+            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">import</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">symbols</span>, <span class="ident">level</span>),
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">ImportStar</span> {
+                <span class="kw-2">ref</span> <span class="ident">name</span>,
+                <span class="kw-2">ref</span> <span class="ident">level</span>,
+            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">import_star</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">level</span>),
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">LoadName</span> {
+                <span class="kw-2">ref</span> <span class="ident">name</span>,
+                <span class="kw-2">ref</span> <span class="ident">scope</span>,
+            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">load_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">scope</span>),
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">StoreName</span> {
+                <span class="kw-2">ref</span> <span class="ident">name</span>,
+                <span class="kw-2">ref</span> <span class="ident">scope</span>,
+            } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">store_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">scope</span>),
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">DeleteName</span> { <span class="kw-2">ref</span> <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">delete_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">StoreSubscript</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">execute_store_subscript</span>(<span class="ident">vm</span>),
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">DeleteSubscript</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">execute_delete_subscript</span>(<span class="ident">vm</span>),
@@ -1623,44 +1821,41 @@
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BuildMap</span> { <span class="ident">size</span>, <span class="ident">unpack</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">map_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_dict</span>();
-                <span class="kw">for</span> <span class="ident">_x</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">size</span> {
-                    <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">unpack</span> {
+                <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">unpack</span> {
+                    <span class="kw">for</span> <span class="ident">obj</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">pop_multiple</span>(<span class="kw-2">*</span><span class="ident">size</span>) {
                         <span class="comment">// Take all key-value pairs from the dict:</span>
-                        <span class="kw">let</span> <span class="ident">dict_elements</span> <span class="op">=</span> <span class="ident">objdict</span>::<span class="ident">get_key_value_pairs</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>);
-                        <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">dict_elements</span>.<span class="ident">iter</span>() {
-                            <span class="ident">objdict</span>::<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">map_obj</span>, <span class="ident">vm</span>, <span class="ident">key</span>, <span class="ident">value</span>);
+                        <span class="kw">let</span> <span class="ident">dict</span>: <span class="ident">PyDictRef</span> <span class="op">=</span>
+                            <span class="ident">obj</span>.<span class="ident">downcast</span>().<span class="ident">expect</span>(<span class="string">&quot;Need a dictionary to build a map.&quot;</span>);
+                        <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">dict</span> {
+                            <span class="ident">map_obj</span>.<span class="ident">set_item</span>(<span class="ident">key</span>, <span class="ident">value</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>();
                         }
-                    } <span class="kw">else</span> {
-                        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                        <span class="ident">objdict</span>::<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">map_obj</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">obj</span>);
+                    }
+                } <span class="kw">else</span> {
+                    <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">pop_multiple</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">size</span>).<span class="ident">into_iter</span>().<span class="ident">tuples</span>() {
+                        <span class="ident">map_obj</span>.<span class="ident">set_item</span>(<span class="ident">key</span>, <span class="ident">value</span>, <span class="ident">vm</span>).<span class="ident">unwrap</span>();
                     }
                 }
-                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">map_obj</span>);
+
+                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">map_obj</span>.<span class="ident">into_object</span>());
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">BuildSlice</span> { <span class="ident">size</span> } <span class="op">=&gt;</span> {
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">size</span> <span class="op">==</span> <span class="number">2</span> <span class="op">||</span> <span class="kw-2">*</span><span class="ident">size</span> <span class="op">==</span> <span class="number">3</span>);
-                <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_multiple</span>(<span class="kw-2">*</span><span class="ident">size</span>);
 
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">elements</span>
-                    .<span class="ident">into_iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
-                        <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()) {
-                            <span class="prelude-val">None</span>
-                        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">x</span>.<span class="ident">payload</span>::<span class="op">&lt;</span><span class="ident">PyInt</span><span class="op">&gt;</span>() {
-                            <span class="prelude-val">Some</span>(<span class="ident">i</span>.<span class="ident">value</span>.<span class="ident">clone</span>())
-                        } <span class="kw">else</span> {
-                            <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Expect Int or None as BUILD_SLICE arguments&quot;</span>)
-                        }
-                    })
-                    .<span class="ident">collect</span>();
+                <span class="kw">let</span> <span class="ident">step</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">size</span> <span class="op">==</span> <span class="number">3</span> {
+                    <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">pop_value</span>())
+                } <span class="kw">else</span> {
+                    <span class="prelude-val">None</span>
+                };
+                <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
+                <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
 
-                <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">out</span>[<span class="number">0</span>].<span class="ident">take</span>();
-                <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="ident">out</span>[<span class="number">1</span>].<span class="ident">take</span>();
-                <span class="kw">let</span> <span class="ident">step</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">out</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">3</span> { <span class="ident">out</span>[<span class="number">2</span>].<span class="ident">take</span>() } <span class="kw">else</span> { <span class="prelude-val">None</span> };
-
-                <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">PySlice</span> { <span class="ident">start</span>, <span class="ident">stop</span>, <span class="ident">step</span> }.<span class="ident">into_ref</span>(<span class="ident">vm</span>);
+                <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">PySlice</span> {
+                    <span class="ident">start</span>: <span class="prelude-val">Some</span>(<span class="ident">start</span>),
+                    <span class="ident">stop</span>,
+                    <span class="ident">step</span>,
+                }
+                .<span class="ident">into_ref</span>(<span class="ident">vm</span>);
                 <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span>.<span class="ident">into_object</span>());
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
@@ -1753,9 +1948,7 @@
                 } <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">block</span>.<span class="ident">typ</span>
                 {
                     <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">end1</span> <span class="op">==</span> <span class="ident">end2</span>);
-
-                    <span class="comment">// call exit now with no exception:</span>
-                    <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.<span class="ident">call_context_manager_exit_no_exception</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else</span> {
                     <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;Block stack is incorrect, expected a with block&quot;</span>);
                 }
@@ -1799,29 +1992,61 @@
                 }
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">MakeFunction</span> { <span class="ident">flags</span> } <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">_qualified_name</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                <span class="kw">let</span> <span class="ident">code_obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
+                <span class="kw">let</span> <span class="ident">qualified_name</span> <span class="op">=</span> <span class="self">self</span>
+                    .<span class="ident">pop_value</span>()
+                    .<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">PyString</span><span class="op">&gt;</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;qualified name to be a string&quot;</span>);
+                <span class="kw">let</span> <span class="ident">code_obj</span> <span class="op">=</span> <span class="self">self</span>
+                    .<span class="ident">pop_value</span>()
+                    .<span class="ident">downcast</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;Second to top value on the stack must be a code object&quot;</span>);
 
                 <span class="kw">let</span> <span class="ident">annotations</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>::<span class="ident">HAS_ANNOTATIONS</span>) {
                     <span class="self">self</span>.<span class="ident">pop_value</span>()
                 } <span class="kw">else</span> {
-                    <span class="ident">vm</span>.<span class="ident">new_dict</span>()
+                    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_dict</span>().<span class="ident">into_object</span>()
                 };
 
+                <span class="kw">let</span> <span class="ident">kw_only_defaults</span> <span class="op">=</span>
+                    <span class="kw">if</span> <span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>::<span class="ident">HAS_KW_ONLY_DEFAULTS</span>) {
+                        <span class="prelude-val">Some</span>(
+                            <span class="self">self</span>.<span class="ident">pop_value</span>().<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">PyDict</span><span class="op">&gt;</span>().<span class="ident">expect</span>(
+                                <span class="string">&quot;Stack value for keyword only defaults expected to be a dict&quot;</span>,
+                            ),
+                        )
+                    } <span class="kw">else</span> {
+                        <span class="prelude-val">None</span>
+                    };
+
                 <span class="kw">let</span> <span class="ident">defaults</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">bytecode</span>::<span class="ident">FunctionOpArg</span>::<span class="ident">HAS_DEFAULTS</span>) {
-                    <span class="self">self</span>.<span class="ident">pop_value</span>()
+                    <span class="prelude-val">Some</span>(
+                        <span class="self">self</span>.<span class="ident">pop_value</span>()
+                            .<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">PyTuple</span><span class="op">&gt;</span>()
+                            .<span class="ident">expect</span>(<span class="string">&quot;Stack value for defaults expected to be a tuple&quot;</span>),
+                    )
                 } <span class="kw">else</span> {
-                    <span class="ident">vm</span>.<span class="ident">get_none</span>()
+                    <span class="prelude-val">None</span>
                 };
 
                 <span class="comment">// pop argc arguments</span>
                 <span class="comment">// argument: name, args, globals</span>
                 <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">clone</span>();
-                <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">code_obj</span>, <span class="ident">scope</span>, <span class="ident">defaults</span>);
+                <span class="kw">let</span> <span class="ident">func_obj</span> <span class="op">=</span> <span class="ident">vm</span>
+                    .<span class="ident">ctx</span>
+                    .<span class="ident">new_function</span>(<span class="ident">code_obj</span>, <span class="ident">scope</span>, <span class="ident">defaults</span>, <span class="ident">kw_only_defaults</span>);
 
-                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="string">&quot;__annotations__&quot;</span>, <span class="ident">annotations</span>);
+                <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">qualified_name</span>.<span class="ident">value</span>.<span class="ident">split</span>(<span class="string">&#39;.&#39;</span>).<span class="ident">next_back</span>().<span class="ident">unwrap</span>();
+                <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">func_obj</span>, <span class="string">&quot;__name__&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
+                <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">func_obj</span>, <span class="string">&quot;__qualname__&quot;</span>, <span class="ident">qualified_name</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="self">self</span>
+                    .<span class="ident">scope</span>
+                    .<span class="ident">globals</span>
+                    .<span class="ident">get_item_option</span>(<span class="string">&quot;__name__&quot;</span>, <span class="ident">vm</span>)<span class="question-mark">?</span>
+                    .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">vm</span>.<span class="ident">get_none</span>());
+                <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">func_obj</span>, <span class="string">&quot;__module__&quot;</span>, <span class="ident">module</span>)<span class="question-mark">?</span>;
+                <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">func_obj</span>, <span class="string">&quot;__annotations__&quot;</span>, <span class="ident">annotations</span>)<span class="question-mark">?</span>;
 
-                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span>);
+                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">func_obj</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">CallFunction</span> { <span class="ident">typ</span> } <span class="op">=&gt;</span> {
@@ -1830,7 +2055,7 @@
                         <span class="kw">let</span> <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_multiple</span>(<span class="kw-2">*</span><span class="ident">count</span>);
                         <span class="ident">PyFuncArgs</span> {
                             <span class="ident">args</span>,
-                            <span class="ident">kwargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                            <span class="ident">kwargs</span>: <span class="ident">IndexMap</span>::<span class="ident">new</span>(),
                         }
                     }
                     <span class="ident">bytecode</span>::<span class="ident">CallType</span>::<span class="ident">Keyword</span>(<span class="ident">count</span>) <span class="op">=&gt;</span> {
@@ -1846,14 +2071,14 @@
                     }
                     <span class="ident">bytecode</span>::<span class="ident">CallType</span>::<span class="ident">Ex</span>(<span class="ident">has_kwargs</span>) <span class="op">=&gt;</span> {
                         <span class="kw">let</span> <span class="ident">kwargs</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">has_kwargs</span> {
-                            <span class="kw">let</span> <span class="ident">kw_dict</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-                            <span class="kw">let</span> <span class="ident">dict_elements</span> <span class="op">=</span> <span class="ident">objdict</span>::<span class="ident">get_elements</span>(<span class="kw-2">&amp;</span><span class="ident">kw_dict</span>).<span class="ident">clone</span>();
-                            <span class="ident">dict_elements</span>
+                            <span class="kw">let</span> <span class="ident">kw_dict</span>: <span class="ident">PyDictRef</span> <span class="op">=</span>
+                                <span class="self">self</span>.<span class="ident">pop_value</span>().<span class="ident">downcast</span>().<span class="ident">expect</span>(<span class="string">&quot;Kwargs must be a dict.&quot;</span>);
+                            <span class="ident">kw_dict</span>
                                 .<span class="ident">into_iter</span>()
-                                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> (<span class="ident">elem</span>.<span class="number">0</span>, (<span class="ident">elem</span>.<span class="number">1</span>).<span class="number">1</span>))
+                                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> (<span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">elem</span>.<span class="number">0</span>), <span class="ident">elem</span>.<span class="number">1</span>))
                                 .<span class="ident">collect</span>()
                         } <span class="kw">else</span> {
-                            <span class="macro">vec</span><span class="macro">!</span>[]
+                            <span class="ident">IndexMap</span>::<span class="ident">new</span>()
                         };
                         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
                         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">extract_elements</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>)<span class="question-mark">?</span>;
@@ -1890,29 +2115,38 @@
             }
 
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">Raise</span> { <span class="ident">argc</span> } <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">cause</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">argc</span> {
+                    <span class="number">2</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">get_exception</span>(<span class="ident">vm</span>, <span class="bool-val">true</span>)<span class="question-mark">?</span>,
+                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">get_none</span>(),
+                };
                 <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">argc</span> {
-                    <span class="number">1</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">pop_value</span>(),
-                    <span class="number">0</span> <span class="op">|</span> <span class="number">2</span> <span class="op">|</span> <span class="number">3</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Not implemented!&quot;</span>),
+                    <span class="number">0</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">pop_exception</span>() {
+                        <span class="prelude-val">Some</span>(<span class="ident">exc</span>) <span class="op">=&gt;</span> <span class="ident">exc</span>,
+                        <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception</span>(
+                                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">runtime_error</span>.<span class="ident">clone</span>(),
+                                <span class="string">&quot;No active exception to reraise&quot;</span>.<span class="ident">to_string</span>(),
+                            ));
+                        }
+                    },
+                    <span class="number">1</span> <span class="op">|</span> <span class="number">2</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">get_exception</span>(<span class="ident">vm</span>, <span class="bool-val">false</span>)<span class="question-mark">?</span>,
+                    <span class="number">3</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Not implemented!&quot;</span>),
                     <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid parameter for RAISE_VARARGS, must be between 0 to 3&quot;</span>),
                 };
-                <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">base_exception_type</span>) {
-                    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Exception raised: {:?}&quot;</span>, <span class="ident">exception</span>);
-                    <span class="prelude-val">Err</span>(<span class="ident">exception</span>)
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">type_type</span>())
-                    <span class="op">&amp;&amp;</span> <span class="ident">objtype</span>::<span class="ident">issubclass</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">base_exception_type</span>)
-                {
-                    <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_empty_exception</span>(<span class="ident">exception</span>)<span class="question-mark">?</span>;
-                    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Exception raised: {:?}&quot;</span>, <span class="ident">exception</span>);
-                    <span class="prelude-val">Err</span>(<span class="ident">exception</span>)
-                } <span class="kw">else</span> {
-                    <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
-                        <span class="string">&quot;Can only raise BaseException derived types, not {}&quot;</span>,
-                        <span class="ident">exception</span>
-                    );
-                    <span class="kw">let</span> <span class="ident">type_error_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">type_error</span>.<span class="ident">clone</span>();
-                    <span class="kw">let</span> <span class="ident">type_error</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">type_error_type</span>, <span class="ident">msg</span>);
-                    <span class="prelude-val">Err</span>(<span class="ident">type_error</span>)
-                }
+                <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">argc</span> {
+                    <span class="number">0</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">get_none</span>(), <span class="comment">// We have already got the exception,</span>
+                    <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">vm</span>.<span class="ident">pop_exception</span>() {
+                        <span class="prelude-val">Some</span>(<span class="ident">exc</span>) <span class="op">=&gt;</span> <span class="ident">exc</span>,
+                        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">get_none</span>(),
+                    },
+                };
+                <span class="macro">info</span><span class="macro">!</span>(
+                    <span class="string">&quot;Exception raised: {:?} with cause: {:?} and context: {:?}&quot;</span>,
+                    <span class="ident">exception</span>, <span class="ident">cause</span>, <span class="ident">context</span>
+                );
+                <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;__cause__&quot;</span>.<span class="ident">to_string</span>()), <span class="ident">cause</span>)<span class="question-mark">?</span>;
+                <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;__context__&quot;</span>.<span class="ident">to_string</span>()), <span class="ident">context</span>)<span class="question-mark">?</span>;
+                <span class="prelude-val">Err</span>(<span class="ident">exception</span>)
             }
 
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">Break</span> <span class="op">=&gt;</span> {
@@ -1943,16 +2177,14 @@
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">expr</span>.<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">get_none</span>()) {
                     <span class="kw">let</span> <span class="ident">repr</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">expr</span>)<span class="question-mark">?</span>;
                     <span class="comment">// TODO: implement sys.displayhook</span>
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">print</span>) <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">get_attr</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">builtins</span>, <span class="string">&quot;print&quot;</span>) {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">print</span>) <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">vm</span>.<span class="ident">builtins</span>.<span class="ident">clone</span>(), <span class="string">&quot;print&quot;</span>) {
                         <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">print</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">repr</span>.<span class="ident">into_object</span>()])<span class="question-mark">?</span>;
                     }
                 }
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">LoadBuildClass</span> <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">rustfunc</span> <span class="op">=</span>
-                    <span class="ident">PyBuiltinFunction</span>::<span class="ident">new</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">builtins</span>::<span class="ident">builtin_build_class_</span>)).<span class="ident">into_ref</span>(<span class="ident">vm</span>);
-                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">rustfunc</span>.<span class="ident">into_object</span>());
+                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtins</span>::<span class="ident">builtin_build_class_</span>));
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">UnpackSequence</span> { <span class="ident">size</span> } <span class="op">=&gt;</span> {
@@ -2011,7 +2243,7 @@
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
             }
             <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">FormatValue</span> { <span class="ident">conversion</span>, <span class="ident">spec</span> } <span class="op">=&gt;</span> {
-                <span class="kw">use</span> <span class="ident">ast</span>::<span class="ident">ConversionFlag</span>::<span class="kw-2">*</span>;
+                <span class="kw">use</span> <span class="ident">bytecode</span>::<span class="ident">ConversionFlag</span>::<span class="kw-2">*</span>;
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">conversion</span> {
                     <span class="prelude-val">Some</span>(<span class="ident">Str</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pop_value</span>())<span class="question-mark">?</span>.<span class="ident">into_object</span>(),
                     <span class="prelude-val">Some</span>(<span class="ident">Repr</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pop_value</span>())<span class="question-mark">?</span>.<span class="ident">into_object</span>(),
@@ -2023,6 +2255,15 @@
                 <span class="kw">let</span> <span class="ident">formatted</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>, <span class="string">&quot;__format__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">spec</span>])<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">formatted</span>);
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            }
+            <span class="ident">bytecode</span>::<span class="ident">Instruction</span>::<span class="ident">PopException</span> {} <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>().<span class="ident">unwrap</span>(); <span class="comment">// this asserts that the block is_some.</span>
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">BlockType</span>::<span class="ident">ExceptHandler</span> <span class="op">=</span> <span class="ident">block</span>.<span class="ident">typ</span> {
+                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">vm</span>.<span class="ident">pop_exception</span>().<span class="ident">is_some</span>());
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+                } <span class="kw">else</span> {
+                    <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Block type must be ExceptHandler here.&quot;</span>)
+                }
             }
         }
     }
@@ -2048,30 +2289,40 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">import</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">import</span>(<span class="ident">module</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn</span> <span class="ident">import</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+        <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+        <span class="ident">symbols</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+        <span class="ident">level</span>: <span class="kw-2">&amp;</span><span class="ident">usize</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
+        <span class="kw">let</span> <span class="ident">from_list</span> <span class="op">=</span> <span class="ident">symbols</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">symbol</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">symbol</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">import</span>(<span class="ident">module</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">from_list</span>), <span class="kw-2">*</span><span class="ident">level</span>)<span class="question-mark">?</span>;
 
-        <span class="comment">// If we&#39;re importing a symbol, look it up and use it, otherwise construct a module and return</span>
-        <span class="comment">// that</span>
-        <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">symbol</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">symbol</span>) <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">module</span>, <span class="ident">symbol</span>.<span class="ident">as_str</span>()).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">import_error</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">context</span>().<span class="ident">exceptions</span>.<span class="ident">import_error</span>.<span class="ident">clone</span>();
-                <span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">import_error</span>, <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot import name &#39;{}&#39;&quot;</span>, <span class="ident">symbol</span>))
-            }),
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">module</span>),
-        };
-
-        <span class="comment">// Push module on stack:</span>
-        <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span><span class="question-mark">?</span>);
+        <span class="kw">if</span> <span class="ident">symbols</span>.<span class="ident">is_empty</span>() {
+            <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">module</span>);
+        } <span class="kw">else</span> {
+            <span class="kw">for</span> <span class="ident">symbol</span> <span class="kw">in</span> <span class="ident">symbols</span> {
+                <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">vm</span>
+                    .<span class="ident">get_attribute</span>(<span class="ident">module</span>.<span class="ident">clone</span>(), <span class="ident">symbol</span>.<span class="ident">as_str</span>())
+                    .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_import_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot import name &#39;{}&#39;&quot;</span>, <span class="ident">symbol</span>)));
+                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">obj</span><span class="question-mark">?</span>);
+            }
+        }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">import_star</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">import</span>(<span class="ident">module</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn</span> <span class="ident">import_star</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">level</span>: <span class="kw-2">&amp;</span><span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
+        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">import</span>(<span class="ident">module</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[]), <span class="kw-2">*</span><span class="ident">level</span>)<span class="question-mark">?</span>;
 
         <span class="comment">// Grab all the names from the module and put them in the context</span>
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">module</span>.<span class="ident">get_key_value_pairs</span>().<span class="ident">iter</span>() {
-            <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">k</span>), <span class="ident">v</span>.<span class="ident">clone</span>());
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">module</span>.<span class="ident">dict</span> {
+            <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">dict</span> {
+                <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>), <span class="ident">v</span>);
+            }
         }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
@@ -2087,13 +2338,16 @@
                 <span class="ident">BlockType</span>::<span class="ident">With</span> {
                     <span class="ident">context_manager</span>, ..
                 } <span class="op">=&gt;</span> {
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>) {
+                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">call_context_manager_exit_no_exception</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>) {
                         <span class="prelude-val">Ok</span>(..) <span class="op">=&gt;</span> {}
                         <span class="prelude-val">Err</span>(<span class="ident">exc</span>) <span class="op">=&gt;</span> {
                             <span class="comment">// __exit__ went wrong,</span>
                             <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">exc</span>);
                         }
                     }
+                }
+                <span class="ident">BlockType</span>::<span class="ident">ExceptHandler</span> <span class="op">=&gt;</span> {
+                    <span class="ident">vm</span>.<span class="ident">pop_exception</span>();
                 }
             }
         }
@@ -2111,12 +2365,15 @@
                 }
                 <span class="ident">BlockType</span>::<span class="ident">With</span> {
                     <span class="ident">context_manager</span>, ..
-                } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">None</span>) {
+                } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">call_context_manager_exit_no_exception</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>) {
                     <span class="prelude-val">Ok</span>(..) <span class="op">=&gt;</span> {}
                     <span class="prelude-val">Err</span>(<span class="ident">exc</span>) <span class="op">=&gt;</span> {
                         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Exception in with __exit__ {:?}&quot;</span>, <span class="ident">exc</span>);
                     }
                 },
+                <span class="ident">BlockType</span>::<span class="ident">ExceptHandler</span> <span class="op">=&gt;</span> {
+                    <span class="ident">vm</span>.<span class="ident">pop_exception</span>();
+                }
             }
 
             <span class="self">self</span>.<span class="ident">pop_block</span>();
@@ -2128,7 +2385,9 @@
         <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_block</span>() {
             <span class="kw">match</span> <span class="ident">block</span>.<span class="ident">typ</span> {
                 <span class="ident">BlockType</span>::<span class="ident">TryExcept</span> { <span class="ident">handler</span> } <span class="op">=&gt;</span> {
-                    <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">exc</span>);
+                    <span class="self">self</span>.<span class="ident">push_block</span>(<span class="ident">BlockType</span>::<span class="ident">ExceptHandler</span> {});
+                    <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">exc</span>.<span class="ident">clone</span>());
+                    <span class="ident">vm</span>.<span class="ident">push_exception</span>(<span class="ident">exc</span>);
                     <span class="self">self</span>.<span class="ident">jump</span>(<span class="ident">handler</span>);
                     <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
@@ -2136,12 +2395,12 @@
                     <span class="ident">end</span>,
                     <span class="ident">context_manager</span>,
                 } <span class="op">=&gt;</span> {
-                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">with_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="prelude-val">Some</span>(<span class="ident">exc</span>.<span class="ident">clone</span>())) {
-                        <span class="prelude-val">Ok</span>(<span class="ident">exit_action</span>) <span class="op">=&gt;</span> {
-                            <span class="kw">match</span> <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">exit_action</span>) {
-                                <span class="prelude-val">Ok</span>(<span class="ident">handle_exception</span>) <span class="op">=&gt;</span> {
-                                    <span class="kw">if</span> <span class="ident">handle_exception</span> {
-                                        <span class="comment">// We handle the exception, so return!</span>
+                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">call_context_manager_exit</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">context_manager</span>, <span class="ident">exc</span>.<span class="ident">clone</span>()) {
+                        <span class="prelude-val">Ok</span>(<span class="ident">exit_result_obj</span>) <span class="op">=&gt;</span> {
+                            <span class="kw">match</span> <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">exit_result_obj</span>) {
+                                <span class="comment">// If __exit__ method returned True, suppress the exception and continue execution.</span>
+                                <span class="prelude-val">Ok</span>(<span class="ident">suppress_exception</span>) <span class="op">=&gt;</span> {
+                                    <span class="kw">if</span> <span class="ident">suppress_exception</span> {
                                         <span class="self">self</span>.<span class="ident">jump</span>(<span class="ident">end</span>);
                                         <span class="kw">return</span> <span class="prelude-val">None</span>;
                                     } <span class="kw">else</span> {
@@ -2152,7 +2411,6 @@
                                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">exit_exc</span>);
                                 }
                             }
-                            <span class="comment">// if objtype::isinstance</span>
                         }
                         <span class="prelude-val">Err</span>(<span class="ident">exit_exc</span>) <span class="op">=&gt;</span> {
                             <span class="comment">// TODO: what about original exception?</span>
@@ -2161,84 +2419,110 @@
                     }
                 }
                 <span class="ident">BlockType</span>::<span class="ident">Loop</span> { .. } <span class="op">=&gt;</span> {}
+                <span class="comment">// Exception was already popped on Raised.</span>
+                <span class="ident">BlockType</span>::<span class="ident">ExceptHandler</span> <span class="op">=&gt;</span> {}
             }
         }
         <span class="prelude-val">Some</span>(<span class="ident">exc</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">with_exit</span>(
+    <span class="kw">fn</span> <span class="ident">call_context_manager_exit_no_exception</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
         <span class="ident">context_manager</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
-        <span class="ident">exc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="comment">// Assume top of stack is __exit__ method:</span>
         <span class="comment">// TODO: do we want to put the exit call on the stack?</span>
-        <span class="comment">// let exit_method = self.pop_value();</span>
-        <span class="comment">// let args = PyFuncArgs::default();</span>
-        <span class="comment">// TODO: what happens when we got an error during handling exception?</span>
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">exc</span>) <span class="op">=</span> <span class="ident">exc</span> {
-            <span class="kw">let</span> <span class="ident">exc_type</span> <span class="op">=</span> <span class="ident">exc</span>.<span class="ident">typ</span>();
-            <span class="kw">let</span> <span class="ident">exc_val</span> <span class="op">=</span> <span class="ident">exc</span>.<span class="ident">clone</span>();
-            <span class="kw">let</span> <span class="ident">exc_tb</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(); <span class="comment">// TODO: retrieve traceback?</span>
-            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">exc_type</span>, <span class="ident">exc_val</span>, <span class="ident">exc_tb</span>]
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">exc_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>();
-            <span class="kw">let</span> <span class="ident">exc_val</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>();
-            <span class="kw">let</span> <span class="ident">exc_tb</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>();
-            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">exc_type</span>, <span class="ident">exc_val</span>, <span class="ident">exc_tb</span>]
-        };
-        <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="ident">context_manager</span>, <span class="string">&quot;__exit__&quot;</span>, <span class="ident">args</span>)
+        <span class="comment">// TODO: what happens when we got an error during execution of __exit__?</span>
+        <span class="ident">vm</span>.<span class="ident">call_method</span>(
+            <span class="ident">context_manager</span>,
+            <span class="string">&quot;__exit__&quot;</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(), <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(), <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()],
+        )
     }
 
-    <span class="kw">fn</span> <span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
+    <span class="kw">fn</span> <span class="ident">call_context_manager_exit</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+        <span class="ident">context_manager</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+        <span class="ident">exc</span>: <span class="ident">PyObjectRef</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+        <span class="comment">// TODO: do we want to put the exit call on the stack?</span>
+        <span class="comment">// TODO: what happens when we got an error during execution of __exit__?</span>
+        <span class="kw">let</span> <span class="ident">exc_type</span> <span class="op">=</span> <span class="ident">exc</span>.<span class="ident">class</span>().<span class="ident">into_object</span>();
+        <span class="kw">let</span> <span class="ident">exc_val</span> <span class="op">=</span> <span class="ident">exc</span>.<span class="ident">clone</span>();
+        <span class="kw">let</span> <span class="ident">exc_tb</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(); <span class="comment">// TODO: retrieve traceback?</span>
+        <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="ident">context_manager</span>, <span class="string">&quot;__exit__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">exc_type</span>, <span class="ident">exc_val</span>, <span class="ident">exc_tb</span>])
+    }
+
+    <span class="kw">fn</span> <span class="ident">store_name</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+        <span class="ident">name_scope</span>: <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">NameScope</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">store_name</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">obj</span>);
+        <span class="kw">match</span> <span class="ident">name_scope</span> {
+            <span class="ident">bytecode</span>::<span class="ident">NameScope</span>::<span class="ident">Global</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">store_global</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">obj</span>);
+            }
+            <span class="ident">bytecode</span>::<span class="ident">NameScope</span>::<span class="ident">NonLocal</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">store_cell</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">obj</span>);
+            }
+            <span class="ident">bytecode</span>::<span class="ident">NameScope</span>::<span class="ident">Local</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">store_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>, <span class="ident">obj</span>);
+            }
+        }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">delete_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">delete_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>);
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-    }
-
-    <span class="kw">fn</span> <span class="ident">load_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">load_name</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="ident">name</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">value</span>);
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-            }
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">name_error_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">name_error</span>.<span class="ident">clone</span>();
-                <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;name &#39;{}&#39; is not defined&quot;</span>, <span class="ident">name</span>);
-                <span class="kw">let</span> <span class="ident">name_error</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">name_error_type</span>, <span class="ident">msg</span>);
-                <span class="prelude-val">Err</span>(<span class="ident">name_error</span>)
-            }
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">delete_name</span>(<span class="ident">vm</span>, <span class="ident">name</span>) {
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_name_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;name &#39;{}&#39; is not defined&quot;</span>, <span class="ident">name</span>))),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">subscript</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">a</span>: <span class="ident">PyObjectRef</span>, <span class="ident">b</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="string">&quot;__getitem__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">b</span>])
+    <span class="kw">fn</span> <span class="ident">load_name</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+        <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+        <span class="ident">name_scope</span>: <span class="kw-2">&amp;</span><span class="ident">bytecode</span>::<span class="ident">NameScope</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
+        <span class="kw">let</span> <span class="ident">optional_value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">name_scope</span> {
+            <span class="ident">bytecode</span>::<span class="ident">NameScope</span>::<span class="ident">Global</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">load_global</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
+            <span class="ident">bytecode</span>::<span class="ident">NameScope</span>::<span class="ident">NonLocal</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">load_cell</span>(<span class="ident">vm</span>, <span class="ident">name</span>),
+            <span class="ident">bytecode</span>::<span class="ident">NameScope</span>::<span class="ident">Local</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">load_name</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="ident">name</span>),
+        };
+
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">optional_value</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">value</span>,
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_name_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;name &#39;{}&#39; is not defined&quot;</span>, <span class="ident">name</span>)));
+            }
+        };
+
+        <span class="self">self</span>.<span class="ident">push_value</span>(<span class="ident">value</span>);
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">execute_store_subscript</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="string">&quot;__setitem__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">idx</span>, <span class="ident">value</span>])<span class="question-mark">?</span>;
+        <span class="ident">obj</span>.<span class="ident">set_item</span>(<span class="ident">idx</span>, <span class="ident">value</span>, <span class="ident">vm</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">execute_delete_subscript</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">FrameResult</span> {
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
-        <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="string">&quot;__delitem__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">idx</span>])<span class="question-mark">?</span>;
+        <span class="ident">obj</span>.<span class="ident">del_item</span>(<span class="ident">idx</span>, <span class="ident">vm</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">jump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">label</span>: <span class="ident">bytecode</span>::<span class="ident">Label</span>) {
         <span class="kw">let</span> <span class="ident">target_pc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">code</span>.<span class="ident">label_map</span>[<span class="kw-2">&amp;</span><span class="ident">label</span>];
-        <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;program counter from {:?} to {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">lasti</span>, <span class="ident">target_pc</span>);
+        <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;jump from {:?} to {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">lasti</span>, <span class="ident">target_pc</span>);
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">lasti</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="ident">target_pc</span>;
     }
 
@@ -2267,7 +2551,7 @@
             <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">FloorDivide</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_floordiv</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
             <span class="comment">// TODO: Subscript should probably have its own op</span>
             <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
-            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">subscript</span>(<span class="ident">vm</span>, <span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
+            <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Subscript</span> <span class="op">=&gt;</span> <span class="ident">a_ref</span>.<span class="ident">get_item</span>(<span class="ident">b_ref</span>, <span class="ident">vm</span>),
             <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Modulo</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_imod</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
             <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Modulo</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_mod</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
             <span class="ident">bytecode</span>::<span class="ident">BinaryOperator</span>::<span class="ident">Lshift</span> <span class="kw">if</span> <span class="ident">inplace</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">_ilshift</span>(<span class="ident">a_ref</span>, <span class="ident">b_ref</span>),
@@ -2305,36 +2589,14 @@
         <span class="ident">a</span>.<span class="ident">get_id</span>()
     }
 
-    <span class="comment">// https://docs.python.org/3/reference/expressions.html#membership-test-operations</span>
-    <span class="kw">fn</span> <span class="ident">_membership</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-        <span class="ident">needle</span>: <span class="ident">PyObjectRef</span>,
-        <span class="ident">haystack</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">haystack</span>, <span class="string">&quot;__contains__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">needle</span>])
-        <span class="comment">// TODO: implement __iter__ and __getitem__ cases when __contains__ is</span>
-        <span class="comment">// not implemented.</span>
-    }
-
     <span class="kw">fn</span> <span class="ident">_in</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">needle</span>: <span class="ident">PyObjectRef</span>, <span class="ident">haystack</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">_membership</span>(<span class="ident">vm</span>, <span class="ident">needle</span>, <span class="kw-2">&amp;</span><span class="ident">haystack</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">found</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">found</span>),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;{} has no __contains__ method&quot;</span>,
-                <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">haystack</span>.<span class="ident">typ</span>())
-            ))),
-        }
+        <span class="kw">let</span> <span class="ident">found</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">_membership</span>(<span class="ident">haystack</span>.<span class="ident">clone</span>(), <span class="ident">needle</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">found</span>)<span class="question-mark">?</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">_not_in</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">needle</span>: <span class="ident">PyObjectRef</span>, <span class="ident">haystack</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">_membership</span>(<span class="ident">vm</span>, <span class="ident">needle</span>, <span class="kw-2">&amp;</span><span class="ident">haystack</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">found</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="op">!</span><span class="ident">objbool</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">found</span>))),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">&quot;{} has no __contains__ method&quot;</span>,
-                <span class="ident">objtype</span>::<span class="ident">get_type_name</span>(<span class="kw-2">&amp;</span><span class="ident">haystack</span>.<span class="ident">typ</span>())
-            ))),
-        }
+        <span class="kw">let</span> <span class="ident">found</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">_membership</span>(<span class="ident">haystack</span>.<span class="ident">clone</span>(), <span class="ident">needle</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="op">!</span><span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">found</span>)<span class="question-mark">?</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">_is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">a</span>: <span class="ident">PyObjectRef</span>, <span class="ident">b</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
@@ -2393,7 +2655,7 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_lineno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Location</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_lineno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bytecode</span>::<span class="ident">Location</span> {
         <span class="self">self</span>.<span class="ident">code</span>.<span class="ident">locations</span>[<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">lasti</span>.<span class="ident">borrow</span>()].<span class="ident">clone</span>()
     }
 
@@ -2439,6 +2701,28 @@
         <span class="kw">let</span> <span class="ident">stack</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stack</span>.<span class="ident">borrow_mut</span>();
         <span class="ident">stack</span>[<span class="ident">stack</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">depth</span> <span class="op">-</span> <span class="number">1</span>].<span class="ident">clone</span>()
     }
+
+    <span class="kw">fn</span> <span class="ident">get_exception</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">none_allowed</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_value</span>();
+        <span class="kw">if</span> <span class="ident">none_allowed</span> <span class="op">&amp;&amp;</span> <span class="ident">vm</span>.<span class="ident">get_none</span>().<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>)
+            <span class="op">||</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">exception</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">base_exception_type</span>)
+        {
+            <span class="prelude-val">Ok</span>(<span class="ident">exception</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">exc_type</span>) <span class="op">=</span> <span class="ident">PyClassRef</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">exception</span>) {
+            <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">issubclass</span>(<span class="kw-2">&amp;</span><span class="ident">exc_type</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">base_exception_type</span>) {
+                <span class="kw">let</span> <span class="ident">exception</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_empty_exception</span>(<span class="ident">exc_type</span>)<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(<span class="ident">exception</span>)
+            } <span class="kw">else</span> {
+                <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;Can only raise BaseException derived types, not {}&quot;</span>,
+                    <span class="ident">exc_type</span>
+                );
+                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">msg</span>))
+            }
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;exceptions must derive from BaseException&quot;</span>.<span class="ident">to_string</span>()))
+        }
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Frame</span> {
@@ -2461,13 +2745,11 @@
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  &gt; {:?}&quot;</span>, <span class="ident">elem</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>();
-        <span class="kw">let</span> <span class="ident">local_str</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">get_locals</span>().<span class="ident">payload</span>::<span class="op">&lt;</span><span class="ident">PyDict</span><span class="op">&gt;</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">dict</span>) <span class="op">=&gt;</span> <span class="ident">objdict</span>::<span class="ident">get_key_value_pairs_from_content</span>(<span class="kw-2">&amp;</span><span class="ident">dict</span>.<span class="ident">entries</span>.<span class="ident">borrow</span>())
-                .<span class="ident">iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  {:?} = {:?}&quot;</span>, <span class="ident">elem</span>.<span class="number">0</span>, <span class="ident">elem</span>.<span class="number">1</span>))
-                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>(),
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;locals unexpectedly not wrapping a dict!&quot;</span>,),
-        };
+        <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">get_locals</span>();
+        <span class="kw">let</span> <span class="ident">local_str</span> <span class="op">=</span> <span class="ident">dict</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\n  {:?} = {:?}&quot;</span>, <span class="ident">elem</span>.<span class="number">0</span>, <span class="ident">elem</span>.<span class="number">1</span>))
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>();
         <span class="macro">write</span><span class="macro">!</span>(
             <span class="ident">f</span>,
             <span class="string">&quot;Frame Object {{ \n Stack:{}\n Blocks:{}\n Locals:{}\n}}&quot;</span>,

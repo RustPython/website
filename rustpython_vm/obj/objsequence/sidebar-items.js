@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_elements",""],["get_elements_cell",""],["get_item",""],["get_mut_elements",""],["seq_equal",""],["seq_ge",""],["seq_gt",""],["seq_le",""],["seq_lt",""],["seq_mul",""]],"trait":[["PySliceableSequence",""]]});
+initSidebarItems({"enum":[["SequenceIndex",""]],"fn":[["get_elements_cell",""],["get_elements_list",""],["get_elements_tuple",""],["get_item",""],["get_mut_elements",""],["is_valid_slice_arg",""],["seq_equal",""],["seq_ge",""],["seq_gt",""],["seq_le",""],["seq_lt",""],["seq_mul",""]],"trait":[["PySliceableSequence",""]]});

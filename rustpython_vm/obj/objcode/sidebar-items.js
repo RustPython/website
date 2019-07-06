@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyCode",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyCode",""]],"type":[["PyCodeRef",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyComplex",""]]});
+initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyComplex","Create a complex number from a real part and an optional imaginary part."]]});

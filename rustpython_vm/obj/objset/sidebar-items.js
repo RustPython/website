@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_elements",""],["init",""],["set_contains",""]],"struct":[["PySet",""]],"type":[["PySetRef",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyFrozenSet","frozenset() -> empty frozenset object frozenset(iterable) -> frozenset object"],["PySet","set() -> new empty set object set(iterable) -> new set object"]],"type":[["PyFrozenSetRef",""],["PySetRef",""],["SetContentType",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PySuper",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PySuper",""]],"type":[["PySuperRef",""]]});

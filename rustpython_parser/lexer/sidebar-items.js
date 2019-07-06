@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["LexicalError",""]],"fn":[["get_keywords",""],["make_tokenizer",""]],"struct":[["Lexer",""],["LineContinationHandler",""],["Location",""],["NewlineHandler",""]],"type":[["Spanned",""]]});
+initSidebarItems({"enum":[["LexicalErrorType",""]],"fn":[["get_keywords",""],["make_tokenizer",""]],"struct":[["Lexer",""],["LexicalError",""],["LineContinationHandler",""],["Location",""],["NewlineHandler",""]],"type":[["LexResult",""],["Spanned",""]]});

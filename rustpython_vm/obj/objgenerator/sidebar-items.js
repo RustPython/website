@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""],["new_generator",""]],"struct":[["PyGenerator",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyGenerator",""]],"type":[["PyGeneratorRef",""]]});

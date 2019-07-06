@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PyMap",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyMap","map(func, *iterables) --> map object"]]});

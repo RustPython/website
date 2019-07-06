@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["bytecode","Implement python as a virtual machine with bytecodes. This module implements bytecode structure."]]});

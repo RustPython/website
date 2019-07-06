@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""],["to_int",""]],"struct":[["PyInt",""]],"type":[["PyIntRef",""]]});
+initSidebarItems({"fn":[["get_float_value",""],["get_value",""],["init",""],["to_int",""]],"struct":[["PyInt","int(x=0) -> integer int(x, base=10) -> integer"]],"type":[["PyIntRef",""]]});

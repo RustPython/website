@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CFloatType",""],["CFormatCase",""],["CFormatErrorType",""],["CFormatPart",""],["CFormatPreconversor",""],["CFormatQuantity",""],["CFormatType",""],["CNumberType",""]],"struct":[["CConversionFlags",""],["CFormatError",""],["CFormatSpec",""],["CFormatString",""]]});

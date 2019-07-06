@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PyFunction",""],["PyMethod",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyFunction",""],["PyMethod",""]],"type":[["PyFunctionRef",""]]});

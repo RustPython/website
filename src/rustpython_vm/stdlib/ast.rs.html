@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/ast.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ast.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/ast.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ast.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -557,80 +557,6 @@
 <span id="557">557</span>
 <span id="558">558</span>
 <span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
-<span id="602">602</span>
-<span id="603">603</span>
-<span id="604">604</span>
-<span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
-<span id="608">608</span>
-<span id="609">609</span>
-<span id="610">610</span>
-<span id="611">611</span>
-<span id="612">612</span>
-<span id="613">613</span>
-<span id="614">614</span>
-<span id="615">615</span>
-<span id="616">616</span>
-<span id="617">617</span>
-<span id="618">618</span>
-<span id="619">619</span>
-<span id="620">620</span>
-<span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
-<span id="627">627</span>
-<span id="628">628</span>
-<span id="629">629</span>
-<span id="630">630</span>
-<span id="631">631</span>
-<span id="632">632</span>
-<span id="633">633</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! `ast` standard module for abstract syntax trees.</span>
 <span class="doccomment">//!</span>
@@ -643,76 +569,73 @@
 
 <span class="kw">use</span> <span class="ident">rustpython_parser</span>::{<span class="ident">ast</span>, <span class="ident">parser</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objlist</span>::<span class="ident">PyListRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>::<span class="ident">PyStringRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>::<span class="ident">PyClassRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
-<span class="comment">/*
- * Idea: maybe we can create a sort of struct with some helper functions?
-struct AstToPyAst {
-    ctx: &amp;PyContext,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">AstNode</span>;
+<span class="kw">type</span> <span class="ident">AstNodeRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">AstNode</span><span class="op">&gt;</span>;
+
+<span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">AstNode</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+        <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;ast&quot;</span>, <span class="string">&quot;AST&quot;</span>)
+    }
 }
 
-impl AstToPyAst {
-    fn new(ctx: &amp;PyContext) -&gt; Self {
-        AstToPyAst {
-            ctx: ctx,
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">node</span> {
+    ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vm</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">node_name</span>:<span class="ident">ident</span>, { $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attr_name</span>:<span class="ident">ident</span> <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attr_value</span>:<span class="ident">expr</span>),<span class="op">*</span> $(,)<span class="op">*</span> }) <span class="op">=&gt;</span> {
+        {
+        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">vm</span>, <span class="macro">stringify</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">node_name</span>))<span class="question-mark">?</span>;
+        $(
+            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vm</span>.<span class="ident">set_attr</span>(<span class="ident">node</span>.<span class="ident">as_object</span>(), <span class="macro">stringify</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attr_name</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attr_value</span>)<span class="question-mark">?</span>;
+        )<span class="op">*</span>
+        <span class="prelude-val">Ok</span>(<span class="ident">node</span>)
         }
+    };
+    ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vm</span>: <span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">node_name</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
+        <span class="ident">create_node</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">vm</span>, <span class="macro">stringify</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">node_name</span>))
     }
-
 }
-*/</span>
 
-<span class="kw">fn</span> <span class="ident">program_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">body</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-    <span class="kw">for</span> <span class="ident">statement</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">program</span>.<span class="ident">statements</span> {
-        <span class="ident">body</span>.<span class="ident">push</span>(<span class="ident">statement_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">statement</span>));
-    }
-    <span class="comment">// TODO: create Module node:</span>
-    <span class="comment">// let ast_node = ctx.new_instance(this.Module);</span>
-    <span class="kw">let</span> <span class="ident">ast_node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_object</span>();
-    <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">body</span>);
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">ast_node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-    <span class="ident">ast_node</span>
+<span class="kw">fn</span> <span class="ident">program_to_ast</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">program</span>.<span class="ident">statements</span>)<span class="question-mark">?</span>;
+    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Module</span>, { <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">py_body</span> })
 }
 
 <span class="comment">// Create a node class instance</span>
-<span class="kw">fn</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="comment">// TODO: instantiate a class of type given by name</span>
-    <span class="comment">// TODO: lookup in the current module?</span>
-    <span class="ident">ctx</span>.<span class="ident">new_object</span>()
+<span class="kw">fn</span> <span class="ident">create_node</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
+    <span class="ident">AstNode</span>.<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;ast&quot;</span>, <span class="ident">name</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span>]) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">py_statements</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-    <span class="kw">for</span> <span class="ident">statement</span> <span class="kw">in</span> <span class="ident">statements</span> {
-        <span class="ident">py_statements</span>.<span class="ident">push</span>(<span class="ident">statement_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">statement</span>));
-    }
-    <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">py_statements</span>)
+<span class="kw">fn</span> <span class="ident">statements_to_ast</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span>],
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyListRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">body</span>: <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">statements</span>
+        .<span class="ident">iter</span>()
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">statement</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">statement_to_ast</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="ident">statement</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()))
+        .<span class="ident">collect</span>();
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">body</span><span class="question-mark">?</span>).<span class="ident">downcast</span>().<span class="ident">unwrap</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">statement_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">statement_to_ast</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">statement</span>.<span class="ident">node</span> {
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">ClassDef</span> {
             <span class="ident">name</span>,
             <span class="ident">body</span>,
             <span class="ident">decorator_list</span>,
             ..
-        } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;ClassDef&quot;</span>);
-
-            <span class="comment">// Set name:</span>
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;name&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()));
-
-            <span class="comment">// Set body:</span>
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="kw">let</span> <span class="ident">py_decorator_list</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">decorator_list</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;decorator_list&quot;</span>, <span class="ident">py_decorator_list</span>);
-            <span class="ident">node</span>
-        }
+        } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">ClassDef</span>, {
+            <span class="ident">name</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()),
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+            <span class="ident">decorator_list</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="ident">decorator_list</span>)<span class="question-mark">?</span>,
+        }),
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">FunctionDef</span> {
             <span class="ident">name</span>,
             <span class="ident">args</span>,
@@ -720,176 +643,151 @@ impl AstToPyAst {
             <span class="ident">decorator_list</span>,
             <span class="ident">returns</span>,
         } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;FunctionDef&quot;</span>);
-
-            <span class="comment">// Set name:</span>
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;name&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()));
-
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;args&quot;</span>, <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>));
-
-            <span class="comment">// Set body:</span>
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="kw">let</span> <span class="ident">py_decorator_list</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">decorator_list</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;decorator_list&quot;</span>, <span class="ident">py_decorator_list</span>);
-
             <span class="kw">let</span> <span class="ident">py_returns</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hint</span>) <span class="op">=</span> <span class="ident">returns</span> {
-                <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">hint</span>)
+                <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">hint</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
             } <span class="kw">else</span> {
-                <span class="ident">ctx</span>.<span class="ident">none</span>()
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;returns&quot;</span>, <span class="ident">py_returns</span>);
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">FunctionDef</span>, {
+                <span class="ident">name</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()),
+                <span class="ident">args</span> <span class="op">=&gt;</span> <span class="ident">parameters_to_ast</span>(<span class="ident">vm</span>, <span class="ident">args</span>)<span class="question-mark">?</span>,
+                <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+                <span class="ident">decorator_list</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="ident">decorator_list</span>)<span class="question-mark">?</span>,
+                <span class="ident">returns</span> <span class="op">=&gt;</span> <span class="ident">py_returns</span>
+            })
         }
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Continue</span> <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Continue&quot;</span>),
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Break</span> <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Break&quot;</span>),
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Pass</span> <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Pass&quot;</span>),
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assert</span> { <span class="ident">test</span>, <span class="ident">msg</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Pass&quot;</span>);
-
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>));
-
-            <span class="kw">let</span> <span class="ident">py_msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">msg</span>),
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">none</span>(),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">AsyncFunctionDef</span> {
+            <span class="ident">name</span>,
+            <span class="ident">args</span>,
+            <span class="ident">body</span>,
+            <span class="ident">decorator_list</span>,
+            <span class="ident">returns</span>,
+        } <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">py_returns</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hint</span>) <span class="op">=</span> <span class="ident">returns</span> {
+                <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">hint</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
+            } <span class="kw">else</span> {
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;msg&quot;</span>, <span class="ident">py_msg</span>);
-
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">AsyncFunctionDef</span>, {
+                <span class="ident">name</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()),
+                <span class="ident">args</span> <span class="op">=&gt;</span> <span class="ident">parameters_to_ast</span>(<span class="ident">vm</span>, <span class="ident">args</span>)<span class="question-mark">?</span>,
+                <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+                <span class="ident">decorator_list</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="ident">decorator_list</span>)<span class="question-mark">?</span>,
+                <span class="ident">returns</span> <span class="op">=&gt;</span> <span class="ident">py_returns</span>
+            })
+        }
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Continue</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Continue</span>),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Break</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Break</span>),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Pass</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Pass</span>),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assert</span> { <span class="ident">test</span>, <span class="ident">msg</span> } <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">py_msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">msg</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>(),
+                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(),
+            };
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Assert</span>, {
+                <span class="ident">test</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">test</span>)<span class="question-mark">?</span>,
+                <span class="ident">msg</span> <span class="op">=&gt;</span> <span class="ident">py_msg</span>
+            })
         }
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Delete</span> { <span class="ident">targets</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Delete&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_targets</span> <span class="op">=</span>
-                <span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">targets</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">v</span>)).<span class="ident">collect</span>());
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;targets&quot;</span>, <span class="ident">py_targets</span>);
-
-            <span class="ident">node</span>
+            <span class="kw">let</span> <span class="ident">targets</span>: <span class="ident">PyResult</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">targets</span>
+                .<span class="ident">iter</span>()
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">v</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()))
+                .<span class="ident">collect</span>();
+            <span class="kw">let</span> <span class="ident">py_targets</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">targets</span><span class="question-mark">?</span>);
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Delete</span>, { <span class="ident">targets</span> <span class="op">=&gt;</span> <span class="ident">py_targets</span> })
         }
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Return</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Return&quot;</span>);
-
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">value</span> {
-                <span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">value</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">v</span>)).<span class="ident">collect</span>())
+                <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
             } <span class="kw">else</span> {
-                <span class="ident">ctx</span>.<span class="ident">none</span>()
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
             };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
 
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Return</span>, {
+                <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">py_value</span>
+            })
         }
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">If</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;If&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_test</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
-
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
-                <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>)
-            } <span class="kw">else</span> {
-                <span class="ident">ctx</span>.<span class="ident">none</span>()
-            };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
-
-            <span class="ident">node</span>
-        }
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">If</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">If</span>, {
+            <span class="ident">test</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">test</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+            <span class="ident">orelse</span> <span class="op">=&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
+                    <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">orelse</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
+                } <span class="kw">else</span> {
+                    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
+                }
+        }),
         <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">For</span> {
             <span class="ident">target</span>,
             <span class="ident">iter</span>,
             <span class="ident">body</span>,
             <span class="ident">orelse</span>,
-        } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;For&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_target</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">target</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;target&quot;</span>, <span class="ident">py_target</span>);
-
-            <span class="kw">let</span> <span class="ident">py_iter</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">iter</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;iter&quot;</span>, <span class="ident">py_iter</span>);
-
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
-                <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>)
+        } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">For</span>, {
+            <span class="ident">target</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">target</span>)<span class="question-mark">?</span>,
+            <span class="ident">iter</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">iter</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+            <span class="ident">or_else</span> <span class="op">=&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
+                <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">orelse</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
             } <span class="kw">else</span> {
-                <span class="ident">ctx</span>.<span class="ident">none</span>()
-            };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">While</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;While&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_test</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
-
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
-                <span class="ident">statements_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>)
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
+            }
+        }),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">AsyncFor</span> {
+            <span class="ident">target</span>,
+            <span class="ident">iter</span>,
+            <span class="ident">body</span>,
+            <span class="ident">orelse</span>,
+        } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">AsyncFor</span>, {
+            <span class="ident">target</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">target</span>)<span class="question-mark">?</span>,
+            <span class="ident">iter</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">iter</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+            <span class="ident">or_else</span> <span class="op">=&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
+                <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">orelse</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
             } <span class="kw">else</span> {
-                <span class="ident">ctx</span>.<span class="ident">none</span>()
-            };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="ident">expression</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Expr&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">expression</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">value</span>);
-
-            <span class="ident">node</span>
-        }
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
+            }
+        }),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">While</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">While</span>, {
+            <span class="ident">test</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">test</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+            <span class="ident">orelse</span> <span class="op">=&gt;</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">orelse</span>) <span class="op">=</span> <span class="ident">orelse</span> {
+                <span class="ident">statements_to_ast</span>(<span class="ident">vm</span>, <span class="ident">orelse</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
+            } <span class="kw">else</span> {
+                <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
+            }
+        }),
+        <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="ident">expression</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Expr</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">expression</span>)<span class="question-mark">?</span>
+        }),
         <span class="ident">x</span> <span class="op">=&gt;</span> {
-            <span class="macro">unimplemented</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">x</span>);
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Ast not implemented: {:?}&quot;</span>, <span class="ident">x</span>)));
         }
-    };
+    }<span class="question-mark">?</span>;
 
     <span class="comment">// set lineno on node:</span>
-    <span class="kw">let</span> <span class="ident">lineno</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">statement</span>.<span class="ident">location</span>.<span class="ident">get_row</span>());
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>);
+    <span class="kw">let</span> <span class="ident">lineno</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">statement</span>.<span class="ident">location</span>.<span class="ident">row</span>());
+    <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="ident">node</span>.<span class="ident">as_object</span>(), <span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>).<span class="ident">unwrap</span>();
 
-    <span class="ident">node</span>
+    <span class="prelude-val">Ok</span>(<span class="ident">node</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">expressions</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>]) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">py_expression_nodes</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-    <span class="kw">for</span> <span class="ident">expression</span> <span class="kw">in</span> <span class="ident">expressions</span> {
-        <span class="ident">py_expression_nodes</span>.<span class="ident">push</span>(<span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">expression</span>));
-    }
-    <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">py_expression_nodes</span>)
+<span class="kw">fn</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">expressions</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>]) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyListRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">py_expression_nodes</span>: <span class="ident">PyResult</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">expressions</span>
+        .<span class="ident">iter</span>()
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">expression</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">expression</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()))
+        .<span class="ident">collect</span>();
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">py_expression_nodes</span><span class="question-mark">?</span>).<span class="ident">downcast</span>().<span class="ident">unwrap</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">expression</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">expression</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">expression</span> {
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> { <span class="ident">function</span>, <span class="ident">args</span>, .. } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Call&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_func_ast</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">function</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;func&quot;</span>, <span class="ident">py_func_ast</span>);
-
-            <span class="kw">let</span> <span class="ident">py_args</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;args&quot;</span>, <span class="ident">py_args</span>);
-
-            <span class="ident">node</span>
-        }
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> { <span class="ident">function</span>, <span class="ident">args</span>, .. } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Call</span>, {
+            <span class="ident">func</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">function</span>)<span class="question-mark">?</span>,
+            <span class="ident">args</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="ident">args</span>)<span class="question-mark">?</span>,
+        }),
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Binop</span> { <span class="ident">a</span>, <span class="ident">op</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;BinOp&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;left&quot;</span>, <span class="ident">py_a</span>);
-
             <span class="comment">// Operator:</span>
-            <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
+            <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
                 <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">Add</span> <span class="op">=&gt;</span> <span class="string">&quot;Add&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">Sub</span> <span class="op">=&gt;</span> <span class="string">&quot;Sub&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">Mult</span> <span class="op">=&gt;</span> <span class="string">&quot;Mult&quot;</span>,
@@ -904,56 +802,46 @@ impl AstToPyAst {
                 <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">BitAnd</span> <span class="op">=&gt;</span> <span class="string">&quot;BitAnd&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">FloorDiv</span> <span class="op">=&gt;</span> <span class="string">&quot;FloorDiv&quot;</span>,
             };
-            <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
-
-            <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;right&quot;</span>, <span class="ident">py_b</span>);
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">BinOp</span>, {
+                <span class="ident">left</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">a</span>)<span class="question-mark">?</span>,
+                <span class="ident">op</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">op</span>.<span class="ident">to_string</span>()),
+                <span class="ident">right</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+            })
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Unop</span> { <span class="ident">op</span>, <span class="ident">a</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;UnaryOp&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
+            <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
                 <span class="ident">ast</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Not</span> <span class="op">=&gt;</span> <span class="string">&quot;Not&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Inv</span> <span class="op">=&gt;</span> <span class="string">&quot;Invert&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Neg</span> <span class="op">=&gt;</span> <span class="string">&quot;USub&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">UnaryOperator</span>::<span class="ident">Pos</span> <span class="op">=&gt;</span> <span class="string">&quot;UAdd&quot;</span>,
             };
-            <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
-
-            <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;operand&quot;</span>, <span class="ident">py_a</span>);
-
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">UnaryOp</span>, {
+                <span class="ident">op</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">op</span>.<span class="ident">to_string</span>()),
+                <span class="ident">operand</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">a</span>)<span class="question-mark">?</span>,
+            })
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">BoolOp</span> { <span class="ident">a</span>, <span class="ident">op</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;BoolOp&quot;</span>);
-
             <span class="comment">// Attach values:</span>
-            <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>);
-            <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">py_a</span>, <span class="ident">py_b</span>]);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
+            <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">a</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>();
+            <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">b</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>();
+            <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">py_a</span>, <span class="ident">py_b</span>]);
 
             <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
                 <span class="ident">ast</span>::<span class="ident">BooleanOperator</span>::<span class="ident">And</span> <span class="op">=&gt;</span> <span class="string">&quot;And&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">BooleanOperator</span>::<span class="ident">Or</span> <span class="op">=&gt;</span> <span class="string">&quot;Or&quot;</span>,
             };
-            <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;op&quot;</span>, <span class="ident">py_op</span>);
+            <span class="kw">let</span> <span class="ident">py_op</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>());
 
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">BoolOp</span>, {
+                <span class="ident">op</span> <span class="op">=&gt;</span> <span class="ident">py_op</span>,
+                <span class="ident">values</span> <span class="op">=&gt;</span> <span class="ident">py_values</span>,
+            })
         }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Compare</span> { <span class="ident">a</span>, <span class="ident">op</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Compare&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_a</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;left&quot;</span>, <span class="ident">py_a</span>);
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Compare</span> { <span class="ident">vals</span>, <span class="ident">ops</span> } <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">left</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">vals</span>[<span class="number">0</span>])<span class="question-mark">?</span>;
 
             <span class="comment">// Operator:</span>
-            <span class="kw">let</span> <span class="ident">str_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">op</span> {
+            <span class="kw">let</span> <span class="ident">to_operator</span> <span class="op">=</span> <span class="op">|</span><span class="ident">op</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Comparison</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">op</span> {
                 <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Equal</span> <span class="op">=&gt;</span> <span class="string">&quot;Eq&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">NotEqual</span> <span class="op">=&gt;</span> <span class="string">&quot;NotEq&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Less</span> <span class="op">=&gt;</span> <span class="string">&quot;Lt&quot;</span>,
@@ -965,304 +853,268 @@ impl AstToPyAst {
                 <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Is</span> <span class="op">=&gt;</span> <span class="string">&quot;Is&quot;</span>,
                 <span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">IsNot</span> <span class="op">=&gt;</span> <span class="string">&quot;IsNot&quot;</span>,
             };
-            <span class="kw">let</span> <span class="ident">py_ops</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">str_op</span>.<span class="ident">to_string</span>())]);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;ops&quot;</span>, <span class="ident">py_ops</span>);
+            <span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(
+                <span class="ident">ops</span>.<span class="ident">iter</span>()
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">to_operator</span>(<span class="ident">x</span>).<span class="ident">to_string</span>()))
+                    .<span class="ident">collect</span>(),
+            );
 
-            <span class="kw">let</span> <span class="ident">py_b</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>)]);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;comparators&quot;</span>, <span class="ident">py_b</span>);
-            <span class="ident">node</span>
+            <span class="kw">let</span> <span class="ident">comparators</span>: <span class="ident">PyResult</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">vals</span>
+                .<span class="ident">iter</span>()
+                .<span class="ident">skip</span>(<span class="number">1</span>)
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">x</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()))
+                .<span class="ident">collect</span>();
+            <span class="kw">let</span> <span class="ident">comparators</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">comparators</span><span class="question-mark">?</span>);
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Compare</span>, {
+                <span class="ident">left</span> <span class="op">=&gt;</span> <span class="ident">left</span>,
+                <span class="ident">ops</span> <span class="op">=&gt;</span> <span class="ident">ops</span>,
+                <span class="ident">comparators</span> <span class="op">=&gt;</span> <span class="ident">comparators</span>,
+            })
         }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Identifier&quot;</span>);
-
-            <span class="comment">// Id:</span>
-            <span class="kw">let</span> <span class="ident">py_name</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">clone</span>());
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;id&quot;</span>, <span class="ident">py_name</span>);
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Lambda</span> { <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Lambda&quot;</span>);
-
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;args&quot;</span>, <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">args</span>));
-
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">IfExpression</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;IfExp&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_test</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">test</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;test&quot;</span>, <span class="ident">py_test</span>);
-
-            <span class="kw">let</span> <span class="ident">py_body</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">body</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;body&quot;</span>, <span class="ident">py_body</span>);
-
-            <span class="kw">let</span> <span class="ident">py_orelse</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">orelse</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;orelse&quot;</span>, <span class="ident">py_orelse</span>);
-
-            <span class="ident">node</span>
-        }
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Identifier</span>, {
+            <span class="ident">id</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">clone</span>())
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Lambda</span> { <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Lambda</span>, {
+            <span class="ident">args</span> <span class="op">=&gt;</span> <span class="ident">parameters_to_ast</span>(<span class="ident">vm</span>, <span class="ident">args</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">IfExpression</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">IfExp</span>, {
+            <span class="ident">text</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">test</span>)<span class="question-mark">?</span>,
+            <span class="ident">body</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">body</span>)<span class="question-mark">?</span>,
+            <span class="ident">or_else</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">orelse</span>)<span class="question-mark">?</span>,
+        }),
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Num&quot;</span>);
-
             <span class="kw">let</span> <span class="ident">py_n</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">value</span> {
-                <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
-                <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Float</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+                <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+                <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Float</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_float</span>(<span class="kw-2">*</span><span class="ident">value</span>),
                 <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Complex</span> { <span class="ident">real</span>, <span class="ident">imag</span> } <span class="op">=&gt;</span> {
-                    <span class="ident">ctx</span>.<span class="ident">new_complex</span>(<span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="kw-2">*</span><span class="ident">real</span>, <span class="kw-2">*</span><span class="ident">imag</span>))
+                    <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_complex</span>(<span class="ident">Complex64</span>::<span class="ident">new</span>(<span class="kw-2">*</span><span class="ident">real</span>, <span class="kw-2">*</span><span class="ident">imag</span>))
                 }
             };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;n&quot;</span>, <span class="ident">py_n</span>);
-
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Num</span>, {
+                <span class="ident">n</span> <span class="op">=&gt;</span> <span class="ident">py_n</span>
+            })
         }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">True</span> <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;NameConstant&quot;</span>);
-
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>));
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">False</span> <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;NameConstant&quot;</span>);
-
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>));
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;NameConstant&quot;</span>);
-
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">ctx</span>.<span class="ident">none</span>());
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Ellipsis</span> <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Ellipsis&quot;</span>),
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">List</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;List&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">elts</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">e</span>)).<span class="ident">collect</span>();
-            <span class="kw">let</span> <span class="ident">py_elts</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elts</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Tuple</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Tuple&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">elts</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">e</span>)).<span class="ident">collect</span>();
-            <span class="kw">let</span> <span class="ident">py_elts</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elts</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Set</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Set&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">elts</span> <span class="op">=</span> <span class="ident">elements</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">e</span>)).<span class="ident">collect</span>();
-            <span class="kw">let</span> <span class="ident">py_elts</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elts</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;elts&quot;</span>, <span class="ident">py_elts</span>);
-
-            <span class="ident">node</span>
-        }
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">True</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">NameConstant</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>)
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">False</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">NameConstant</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>)
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">NameConstant</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Ellipsis</span> <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Ellipsis</span>),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">List</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">List</span>, {
+            <span class="ident">elts</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elements</span>)<span class="question-mark">?</span>
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Tuple</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Tuple</span>, {
+            <span class="ident">elts</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elements</span>)<span class="question-mark">?</span>
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Set</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Set</span>, {
+            <span class="ident">elts</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">elements</span>)<span class="question-mark">?</span>
+        }),
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Dict</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Dict&quot;</span>);
-
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">keys</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">values</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
             <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">elements</span> {
-                <span class="ident">keys</span>.<span class="ident">push</span>(<span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">k</span>));
-                <span class="ident">values</span>.<span class="ident">push</span>(<span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">v</span>));
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">k</span>) <span class="op">=</span> <span class="ident">k</span> {
+                    <span class="ident">keys</span>.<span class="ident">push</span>(<span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">k</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>());
+                } <span class="kw">else</span> {
+                    <span class="ident">keys</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>());
+                }
+                <span class="ident">values</span>.<span class="ident">push</span>(<span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">v</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>());
             }
 
-            <span class="kw">let</span> <span class="ident">py_keys</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">keys</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;keys&quot;</span>, <span class="ident">py_keys</span>);
-
-            <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">values</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
-
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Dict</span>, {
+                <span class="ident">keys</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">keys</span>),
+                <span class="ident">values</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">values</span>),
+            })
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Comprehension</span> { <span class="ident">kind</span>, <span class="ident">generators</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span>.<span class="ident">deref</span>() {
+            <span class="kw">let</span> <span class="ident">py_generators</span> <span class="op">=</span> <span class="ident">map_ast</span>(<span class="ident">comprehension_to_ast</span>, <span class="ident">vm</span>, <span class="ident">generators</span>)<span class="question-mark">?</span>;
+
+            <span class="kw">match</span> <span class="ident">kind</span>.<span class="ident">deref</span>() {
                 <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">GeneratorExpression</span> { .. } <span class="op">=&gt;</span> {
-                    <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;GeneratorExp&quot;</span>)
+                    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">GeneratorExp</span>, {<span class="ident">generators</span> <span class="op">=&gt;</span> <span class="ident">py_generators</span>})
                 }
-                <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> { .. } <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;ListComp&quot;</span>),
-                <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">Set</span> { .. } <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;SetComp&quot;</span>),
-                <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">Dict</span> { .. } <span class="op">=&gt;</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;DictComp&quot;</span>),
-            };
-
-            <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">generators</span>
-                .<span class="ident">iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">g</span><span class="op">|</span> <span class="ident">comprehension_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">g</span>))
-                .<span class="ident">collect</span>();
-            <span class="kw">let</span> <span class="ident">py_generators</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">g</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;generators&quot;</span>, <span class="ident">py_generators</span>);
-
-            <span class="ident">node</span>
+                <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> { .. } <span class="op">=&gt;</span> {
+                    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">ListComp</span>, {<span class="ident">generators</span> <span class="op">=&gt;</span> <span class="ident">py_generators</span>})
+                }
+                <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">Set</span> { .. } <span class="op">=&gt;</span> {
+                    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">SetComp</span>, {<span class="ident">generators</span> <span class="op">=&gt;</span> <span class="ident">py_generators</span>})
+                }
+                <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">Dict</span> { .. } <span class="op">=&gt;</span> {
+                    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">DictComp</span>, {<span class="ident">generators</span> <span class="op">=&gt;</span> <span class="ident">py_generators</span>})
+                }
+            }
+        }
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Await</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>;
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Await</span>, {
+                <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">py_value</span>
+            })
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Yield</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Yield&quot;</span>);
-
             <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">value</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>),
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">none</span>(),
+                <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>(),
+                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>(),
             };
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
-
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Yield</span>, {
+                <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">py_value</span>
+            })
         }
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">YieldFrom</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;YieldFrom&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
-
-            <span class="ident">node</span>
+            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>;
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">YieldFrom</span>, {
+                <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">py_value</span>
+            })
         }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Subscript</span> { <span class="ident">a</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Subscript&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
-
-            <span class="kw">let</span> <span class="ident">py_slice</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">b</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;slice&quot;</span>, <span class="ident">py_slice</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Attribute</span> { <span class="ident">value</span>, <span class="ident">name</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Attribute&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
-
-            <span class="kw">let</span> <span class="ident">py_attr</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>());
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;attr&quot;</span>, <span class="ident">py_attr</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Starred</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Starred&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Slice</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Slice&quot;</span>);
-
-            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">elements</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;bounds&quot;</span>, <span class="ident">py_value</span>);
-
-            <span class="ident">node</span>
-        }
-        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">string_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Subscript</span> { <span class="ident">a</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Subscript</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">a</span>)<span class="question-mark">?</span>,
+            <span class="ident">slice</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">b</span>)<span class="question-mark">?</span>,
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Attribute</span> { <span class="ident">value</span>, <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Attribute</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>,
+            <span class="ident">attr</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()),
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Starred</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Starred</span>, {
+            <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Slice</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Slice</span>, {
+            <span class="ident">bounds</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="ident">elements</span>)<span class="question-mark">?</span>
+        }),
+        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> <span class="ident">string_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>),
         <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Bytes</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Bytes&quot;</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;s&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Bytes</span>, { <span class="ident">s</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>.<span class="ident">clone</span>()) })
         }
-    };
+    }<span class="question-mark">?</span>;
 
     <span class="comment">// TODO: retrieve correct lineno:</span>
-    <span class="kw">let</span> <span class="ident">lineno</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="number">1</span>);
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>);
-
-    <span class="ident">node</span>
+    <span class="kw">let</span> <span class="ident">lineno</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="number">1</span>);
+    <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="ident">node</span>.<span class="ident">as_object</span>(), <span class="string">&quot;lineno&quot;</span>, <span class="ident">lineno</span>).<span class="ident">unwrap</span>();
+    <span class="prelude-val">Ok</span>(<span class="ident">node</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">parameters_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Parameters</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;arguments&quot;</span>);
-
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(
-        <span class="kw-2">&amp;</span><span class="ident">node</span>,
-        <span class="string">&quot;args&quot;</span>,
-        <span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">parameter_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">a</span>)).<span class="ident">collect</span>()),
-    );
-
-    <span class="ident">node</span>
+<span class="kw">fn</span> <span class="ident">parameters_to_ast</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Parameters</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">map_ast</span>(<span class="ident">parameter_to_ast</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">args</span>)<span class="question-mark">?</span>;
+    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">arguments</span>, { <span class="ident">args</span> <span class="op">=&gt;</span> <span class="ident">args</span> })
 }
 
-<span class="kw">fn</span> <span class="ident">parameter_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">parameter</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Parameter</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;arg&quot;</span>);
-
-    <span class="kw">let</span> <span class="ident">py_arg</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">parameter</span>.<span class="ident">arg</span>.<span class="ident">to_string</span>());
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;arg&quot;</span>, <span class="ident">py_arg</span>);
-
+<span class="kw">fn</span> <span class="ident">parameter_to_ast</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">parameter</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Parameter</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">py_annotation</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">annotation</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">parameter</span>.<span class="ident">annotation</span> {
-        <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">annotation</span>)
+        <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">annotation</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>()
     } <span class="kw">else</span> {
-        <span class="ident">ctx</span>.<span class="ident">none</span>()
+        <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>()
     };
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;annotation&quot;</span>, <span class="ident">py_annotation</span>);
 
-    <span class="ident">node</span>
+    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">arg</span>, {
+        <span class="ident">arg</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">parameter</span>.<span class="ident">arg</span>.<span class="ident">to_string</span>()),
+        <span class="ident">annotation</span> <span class="op">=&gt;</span> <span class="ident">py_annotation</span>
+    })
 }
 
-<span class="kw">fn</span> <span class="ident">comprehension_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">comprehension</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Comprehension</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;comprehension&quot;</span>);
-
-    <span class="kw">let</span> <span class="ident">py_target</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">target</span>);
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;target&quot;</span>, <span class="ident">py_target</span>);
-
-    <span class="kw">let</span> <span class="ident">py_iter</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">iter</span>);
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;iter&quot;</span>, <span class="ident">py_iter</span>);
-
-    <span class="kw">let</span> <span class="ident">py_ifs</span> <span class="op">=</span> <span class="ident">expressions_to_ast</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">ifs</span>);
-    <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;ifs&quot;</span>, <span class="ident">py_ifs</span>);
-
-    <span class="ident">node</span>
+<span class="kw">fn</span> <span class="ident">map_ast</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+    <span class="ident">f</span>: <span class="kw">fn</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span>,
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>],
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">list</span>: <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;&gt;</span> <span class="op">=</span>
+        <span class="ident">items</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">f</span>(<span class="ident">vm</span>, <span class="ident">x</span>)<span class="question-mark">?</span>.<span class="ident">into_object</span>())).<span class="ident">collect</span>();
+    <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">list</span><span class="question-mark">?</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">string_to_ast</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>, <span class="ident">string</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">StringGroup</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">comprehension_to_ast</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">comprehension</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Comprehension</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
+    <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">comprehension</span>, {
+        <span class="ident">target</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">target</span>)<span class="question-mark">?</span>,
+        <span class="ident">iter</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">iter</span>)<span class="question-mark">?</span>,
+        <span class="ident">ifs</span> <span class="op">=&gt;</span> <span class="ident">expressions_to_ast</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">comprehension</span>.<span class="ident">ifs</span>)<span class="question-mark">?</span>,
+    })
+}
+
+<span class="kw">fn</span> <span class="ident">string_to_ast</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">string</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">StringGroup</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">string</span> {
         <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;Str&quot;</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;s&quot;</span>, <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">Str</span>, { <span class="ident">s</span> <span class="op">=&gt;</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()) })
         }
         <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">FormattedValue</span> { <span class="ident">value</span>, .. } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;FormattedValue&quot;</span>);
-            <span class="kw">let</span> <span class="ident">py_value</span> <span class="op">=</span> <span class="ident">expression_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>);
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;value&quot;</span>, <span class="ident">py_value</span>);
-            <span class="ident">node</span>
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">FormattedValue</span>, { <span class="ident">value</span> <span class="op">=&gt;</span> <span class="ident">expression_to_ast</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span> })
         }
         <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Joined</span> { <span class="ident">values</span> } <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">create_node</span>(<span class="ident">ctx</span>, <span class="string">&quot;JoinedStr&quot;</span>);
-            <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(
-                <span class="ident">values</span>
-                    .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">value</span><span class="op">|</span> <span class="ident">string_to_ast</span>(<span class="ident">ctx</span>, <span class="ident">value</span>))
-                    .<span class="ident">collect</span>(),
-            );
-            <span class="ident">ctx</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="string">&quot;values&quot;</span>, <span class="ident">py_values</span>);
-            <span class="ident">node</span>
+            <span class="kw">let</span> <span class="ident">py_values</span> <span class="op">=</span> <span class="ident">map_ast</span>(<span class="ident">string_to_ast</span>, <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">values</span>)<span class="question-mark">?</span>;
+            <span class="macro">node</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">JoinedStr</span>, { <span class="ident">values</span> <span class="op">=&gt;</span> <span class="ident">py_values</span> })
         }
     }
 }
 
-<span class="kw">fn</span> <span class="ident">ast_parse</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-    <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()))]);
-
-    <span class="kw">let</span> <span class="ident">source_string</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">source</span>);
-    <span class="kw">let</span> <span class="ident">internal_ast</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">source_string</span>)
+<span class="kw">fn</span> <span class="ident">ast_parse</span>(<span class="ident">source</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">AstNodeRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">internal_ast</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>.<span class="ident">value</span>)
         .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">err</span>)))<span class="question-mark">?</span>;
     <span class="comment">// source.clone();</span>
-    <span class="kw">let</span> <span class="ident">ast_node</span> <span class="op">=</span> <span class="ident">program_to_ast</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">internal_ast</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">ast_node</span>)
+    <span class="ident">program_to_ast</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">internal_ast</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
-    <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;ast&quot;</span>, {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>;
+
+    <span class="kw">let</span> <span class="ident">ast_base</span> <span class="op">=</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.AST&quot;</span>, <span class="ident">ctx</span>.<span class="ident">object</span>(), {});
+    <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="string">&quot;ast&quot;</span>, {
         <span class="string">&quot;parse&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">ast_parse</span>),
-        <span class="string">&quot;Module&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Module&quot;</span>, <span class="ident">ctx</span>.<span class="ident">object</span>(), {}),
-        <span class="string">&quot;FunctionDef&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.FunctionDef&quot;</span>, <span class="ident">ctx</span>.<span class="ident">object</span>(), {}),
-        <span class="string">&quot;Call&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Call&quot;</span>, <span class="ident">ctx</span>.<span class="ident">object</span>(), {})
+        <span class="string">&quot;AST&quot;</span> <span class="op">=&gt;</span> <span class="ident">ast_base</span>.<span class="ident">clone</span>(),
+        <span class="comment">// TODO: There&#39;s got to be a better way!</span>
+        <span class="string">&quot;arg&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.arg&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;arguments&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.arguments&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;AsyncFor&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.AsyncFor&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;AsyncFunctionDef&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.AsyncFunctionDef&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Assert&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Assert&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Attribute&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Attribute&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Await&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Await&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;BinOp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.BinOp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;BoolOp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.BoolOp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Break&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Break&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Bytes&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Bytes&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Call&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Call&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;ClassDef&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.ClassDef&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Compare&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Compare&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;comprehension&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.comprehension&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Continue&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Continue&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Delete&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Delete&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Dict&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Dict&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;DictComp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.DictComp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Ellipsis&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Ellipsis&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Expr&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Expr&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;For&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.For&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;FormattedValue&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.FormattedValue&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;FunctionDef&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.FunctionDef&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;GeneratorExp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.GeneratorExp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Identifier&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Identifier&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;If&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.If&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;IfExp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.IfExp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;JoinedStr&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.JoinedStr&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Lambda&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Lambda&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;List&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.List&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;ListComp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.ListComp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Module&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Module&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;NameConstant&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.NameConstant&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;NameConstant&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.NameConstant&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;NameConstant&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.NameConstant&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Num&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Num&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Pass&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Pass&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Return&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Return&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Set&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Set&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;SetComp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.SetComp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Starred&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Starred&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Starred&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Starred&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Str&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Str&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Subscript&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Subscript&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Tuple&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Tuple&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;UnaryOp&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.UnaryOp&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;While&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.While&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;Yield&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.Yield&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
+        <span class="string">&quot;YieldFrom&quot;</span> <span class="op">=&gt;</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;_ast.YieldFrom&quot;</span>, <span class="ident">ast_base</span>.<span class="ident">clone</span>(), {}),
     })
 }
 </pre></div>

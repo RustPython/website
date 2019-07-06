@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["VMStore",""],["WASMVirtualMachine",""]],"trait":[["HeldRcInner",""]]});
+initSidebarItems({"fn":[["get_vm_id",""]],"struct":[["VMStore",""],["WASMVirtualMachine",""]]});

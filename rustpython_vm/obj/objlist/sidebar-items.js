@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PyList",""]],"type":[["PyListRef",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyList",""],["PyListIterator",""]],"type":[["PyListRef",""]]});

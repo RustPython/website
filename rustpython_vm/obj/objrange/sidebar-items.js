@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyRange",""]]});
+initSidebarItems({"enum":[["RangeIndex",""]],"fn":[["get_value",""],["init",""]],"struct":[["PyRange","range(stop) -> range object range(start, stop[, step]) -> range object"],["PyRangeIterator",""]]});
