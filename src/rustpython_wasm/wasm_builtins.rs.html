@@ -76,9 +76,6 @@
 <span id="76">76</span>
 <span id="77">77</span>
 <span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Builtin function specific to WASM build.</span>
 <span class="doccomment">//!</span>
@@ -89,12 +86,9 @@
 <span class="kw">use</span> <span class="ident">js_sys</span>::{<span class="self">self</span>, <span class="ident">Array</span>};
 <span class="kw">use</span> <span class="ident">web_sys</span>::{<span class="self">self</span>, <span class="ident">console</span>};
 
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">function</span>::{<span class="ident">Args</span>, <span class="ident">KwArgs</span>, <span class="ident">PyFuncArgs</span>};
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::{
-    <span class="ident">objstr</span>::{<span class="self">self</span>, <span class="ident">PyStringRef</span>},
-    <span class="ident">objtype</span>,
-};
-<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{<span class="ident">IdProtocol</span>, <span class="ident">ItemProtocol</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::{<span class="ident">objstr</span>, <span class="ident">objtype</span>};
+<span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::{<span class="ident">IdProtocol</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">TypeProtocol</span>};
 <span class="kw">use</span> <span class="ident">rustpython_vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">window</span>() <span class="op">-&gt;</span> <span class="ident">web_sys</span>::<span class="ident">Window</span> {

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `parser/src/parser.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>parser.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_parser/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `parser/src/parser.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>parser.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_parser/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -443,54 +443,6 @@
 <span id="443">443</span>
 <span id="444">444</span>
 <span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
-<span id="458">458</span>
-<span id="459">459</span>
-<span id="460">460</span>
-<span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
-<span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
-<span id="474">474</span>
-<span id="475">475</span>
-<span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>;
 
@@ -529,7 +481,7 @@
     <span class="macro">do_lalr_parsing</span><span class="macro">!</span>(<span class="ident">source</span>, <span class="ident">Program</span>, <span class="ident">StartProgram</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_statement</span>(<span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span><span class="op">&gt;</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_statement</span>(<span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Statement</span><span class="op">&gt;</span>, <span class="ident">ParseError</span><span class="op">&gt;</span> {
     <span class="macro">do_lalr_parsing</span><span class="macro">!</span>(<span class="ident">source</span>, <span class="ident">Statement</span>, <span class="ident">StartStatement</span>)
 }
 
@@ -540,16 +492,25 @@
 <span class="doccomment">/// extern crate num_bigint;</span>
 <span class="doccomment">/// use num_bigint::BigInt;</span>
 <span class="doccomment">/// use rustpython_parser::{parser, ast};</span>
-<span class="doccomment">/// let expr = parser::parse_expression(&quot;1+2&quot;).unwrap();</span>
+<span class="doccomment">/// let expr = parser::parse_expression(&quot;1 + 2&quot;).unwrap();</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// assert_eq!(ast::Expression::Binop {</span>
-<span class="doccomment">///         a: Box::new(ast::Expression::Number {</span>
-<span class="doccomment">///             value: ast::Number::Integer { value: BigInt::from(1) }</span>
-<span class="doccomment">///         }),</span>
-<span class="doccomment">///         op: ast::Operator::Add,</span>
-<span class="doccomment">///         b: Box::new(ast::Expression::Number {</span>
-<span class="doccomment">///             value: ast::Number::Integer { value: BigInt::from(2) }</span>
-<span class="doccomment">///         })</span>
+<span class="doccomment">/// assert_eq!(ast::Expression {</span>
+<span class="doccomment">///         location: ast::Location::new(1, 3),</span>
+<span class="doccomment">///         node: ast::ExpressionType::Binop {</span>
+<span class="doccomment">///             a: Box::new(ast::Expression {</span>
+<span class="doccomment">///                 location: ast::Location::new(1, 1),</span>
+<span class="doccomment">///                 node: ast::ExpressionType::Number {</span>
+<span class="doccomment">///                     value: ast::Number::Integer { value: BigInt::from(1) }</span>
+<span class="doccomment">///                 }</span>
+<span class="doccomment">///             }),</span>
+<span class="doccomment">///             op: ast::Operator::Add,</span>
+<span class="doccomment">///             b: Box::new(ast::Expression {</span>
+<span class="doccomment">///                 location: ast::Location::new(1, 5),</span>
+<span class="doccomment">///                 node: ast::ExpressionType::Number {</span>
+<span class="doccomment">///                     value: ast::Number::Integer { value: BigInt::from(2) }</span>
+<span class="doccomment">///                 }</span>
+<span class="doccomment">///             })</span>
+<span class="doccomment">///         }</span>
 <span class="doccomment">///     },</span>
 <span class="doccomment">///     expr);</span>
 <span class="doccomment">///</span>
@@ -566,32 +527,67 @@
     <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">parse_statement</span>;
     <span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">BigInt</span>;
 
+    <span class="kw">fn</span> <span class="ident">mk_ident</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row</span>: <span class="ident">usize</span>, <span class="ident">col</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Expression</span> {
+        <span class="ident">ast</span>::<span class="ident">Expression</span> {
+            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="ident">row</span>, <span class="ident">col</span>),
+            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Identifier</span> {
+                <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>(),
+            },
+        }
+    }
+
+    <span class="kw">fn</span> <span class="ident">make_int</span>(<span class="ident">value</span>: <span class="ident">i32</span>, <span class="ident">row</span>: <span class="ident">usize</span>, <span class="ident">col</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Expression</span> {
+        <span class="ident">ast</span>::<span class="ident">Expression</span> {
+            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="ident">row</span>, <span class="ident">col</span>),
+            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Number</span> {
+                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
+                    <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="ident">value</span>),
+                },
+            },
+        }
+    }
+
+    <span class="kw">fn</span> <span class="ident">make_string</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">row</span>: <span class="ident">usize</span>, <span class="ident">col</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Expression</span> {
+        <span class="ident">ast</span>::<span class="ident">Expression</span> {
+            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="ident">row</span>, <span class="ident">col</span>),
+            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">String</span> {
+                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> {
+                    <span class="ident">value</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">value</span>),
+                },
+            },
+        }
+    }
+
+    <span class="kw">fn</span> <span class="ident">as_statement</span>(<span class="ident">expr</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Statement</span> {
+        <span class="ident">ast</span>::<span class="ident">Statement</span> {
+            <span class="ident">location</span>: <span class="ident">expr</span>.<span class="ident">location</span>.<span class="ident">clone</span>(),
+            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Expression</span> { <span class="ident">expression</span>: <span class="ident">expr</span> },
+        }
+    }
+
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_empty</span>() {
-        <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;\n&quot;</span>));
+        <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;&quot;</span>));
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">parse_ast</span>, <span class="prelude-val">Ok</span>(<span class="ident">ast</span>::<span class="ident">Program</span> { <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[] }))
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_print_hello</span>() {
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;print(&#39;Hello world&#39;)\n&quot;</span>);
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;print(&#39;Hello world&#39;)&quot;</span>);
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
             <span class="ident">ast</span>::<span class="ident">Program</span> {
-                <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                     <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                        <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> {
-                            <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;print&quot;</span>),
-                            }),
-                            <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> {
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> {
-                                    <span class="ident">value</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Hello world&quot;</span>)
-                                }
-                            }],
-                            <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Expression</span> {
+                        <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">6</span>),
+                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Call</span> {
+                                <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">mk_ident</span>(<span class="string">&quot;print&quot;</span>, <span class="number">1</span>, <span class="number">1</span>)),
+                                <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">make_string</span>(<span class="string">&quot;Hello world&quot;</span>, <span class="number">1</span>, <span class="number">8</span>)],
+                                <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                            }
                         },
                     },
                 },],
@@ -601,31 +597,21 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_print_2</span>() {
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;print(&#39;Hello world&#39;, 2)\n&quot;</span>);
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;print(&#39;Hello world&#39;, 2)&quot;</span>);
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
             <span class="ident">ast</span>::<span class="ident">Program</span> {
-                <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                     <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                        <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> {
-                            <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;print&quot;</span>),
-                            }),
-                            <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                                <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> {
-                                    <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> {
-                                        <span class="ident">value</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Hello world&quot;</span>),
-                                    }
-                                },
-                                <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                    <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                        <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">2</span>)
-                                    },
-                                }
-                            ],
-                            <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Expression</span> {
+                        <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">6</span>),
+                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Call</span> {
+                                <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">mk_ident</span>(<span class="string">&quot;print&quot;</span>, <span class="number">1</span>, <span class="number">1</span>)),
+                                <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">make_string</span>(<span class="string">&quot;Hello world&quot;</span>, <span class="number">1</span>, <span class="number">8</span>), <span class="ident">make_int</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">22</span>),],
+                                <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                            },
                         },
                     },
                 },],
@@ -635,31 +621,24 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_kwargs</span>() {
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;my_func(&#39;positional&#39;, keyword=2)\n&quot;</span>);
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;my_func(&#39;positional&#39;, keyword=2)&quot;</span>);
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_program</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
             <span class="ident">ast</span>::<span class="ident">Program</span> {
-                <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                <span class="ident">statements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                     <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                        <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> {
-                            <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;my_func&quot;</span>),
-                            }),
-                            <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> {
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> {
-                                    <span class="ident">value</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;positional&quot;</span>),
-                                }
-                            }],
-                            <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Keyword</span> {
-                                <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;keyword&quot;</span>.<span class="ident">to_string</span>()),
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                    <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                        <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">2</span>)
-                                    },
-                                }
-                            }],
+                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Expression</span> {
+                        <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">8</span>),
+                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Call</span> {
+                                <span class="ident">function</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">mk_ident</span>(<span class="string">&quot;my_func&quot;</span>, <span class="number">1</span>, <span class="number">1</span>)),
+                                <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">make_string</span>(<span class="string">&quot;positional&quot;</span>, <span class="number">1</span>, <span class="number">10</span>)],
+                                <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Keyword</span> {
+                                    <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;keyword&quot;</span>.<span class="ident">to_string</span>()),
+                                    <span class="ident">value</span>: <span class="ident">make_int</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">31</span>),
+                                }],
+                            }
                         },
                     },
                 },],
@@ -669,56 +648,21 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_if_elif_else</span>() {
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;if 1: 10\nelif 2: 20\nelse: 30\n&quot;</span>);
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;if 1: 10\nelif 2: 20\nelse: 30&quot;</span>);
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_statement</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
-            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                 <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">If</span> {
-                    <span class="ident">test</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                        <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                            <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">1</span>)
-                        },
-                    },
-                    <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
-                        <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">7</span>),
-                        <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                            <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                    <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">10</span>)
-                                },
-                            }
-                        },
-                    },],
-                    <span class="ident">orelse</span>: <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">If</span> {
+                    <span class="ident">test</span>: <span class="ident">make_int</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">4</span>),
+                    <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">as_statement</span>(<span class="ident">make_int</span>(<span class="number">10</span>, <span class="number">1</span>, <span class="number">7</span>))],
+                    <span class="ident">orelse</span>: <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                         <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">1</span>),
-                        <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">If</span> {
-                            <span class="ident">test</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                    <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">2</span>)
-                                },
-                            },
-                            <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
-                                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">9</span>),
-                                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                                    <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                        <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                            <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">20</span>)
-                                        },
-                                    },
-                                },
-                            },],
-                            <span class="ident">orelse</span>: <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
-                                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">3</span>, <span class="number">7</span>),
-                                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                                    <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                        <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                            <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">30</span>)
-                                        },
-                                    },
-                                },
-                            },]),
+                        <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">If</span> {
+                            <span class="ident">test</span>: <span class="ident">make_int</span>(<span class="number">2</span>, <span class="number">2</span>, <span class="number">6</span>),
+                            <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">as_statement</span>(<span class="ident">make_int</span>(<span class="number">20</span>, <span class="number">2</span>, <span class="number">9</span>))],
+                            <span class="ident">orelse</span>: <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">as_statement</span>(<span class="ident">make_int</span>(<span class="number">30</span>, <span class="number">3</span>, <span class="number">7</span>))]),
                         }
                     },]),
                 }
@@ -728,78 +672,65 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_lambda</span>() {
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;lambda x, y: x * y\n&quot;</span>); <span class="comment">// lambda(x, y): x * y&quot;);</span>
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;lambda x, y: x * y&quot;</span>); <span class="comment">// lambda(x, y): x * y&quot;);</span>
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_statement</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
-            <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+            <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">as_statement</span>(<span class="ident">ast</span>::<span class="ident">Expression</span> {
                 <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> {
-                    <span class="ident">expression</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Lambda</span> {
-                        <span class="ident">args</span>: <span class="ident">ast</span>::<span class="ident">Parameters</span> {
-                            <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                                <span class="ident">ast</span>::<span class="ident">Parameter</span> {
-                                    <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;x&quot;</span>),
-                                    <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
-                                },
-                                <span class="ident">ast</span>::<span class="ident">Parameter</span> {
-                                    <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;y&quot;</span>),
-                                    <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
-                                }
-                            ],
-                            <span class="ident">kwonlyargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                            <span class="ident">vararg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
-                            <span class="ident">kwarg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
-                            <span class="ident">defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                            <span class="ident">kw_defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                        },
-                        <span class="ident">body</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Binop</span> {
-                            <span class="ident">a</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;x&quot;</span>),
-                            }),
+                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Lambda</span> {
+                    <span class="ident">args</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Parameters</span> {
+                        <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                            <span class="ident">ast</span>::<span class="ident">Parameter</span> {
+                                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">8</span>),
+                                <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;x&quot;</span>),
+                                <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
+                            },
+                            <span class="ident">ast</span>::<span class="ident">Parameter</span> {
+                                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">11</span>),
+                                <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;y&quot;</span>),
+                                <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
+                            }
+                        ],
+                        <span class="ident">kwonlyargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                        <span class="ident">vararg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
+                        <span class="ident">kwarg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
+                        <span class="ident">defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                        <span class="ident">kw_defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                    }),
+                    <span class="ident">body</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span> {
+                        <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">16</span>),
+                        <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Binop</span> {
+                            <span class="ident">a</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">mk_ident</span>(<span class="string">&quot;x&quot;</span>, <span class="number">1</span>, <span class="number">14</span>)),
                             <span class="ident">op</span>: <span class="ident">ast</span>::<span class="ident">Operator</span>::<span class="ident">Mult</span>,
-                            <span class="ident">b</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;y&quot;</span>),
-                            })
-                        })
-                    }
+                            <span class="ident">b</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">mk_ident</span>(<span class="string">&quot;y&quot;</span>, <span class="number">1</span>, <span class="number">18</span>))
+                        }
+                    })
                 }
-            }])
+            })])
         )
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_tuples</span>() {
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;a, b = 4, 5\n&quot;</span>);
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;a, b = 4, 5&quot;</span>);
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_statement</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>),
-            <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+            <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                 <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assign</span> {
-                    <span class="ident">targets</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Tuple</span> {
-                        <span class="ident">elements</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="string">&quot;a&quot;</span>.<span class="ident">to_string</span>()
-                            },
-                            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                <span class="ident">name</span>: <span class="string">&quot;b&quot;</span>.<span class="ident">to_string</span>()
-                            }
-                        ]
+                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Assign</span> {
+                    <span class="ident">targets</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Expression</span> {
+                        <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
+                        <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Tuple</span> {
+                            <span class="ident">elements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mk_ident</span>(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>, <span class="number">1</span>), <span class="ident">mk_ident</span>(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>, <span class="number">4</span>),]
+                        }
                     }],
-                    <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Tuple</span> {
-                        <span class="ident">elements</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                    <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">4</span>)
-                                }
-                            },
-                            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                    <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">5</span>)
-                                }
-                            }
-                        ]
+                    <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                        <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">8</span>),
+                        <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Tuple</span> {
+                            <span class="ident">elements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">make_int</span>(<span class="number">4</span>, <span class="number">1</span>, <span class="number">8</span>), <span class="ident">make_int</span>(<span class="number">5</span>, <span class="number">1</span>, <span class="number">11</span>),]
+                        }
                     }
                 }
             }])
@@ -809,30 +740,25 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_parse_class</span>() {
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(
-            <span class="string">&quot;class Foo(A, B):\n def __init__(self):\n  pass\n def method_with_default(self, arg=&#39;default&#39;):\n  pass\n&quot;</span>,
+            <span class="string">&quot;class Foo(A, B):\n def __init__(self):\n  pass\n def method_with_default(self, arg=&#39;default&#39;):\n  pass&quot;</span>,
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_statement</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>),
-            <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+            <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                 <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">1</span>),
-                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">ClassDef</span> {
+                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">ClassDef</span> {
                     <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Foo&quot;</span>),
-                    <span class="ident">bases</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                            <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;A&quot;</span>)
-                        },
-                        <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                            <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;B&quot;</span>)
-                        }
-                    ],
+                    <span class="ident">bases</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mk_ident</span>(<span class="string">&quot;A&quot;</span>, <span class="number">1</span>, <span class="number">11</span>), <span class="ident">mk_ident</span>(<span class="string">&quot;B&quot;</span>, <span class="number">1</span>, <span class="number">14</span>)],
                     <span class="ident">keywords</span>: <span class="macro">vec</span><span class="macro">!</span>[],
                     <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                        <span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                        <span class="ident">ast</span>::<span class="ident">Statement</span> {
                             <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">2</span>),
-                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">FunctionDef</span> {
+                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">FunctionDef</span> {
+                                <span class="ident">is_async</span>: <span class="bool-val">false</span>,
                                 <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;__init__&quot;</span>),
-                                <span class="ident">args</span>: <span class="ident">ast</span>::<span class="ident">Parameters</span> {
+                                <span class="ident">args</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Parameters</span> {
                                     <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Parameter</span> {
+                                        <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">15</span>),
                                         <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;self&quot;</span>),
                                         <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
                                     }],
@@ -841,26 +767,29 @@
                                     <span class="ident">kwarg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
                                     <span class="ident">defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
                                     <span class="ident">kw_defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                                },
-                                <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                                }),
+                                <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                                     <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">3</span>, <span class="number">3</span>),
-                                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Pass</span>,
+                                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Pass</span>,
                                 }],
                                 <span class="ident">decorator_list</span>: <span class="macro">vec</span><span class="macro">!</span>[],
                                 <span class="ident">returns</span>: <span class="prelude-val">None</span>,
                             }
                         },
-                        <span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                        <span class="ident">ast</span>::<span class="ident">Statement</span> {
                             <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">4</span>, <span class="number">2</span>),
-                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">FunctionDef</span> {
+                            <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">FunctionDef</span> {
+                                <span class="ident">is_async</span>: <span class="bool-val">false</span>,
                                 <span class="ident">name</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;method_with_default&quot;</span>),
-                                <span class="ident">args</span>: <span class="ident">ast</span>::<span class="ident">Parameters</span> {
+                                <span class="ident">args</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">Parameters</span> {
                                     <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[
                                         <span class="ident">ast</span>::<span class="ident">Parameter</span> {
+                                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">4</span>, <span class="number">26</span>),
                                             <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;self&quot;</span>),
                                             <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
                                         },
                                         <span class="ident">ast</span>::<span class="ident">Parameter</span> {
+                                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">4</span>, <span class="number">32</span>),
                                             <span class="ident">arg</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;arg&quot;</span>),
                                             <span class="ident">annotation</span>: <span class="prelude-val">None</span>,
                                         }
@@ -868,16 +797,12 @@
                                     <span class="ident">kwonlyargs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
                                     <span class="ident">vararg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
                                     <span class="ident">kwarg</span>: <span class="ident">ast</span>::<span class="ident">Varargs</span>::<span class="prelude-val">None</span>,
-                                    <span class="ident">defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> {
-                                        <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">StringGroup</span>::<span class="ident">Constant</span> {
-                                            <span class="ident">value</span>: <span class="string">&quot;default&quot;</span>.<span class="ident">to_string</span>()
-                                        }
-                                    }],
+                                    <span class="ident">defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">make_string</span>(<span class="string">&quot;default&quot;</span>, <span class="number">4</span>, <span class="number">37</span>)],
                                     <span class="ident">kw_defaults</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                                },
-                                <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span> {
+                                }),
+                                <span class="ident">body</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Statement</span> {
                                     <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">5</span>, <span class="number">3</span>),
-                                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Pass</span>,
+                                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="ident">Pass</span>,
                                 }],
                                 <span class="ident">decorator_list</span>: <span class="macro">vec</span><span class="macro">!</span>[],
                                 <span class="ident">returns</span>: <span class="prelude-val">None</span>,
@@ -896,21 +821,19 @@
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_expression</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Comprehension</span> {
-                <span class="ident">kind</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> {
-                    <span class="ident">element</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                        <span class="ident">name</span>: <span class="string">&quot;x&quot;</span>.<span class="ident">to_string</span>()
-                    }
-                }),
-                <span class="ident">generators</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Comprehension</span> {
-                    <span class="ident">target</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                        <span class="ident">name</span>: <span class="string">&quot;y&quot;</span>.<span class="ident">to_string</span>()
-                    },
-                    <span class="ident">iter</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                        <span class="ident">name</span>: <span class="string">&quot;z&quot;</span>.<span class="ident">to_string</span>()
-                    },
-                    <span class="ident">ifs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                }],
+            <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">2</span>),
+                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Comprehension</span> {
+                    <span class="ident">kind</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> {
+                        <span class="ident">element</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;x&quot;</span>, <span class="number">1</span>, <span class="number">2</span>),
+                    }),
+                    <span class="ident">generators</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Comprehension</span> {
+                        <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">4</span>),
+                        <span class="ident">target</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;y&quot;</span>, <span class="number">1</span>, <span class="number">8</span>),
+                        <span class="ident">iter</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;z&quot;</span>, <span class="number">1</span>, <span class="number">13</span>),
+                        <span class="ident">ifs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                    }],
+                }
             }
         );
     }
@@ -921,66 +844,47 @@
         <span class="kw">let</span> <span class="ident">parse_ast</span> <span class="op">=</span> <span class="ident">parse_expression</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">parse_ast</span>,
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Comprehension</span> {
-                <span class="ident">kind</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> {
-                    <span class="ident">element</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                        <span class="ident">name</span>: <span class="string">&quot;x&quot;</span>.<span class="ident">to_string</span>()
-                    }
-                }),
-                <span class="ident">generators</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                    <span class="ident">ast</span>::<span class="ident">Comprehension</span> {
-                        <span class="ident">target</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Tuple</span> {
-                            <span class="ident">elements</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                                <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                    <span class="ident">name</span>: <span class="string">&quot;y&quot;</span>.<span class="ident">to_string</span>()
+            <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">2</span>),
+                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Comprehension</span> {
+                    <span class="ident">kind</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> {
+                        <span class="ident">element</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;x&quot;</span>, <span class="number">1</span>, <span class="number">2</span>)
+                    }),
+                    <span class="ident">generators</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                        <span class="ident">ast</span>::<span class="ident">Comprehension</span> {
+                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">4</span>),
+                            <span class="ident">target</span>: <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                                <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">8</span>),
+                                <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Tuple</span> {
+                                    <span class="ident">elements</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mk_ident</span>(<span class="string">&quot;y&quot;</span>, <span class="number">1</span>, <span class="number">8</span>), <span class="ident">mk_ident</span>(<span class="string">&quot;y2&quot;</span>, <span class="number">1</span>, <span class="number">11</span>),],
+                                }
+                            },
+                            <span class="ident">iter</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;z&quot;</span>, <span class="number">1</span>, <span class="number">17</span>),
+                            <span class="ident">ifs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+                        },
+                        <span class="ident">ast</span>::<span class="ident">Comprehension</span> {
+                            <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">19</span>),
+                            <span class="ident">target</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>, <span class="number">23</span>),
+                            <span class="ident">iter</span>: <span class="ident">mk_ident</span>(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>, <span class="number">28</span>),
+                            <span class="ident">ifs</span>: <span class="macro">vec</span><span class="macro">!</span>[
+                                <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                                    <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">35</span>),
+                                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Compare</span> {
+                                        <span class="ident">vals</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mk_ident</span>(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>, <span class="number">33</span>), <span class="ident">make_int</span>(<span class="number">5</span>, <span class="number">1</span>, <span class="number">37</span>),],
+                                        <span class="ident">ops</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Less</span>],
+                                    }
                                 },
-                                <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                    <span class="ident">name</span>: <span class="string">&quot;y2&quot;</span>.<span class="ident">to_string</span>()
+                                <span class="ident">ast</span>::<span class="ident">Expression</span> {
+                                    <span class="ident">location</span>: <span class="ident">ast</span>::<span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">1</span>, <span class="number">44</span>),
+                                    <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="ident">Compare</span> {
+                                        <span class="ident">vals</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mk_ident</span>(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>, <span class="number">42</span>), <span class="ident">make_int</span>(<span class="number">10</span>, <span class="number">1</span>, <span class="number">46</span>),],
+                                        <span class="ident">ops</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Greater</span>],
+                                    },
                                 },
                             ],
-                        },
-                        <span class="ident">iter</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                            <span class="ident">name</span>: <span class="string">&quot;z&quot;</span>.<span class="ident">to_string</span>()
-                        },
-                        <span class="ident">ifs</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-                    },
-                    <span class="ident">ast</span>::<span class="ident">Comprehension</span> {
-                        <span class="ident">target</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                            <span class="ident">name</span>: <span class="string">&quot;a&quot;</span>.<span class="ident">to_string</span>()
-                        },
-                        <span class="ident">iter</span>: <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                            <span class="ident">name</span>: <span class="string">&quot;b&quot;</span>.<span class="ident">to_string</span>()
-                        },
-                        <span class="ident">ifs</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Compare</span> {
-                                <span class="ident">vals</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                                    <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                        <span class="ident">name</span>: <span class="string">&quot;a&quot;</span>.<span class="ident">to_string</span>()
-                                    },
-                                    <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                        <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                            <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">5</span>)
-                                        }
-                                    }
-                                ],
-                                <span class="ident">ops</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Less</span>],
-                            },
-                            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Compare</span> {
-                                <span class="ident">vals</span>: <span class="macro">vec</span><span class="macro">!</span>[
-                                    <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> {
-                                        <span class="ident">name</span>: <span class="string">&quot;a&quot;</span>.<span class="ident">to_string</span>()
-                                    },
-                                    <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> {
-                                        <span class="ident">value</span>: <span class="ident">ast</span>::<span class="ident">Number</span>::<span class="ident">Integer</span> {
-                                            <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">10</span>)
-                                        }
-                                    }
-                                ],
-                                <span class="ident">ops</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ast</span>::<span class="ident">Comparison</span>::<span class="ident">Greater</span>],
-                            },
-                        ],
-                    }
-                ],
+                        }
+                    ],
+                }
             }
         );
     }

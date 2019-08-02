@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["borrow_value",""],["get_value",""],["init",""],["subscript",""]],"struct":[["PyString","str(object='') -> str str(bytes_or_buffer[, encoding[, errors]]) -> str"]],"type":[["PyStringRef",""]]});
+initSidebarItems({"fn":[["borrow_value",""],["get_value",""],["init",""],["subscript",""]],"struct":[["PyString","str(object='') -> str str(bytes_or_buffer[, encoding[, errors]]) -> str"],["PyStringIterator",""],["PyStringReverseIterator",""]],"type":[["PyStringRef",""]]});

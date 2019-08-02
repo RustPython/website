@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["ParseError","Represents an error during parsing"]]});
+initSidebarItems({"enum":[["FStringErrorType",""],["LexicalErrorType",""],["ParseErrorType",""]],"struct":[["FStringError",""],["LexicalError","Represents an error during lexical scanning."],["ParseError","Represents an error during parsing"]]});

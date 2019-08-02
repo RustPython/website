@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `compiler/src/symboltable.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>symboltable.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_compiler/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `compiler/src/symboltable.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>symboltable.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_compiler/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -594,6 +594,22 @@
 <span id="594">594</span>
 <span id="595">595</span>
 <span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/* Python code is pre-scanned for symbols in the ast.
 
@@ -605,12 +621,12 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
 */</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::{<span class="ident">CompileError</span>, <span class="ident">CompileErrorType</span>};
+<span class="kw">use</span> <span class="ident">indexmap</span>::<span class="ident">map</span>::<span class="ident">IndexMap</span>;
 <span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">ast</span>;
-<span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">lexer</span>::<span class="ident">Location</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
+<span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">location</span>::<span class="ident">Location</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_symbol_table</span>(<span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SymbolScope</span>, <span class="ident">SymbolTableError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">SymbolTableBuilder</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span>: <span class="ident">SymbolTableBuilder</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
     <span class="ident">builder</span>.<span class="ident">enter_scope</span>();
     <span class="ident">builder</span>.<span class="ident">scan_program</span>(<span class="ident">program</span>)<span class="question-mark">?</span>;
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">builder</span>.<span class="ident">scopes</span>.<span class="ident">len</span>(), <span class="number">1</span>);
@@ -621,9 +637,9 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">statements_to_symbol_table</span>(
-    <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span>],
+    <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Statement</span>],
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SymbolScope</span>, <span class="ident">SymbolTableError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">SymbolTableBuilder</span>::<span class="ident">new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span>: <span class="ident">SymbolTableBuilder</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
     <span class="ident">builder</span>.<span class="ident">enter_scope</span>();
     <span class="ident">builder</span>.<span class="ident">scan_statements</span>(<span class="ident">statements</span>)<span class="question-mark">?</span>;
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">builder</span>.<span class="ident">scopes</span>.<span class="ident">len</span>(), <span class="number">1</span>);
@@ -633,22 +649,44 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
     <span class="prelude-val">Ok</span>(<span class="ident">symbol_table</span>)
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SymbolRole</span> {
-    <span class="ident">Global</span>,
-    <span class="ident">Nonlocal</span>,
-    <span class="ident">Used</span>,
-    <span class="ident">Assigned</span>,
-}
-
 <span class="doccomment">/// Captures all symbols in the current scope, and has a list of subscopes in this scope.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SymbolScope</span> {
     <span class="doccomment">/// A set of symbols present on this scope level.</span>
-    <span class="kw">pub</span> <span class="ident">symbols</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">SymbolRole</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">symbols</span>: <span class="ident">IndexMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Symbol</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// A list of subscopes in the order as found in the</span>
     <span class="doccomment">/// AST nodes.</span>
     <span class="kw">pub</span> <span class="ident">sub_scopes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SymbolScope</span><span class="op">&gt;</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Symbol</span> {
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">is_global</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_local</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_nonlocal</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_param</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_referenced</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_assigned</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_parameter</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">is_free</span>: <span class="ident">bool</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Symbol</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">Symbol</span> {
+            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_string</span>(),
+            <span class="ident">is_global</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_local</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_nonlocal</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_param</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_referenced</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_assigned</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_parameter</span>: <span class="bool-val">false</span>,
+            <span class="ident">is_free</span>: <span class="bool-val">false</span>,
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
@@ -669,14 +707,7 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
 <span class="kw">type</span> <span class="ident">SymbolTableResult</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">SymbolTableError</span><span class="op">&gt;</span>;
 
 <span class="kw">impl</span> <span class="ident">SymbolScope</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">SymbolScope</span> {
-            <span class="ident">symbols</span>: <span class="ident">HashMap</span>::<span class="ident">new</span>(),
-            <span class="ident">sub_scopes</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-        }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SymbolRole</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Symbol</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">symbols</span>.<span class="ident">get</span>(<span class="ident">name</span>)
     }
 }
@@ -705,72 +736,73 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
     }
 
     <span class="comment">// Analyze symbols:</span>
-    <span class="kw">for</span> (<span class="ident">symbol_name</span>, <span class="ident">symbol_role</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">symbol_scope</span>.<span class="ident">symbols</span> {
-        <span class="ident">analyze_symbol</span>(<span class="ident">symbol_name</span>, <span class="ident">symbol_role</span>, <span class="ident">parent_symbol_scope</span>)<span class="question-mark">?</span>;
+    <span class="kw">for</span> <span class="ident">symbol</span> <span class="kw">in</span> <span class="ident">symbol_scope</span>.<span class="ident">symbols</span>.<span class="ident">values</span>() {
+        <span class="ident">analyze_symbol</span>(<span class="ident">symbol</span>, <span class="ident">parent_symbol_scope</span>)<span class="question-mark">?</span>;
     }
 
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">single_match</span>)]</span>
-<span class="kw">fn</span> <span class="ident">analyze_symbol</span>(
-    <span class="ident">symbol_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-    <span class="ident">symbol_role</span>: <span class="kw-2">&amp;</span><span class="ident">SymbolRole</span>,
-    <span class="ident">parent_symbol_scope</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SymbolScope</span><span class="op">&gt;</span>,
-) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
-    <span class="kw">match</span> <span class="ident">symbol_role</span> {
-        <span class="ident">SymbolRole</span>::<span class="ident">Nonlocal</span> <span class="op">=&gt;</span> {
-            <span class="comment">// check if name is defined in parent scope!</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parent_symbol_scope</span>) <span class="op">=</span> <span class="ident">parent_symbol_scope</span> {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">parent_symbol_scope</span>.<span class="ident">symbols</span>.<span class="ident">contains_key</span>(<span class="ident">symbol_name</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SymbolTableError</span> {
-                        <span class="ident">error</span>: <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;no binding for nonlocal &#39;{}&#39; found&quot;</span>, <span class="ident">symbol_name</span>),
-                        <span class="ident">location</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
-                    });
-                }
-            } <span class="kw">else</span> {
+<span class="kw">fn</span> <span class="ident">analyze_symbol</span>(<span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="ident">Symbol</span>, <span class="ident">parent_symbol_scope</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SymbolScope</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
+    <span class="kw">if</span> <span class="ident">symbol</span>.<span class="ident">is_nonlocal</span> {
+        <span class="comment">// check if name is defined in parent scope!</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parent_symbol_scope</span>) <span class="op">=</span> <span class="ident">parent_symbol_scope</span> {
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">parent_symbol_scope</span>.<span class="ident">symbols</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">symbol</span>.<span class="ident">name</span>) {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SymbolTableError</span> {
-                    <span class="ident">error</span>: <span class="macro">format</span><span class="macro">!</span>(
-                        <span class="string">&quot;nonlocal {} defined at place without an enclosing scope&quot;</span>,
-                        <span class="ident">symbol_name</span>
-                    ),
+                    <span class="ident">error</span>: <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;no binding for nonlocal &#39;{}&#39; found&quot;</span>, <span class="ident">symbol</span>.<span class="ident">name</span>),
                     <span class="ident">location</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
                 });
             }
+        } <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SymbolTableError</span> {
+                <span class="ident">error</span>: <span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;nonlocal {} defined at place without an enclosing scope&quot;</span>,
+                    <span class="ident">symbol</span>.<span class="ident">name</span>
+                ),
+                <span class="ident">location</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
+            });
         }
-        <span class="comment">// TODO: add more checks for globals</span>
-        <span class="kw">_</span> <span class="op">=&gt;</span> {}
     }
+
+    <span class="comment">// TODO: add more checks for globals</span>
+
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SymbolTableBuilder</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">enum</span> <span class="ident">SymbolRole</span> {
+    <span class="ident">Global</span>,
+    <span class="ident">Nonlocal</span>,
+    <span class="ident">Used</span>,
+    <span class="ident">Assigned</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="kw">struct</span> <span class="ident">SymbolTableBuilder</span> {
     <span class="comment">// Scope stack.</span>
-    <span class="kw">pub</span> <span class="ident">scopes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SymbolScope</span><span class="op">&gt;</span>,
+    <span class="ident">scopes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SymbolScope</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">SymbolTableBuilder</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">SymbolTableBuilder</span> { <span class="ident">scopes</span>: <span class="macro">vec</span><span class="macro">!</span>[] }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enter_scope</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">SymbolScope</span>::<span class="ident">new</span>();
+    <span class="kw">fn</span> <span class="ident">enter_scope</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
         <span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">push</span>(<span class="ident">scope</span>);
+        <span class="comment">// self.work_scopes.push(Default::default());</span>
     }
 
     <span class="kw">fn</span> <span class="ident">leave_scope</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="comment">// Pop scope and add to subscopes of parent scope.</span>
+        <span class="comment">// let work_scope = self.work_scopes.pop().unwrap();</span>
         <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
         <span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">last_mut</span>().<span class="ident">unwrap</span>().<span class="ident">sub_scopes</span>.<span class="ident">push</span>(<span class="ident">scope</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scan_program</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
+    <span class="kw">fn</span> <span class="ident">scan_program</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">program</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Program</span>) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
         <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="kw-2">&amp;</span><span class="ident">program</span>.<span class="ident">statements</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scan_statements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">LocatedStatement</span>]) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
+    <span class="kw">fn</span> <span class="ident">scan_statements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statements</span>: <span class="kw-2">&amp;</span>[<span class="ident">ast</span>::<span class="ident">Statement</span>]) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
         <span class="kw">for</span> <span class="ident">statement</span> <span class="kw">in</span> <span class="ident">statements</span> {
             <span class="self">self</span>.<span class="ident">scan_statement</span>(<span class="ident">statement</span>)<span class="question-mark">?</span>;
         }
@@ -802,31 +834,26 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">scan_statement</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">LocatedStatement</span>) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
+    <span class="kw">fn</span> <span class="ident">scan_statement</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">statement</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Statement</span>) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
+        <span class="kw">use</span> <span class="ident">ast</span>::<span class="ident">StatementType</span>::<span class="kw-2">*</span>;
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">statement</span>.<span class="ident">node</span> {
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Global</span> { <span class="ident">names</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Global</span> { <span class="ident">names</span> } <span class="op">=&gt;</span> {
                 <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">names</span> {
                     <span class="self">self</span>.<span class="ident">register_name</span>(<span class="ident">name</span>, <span class="ident">SymbolRole</span>::<span class="ident">Global</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Nonlocal</span> { <span class="ident">names</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Nonlocal</span> { <span class="ident">names</span> } <span class="op">=&gt;</span> {
                 <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">names</span> {
                     <span class="self">self</span>.<span class="ident">register_name</span>(<span class="ident">name</span>, <span class="ident">SymbolRole</span>::<span class="ident">Nonlocal</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">FunctionDef</span> {
+            <span class="ident">FunctionDef</span> {
                 <span class="ident">name</span>,
                 <span class="ident">body</span>,
                 <span class="ident">args</span>,
                 <span class="ident">decorator_list</span>,
                 <span class="ident">returns</span>,
-            }
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">AsyncFunctionDef</span> {
-                <span class="ident">name</span>,
-                <span class="ident">body</span>,
-                <span class="ident">args</span>,
-                <span class="ident">decorator_list</span>,
-                <span class="ident">returns</span>,
+                ..
             } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expressions</span>(<span class="ident">decorator_list</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">register_name</span>(<span class="ident">name</span>, <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span>)<span class="question-mark">?</span>;
@@ -839,7 +866,7 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                 }
                 <span class="self">self</span>.<span class="ident">leave_scope</span>();
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">ClassDef</span> {
+            <span class="ident">ClassDef</span> {
                 <span class="ident">name</span>,
                 <span class="ident">body</span>,
                 <span class="ident">bases</span>,
@@ -856,25 +883,20 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                 }
                 <span class="self">self</span>.<span class="ident">scan_expressions</span>(<span class="ident">decorator_list</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Expression</span> { <span class="ident">expression</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>,
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">If</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Expression</span> { <span class="ident">expression</span> } <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>,
+            <span class="ident">If</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">test</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">code</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                     <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">For</span> {
+            <span class="ident">For</span> {
                 <span class="ident">target</span>,
                 <span class="ident">iter</span>,
                 <span class="ident">body</span>,
                 <span class="ident">orelse</span>,
-            }
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">AsyncFor</span> {
-                <span class="ident">target</span>,
-                <span class="ident">iter</span>,
-                <span class="ident">body</span>,
-                <span class="ident">orelse</span>,
+                ..
             } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">target</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>;
@@ -883,62 +905,50 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                     <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">While</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
+            <span class="ident">While</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">test</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">code</span>) <span class="op">=</span> <span class="ident">orelse</span> {
                     <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Break</span> <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Continue</span> <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Pass</span> <span class="op">=&gt;</span> {
+            <span class="ident">Break</span> <span class="op">|</span> <span class="ident">Continue</span> <span class="op">|</span> <span class="ident">Pass</span> <span class="op">=&gt;</span> {
                 <span class="comment">// No symbols here.</span>
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Import</span> { <span class="ident">import_parts</span> } <span class="op">=&gt;</span> {
-                <span class="kw">for</span> <span class="ident">part</span> <span class="kw">in</span> <span class="ident">import_parts</span> {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">alias</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">part</span>.<span class="ident">alias</span> {
+            <span class="ident">Import</span> { <span class="ident">names</span> } <span class="op">|</span> <span class="ident">ImportFrom</span> { <span class="ident">names</span>, .. } <span class="op">=&gt;</span> {
+                <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">names</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">alias</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">alias</span> {
                         <span class="comment">// `import mymodule as myalias`</span>
                         <span class="self">self</span>.<span class="ident">register_name</span>(<span class="ident">alias</span>, <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else</span> {
-                        <span class="kw">if</span> <span class="ident">part</span>.<span class="ident">symbols</span>.<span class="ident">is_empty</span>() {
-                            <span class="comment">// `import module`</span>
-                            <span class="self">self</span>.<span class="ident">register_name</span>(<span class="kw-2">&amp;</span><span class="ident">part</span>.<span class="ident">module</span>, <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span>)<span class="question-mark">?</span>;
-                        } <span class="kw">else</span> {
-                            <span class="comment">// `from mymodule import myimport`</span>
-                            <span class="kw">for</span> <span class="ident">symbol</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">part</span>.<span class="ident">symbols</span> {
-                                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">alias</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">symbol</span>.<span class="ident">alias</span> {
-                                    <span class="comment">// `from mymodule import myimportname as myalias`</span>
-                                    <span class="self">self</span>.<span class="ident">register_name</span>(<span class="ident">alias</span>, <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span>)<span class="question-mark">?</span>;
-                                } <span class="kw">else</span> {
-                                    <span class="self">self</span>.<span class="ident">register_name</span>(<span class="kw-2">&amp;</span><span class="ident">symbol</span>.<span class="ident">symbol</span>, <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span>)<span class="question-mark">?</span>;
-                                }
-                            }
-                        }
+                        <span class="comment">// `import module`</span>
+                        <span class="self">self</span>.<span class="ident">register_name</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">symbol</span>, <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span>)<span class="question-mark">?</span>;
                     }
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Return</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Return</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expression</span>) <span class="op">=</span> <span class="ident">value</span> {
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assert</span> { <span class="ident">test</span>, <span class="ident">msg</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Assert</span> { <span class="ident">test</span>, <span class="ident">msg</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">test</span>)<span class="question-mark">?</span>;
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expression</span>) <span class="op">=</span> <span class="ident">msg</span> {
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Delete</span> { <span class="ident">targets</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Delete</span> { <span class="ident">targets</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expressions</span>(<span class="ident">targets</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Assign</span> { <span class="ident">targets</span>, <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Assign</span> { <span class="ident">targets</span>, <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expressions</span>(<span class="ident">targets</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">AugAssign</span> { <span class="ident">target</span>, <span class="ident">value</span>, .. } <span class="op">=&gt;</span> {
+            <span class="ident">AugAssign</span> { <span class="ident">target</span>, <span class="ident">value</span>, .. } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">target</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">With</span> { <span class="ident">items</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
+            <span class="ident">With</span> { <span class="ident">items</span>, <span class="ident">body</span>, .. } <span class="op">=&gt;</span> {
                 <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">context_expr</span>)<span class="question-mark">?</span>;
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expression</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="ident">optional_vars</span> {
@@ -947,7 +957,7 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                 }
                 <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Try</span> {
+            <span class="ident">Try</span> {
                 <span class="ident">body</span>,
                 <span class="ident">handlers</span>,
                 <span class="ident">orelse</span>,
@@ -970,7 +980,7 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                     <span class="self">self</span>.<span class="ident">scan_statements</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Statement</span>::<span class="ident">Raise</span> { <span class="ident">exception</span>, <span class="ident">cause</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Raise</span> { <span class="ident">exception</span>, <span class="ident">cause</span> } <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expression</span>) <span class="op">=</span> <span class="ident">exception</span> {
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
                 }
@@ -990,26 +1000,27 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
     }
 
     <span class="kw">fn</span> <span class="ident">scan_expression</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expression</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expression</span>) <span class="op">-&gt;</span> <span class="ident">SymbolTableResult</span> {
-        <span class="kw">match</span> <span class="ident">expression</span> {
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Binop</span> { <span class="ident">a</span>, <span class="ident">b</span>, .. } <span class="op">=&gt;</span> {
+        <span class="kw">use</span> <span class="ident">ast</span>::<span class="ident">ExpressionType</span>::<span class="kw-2">*</span>;
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">expression</span>.<span class="ident">node</span> {
+            <span class="ident">Binop</span> { <span class="ident">a</span>, <span class="ident">b</span>, .. } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">BoolOp</span> { <span class="ident">a</span>, <span class="ident">b</span>, .. } <span class="op">=&gt;</span> {
+            <span class="ident">BoolOp</span> { <span class="ident">a</span>, <span class="ident">b</span>, .. } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Compare</span> { <span class="ident">vals</span>, .. } <span class="op">=&gt;</span> {
+            <span class="ident">Compare</span> { <span class="ident">vals</span>, .. } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expressions</span>(<span class="ident">vals</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Subscript</span> { <span class="ident">a</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Subscript</span> { <span class="ident">a</span>, <span class="ident">b</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Attribute</span> { <span class="ident">value</span>, .. } <span class="op">=&gt;</span> {
+            <span class="ident">Attribute</span> { <span class="ident">value</span>, .. } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Dict</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Dict</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
                 <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">elements</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">key</span>) <span class="op">=</span> <span class="ident">key</span> {
                         <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">key</span>)<span class="question-mark">?</span>;
@@ -1019,36 +1030,30 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Await</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Await</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Yield</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Yield</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expression</span>) <span class="op">=</span> <span class="ident">value</span> {
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">expression</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">YieldFrom</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">YieldFrom</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Unop</span> { <span class="ident">a</span>, .. } <span class="op">=&gt;</span> {
+            <span class="ident">Unop</span> { <span class="ident">a</span>, .. } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">a</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">True</span>
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">False</span>
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="prelude-val">None</span>
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Ellipsis</span> <span class="op">=&gt;</span> {}
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Number</span> { .. } <span class="op">=&gt;</span> {}
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Starred</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">True</span> <span class="op">|</span> <span class="ident">False</span> <span class="op">|</span> <span class="prelude-val">None</span> <span class="op">|</span> <span class="ident">Ellipsis</span> <span class="op">=&gt;</span> {}
+            <span class="ident">Number</span> { .. } <span class="op">=&gt;</span> {}
+            <span class="ident">Starred</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Bytes</span> { .. } <span class="op">=&gt;</span> {}
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Tuple</span> { <span class="ident">elements</span> }
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Set</span> { <span class="ident">elements</span> }
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">List</span> { <span class="ident">elements</span> }
-            <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Slice</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Bytes</span> { .. } <span class="op">=&gt;</span> {}
+            <span class="ident">Tuple</span> { <span class="ident">elements</span> } <span class="op">|</span> <span class="ident">Set</span> { <span class="ident">elements</span> } <span class="op">|</span> <span class="ident">List</span> { <span class="ident">elements</span> } <span class="op">|</span> <span class="ident">Slice</span> { <span class="ident">elements</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expressions</span>(<span class="ident">elements</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Comprehension</span> { <span class="ident">kind</span>, <span class="ident">generators</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Comprehension</span> { <span class="ident">kind</span>, <span class="ident">generators</span> } <span class="op">=&gt;</span> {
                 <span class="kw">match</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">kind</span> {
                     <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">GeneratorExpression</span> { <span class="kw-2">ref</span> <span class="ident">element</span> }
                     <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">ComprehensionKind</span>::<span class="ident">List</span> { <span class="kw-2">ref</span> <span class="ident">element</span> }
@@ -1069,7 +1074,7 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                     }
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Call</span> {
+            <span class="ident">Call</span> {
                 <span class="ident">function</span>,
                 <span class="ident">args</span>,
                 <span class="ident">keywords</span>,
@@ -1080,18 +1085,18 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                     <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="kw-2">&amp;</span><span class="ident">keyword</span>.<span class="ident">value</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">String</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
+            <span class="ident">String</span> { <span class="ident">value</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_string_group</span>(<span class="ident">value</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Identifier</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Identifier</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">register_name</span>(<span class="ident">name</span>, <span class="ident">SymbolRole</span>::<span class="ident">Used</span>)<span class="question-mark">?</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">Lambda</span> { <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
+            <span class="ident">Lambda</span> { <span class="ident">args</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">enter_function</span>(<span class="ident">args</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">leave_scope</span>();
             }
-            <span class="ident">ast</span>::<span class="ident">Expression</span>::<span class="ident">IfExpression</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
+            <span class="ident">IfExpression</span> { <span class="ident">test</span>, <span class="ident">body</span>, <span class="ident">orelse</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">test</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">body</span>)<span class="question-mark">?</span>;
                 <span class="self">self</span>.<span class="ident">scan_expression</span>(<span class="ident">orelse</span>)<span class="question-mark">?</span>;
@@ -1153,6 +1158,8 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
         <span class="kw">let</span> <span class="ident">scope_depth</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">current_scope</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scopes</span>.<span class="ident">last_mut</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">location</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
+
+        <span class="comment">// Some checks:</span>
         <span class="kw">if</span> <span class="ident">current_scope</span>.<span class="ident">symbols</span>.<span class="ident">contains_key</span>(<span class="ident">name</span>) {
             <span class="comment">// Role already set..</span>
             <span class="kw">match</span> <span class="ident">role</span> {
@@ -1172,22 +1179,47 @@ Inspirational file: https://github.com/python/cpython/blob/master/Python/symtabl
                     <span class="comment">// Ok?</span>
                 }
             }
-        } <span class="kw">else</span> {
-            <span class="kw">match</span> <span class="ident">role</span> {
-                <span class="ident">SymbolRole</span>::<span class="ident">Nonlocal</span> <span class="op">=&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">scope_depth</span> <span class="op">&lt;</span> <span class="number">2</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SymbolTableError</span> {
-                            <span class="ident">error</span>: <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot define nonlocal &#39;{}&#39; at top level.&quot;</span>, <span class="ident">name</span>),
-                            <span class="ident">location</span>,
-                        });
-                    }
-                }
-                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                    <span class="comment">// Ok!</span>
+        }
+
+        <span class="comment">// Some more checks:</span>
+        <span class="kw">match</span> <span class="ident">role</span> {
+            <span class="ident">SymbolRole</span>::<span class="ident">Nonlocal</span> <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="ident">scope_depth</span> <span class="op">&lt;</span> <span class="number">2</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SymbolTableError</span> {
+                        <span class="ident">error</span>: <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cannot define nonlocal &#39;{}&#39; at top level.&quot;</span>, <span class="ident">name</span>),
+                        <span class="ident">location</span>,
+                    });
                 }
             }
-            <span class="ident">current_scope</span>.<span class="ident">symbols</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">role</span>);
+            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                <span class="comment">// Ok!</span>
+            }
         }
+
+        <span class="comment">// Insert symbol when required:</span>
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">current_scope</span>.<span class="ident">symbols</span>.<span class="ident">contains_key</span>(<span class="ident">name</span>) {
+            <span class="kw">let</span> <span class="ident">symbol</span> <span class="op">=</span> <span class="ident">Symbol</span>::<span class="ident">new</span>(<span class="ident">name</span>);
+            <span class="ident">current_scope</span>.<span class="ident">symbols</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">symbol</span>);
+        }
+
+        <span class="comment">// Set proper flags on symbol:</span>
+        <span class="kw">let</span> <span class="ident">symbol</span> <span class="op">=</span> <span class="ident">current_scope</span>.<span class="ident">symbols</span>.<span class="ident">get_mut</span>(<span class="ident">name</span>).<span class="ident">unwrap</span>();
+        <span class="kw">match</span> <span class="ident">role</span> {
+            <span class="ident">SymbolRole</span>::<span class="ident">Nonlocal</span> <span class="op">=&gt;</span> {
+                <span class="ident">symbol</span>.<span class="ident">is_nonlocal</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            }
+            <span class="ident">SymbolRole</span>::<span class="ident">Assigned</span> <span class="op">=&gt;</span> {
+                <span class="ident">symbol</span>.<span class="ident">is_assigned</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="comment">// symbol.is_local = true;</span>
+            }
+            <span class="ident">SymbolRole</span>::<span class="ident">Global</span> <span class="op">=&gt;</span> {
+                <span class="ident">symbol</span>.<span class="ident">is_global</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            }
+            <span class="ident">SymbolRole</span>::<span class="ident">Used</span> <span class="op">=&gt;</span> {
+                <span class="ident">symbol</span>.<span class="ident">is_referenced</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            }
+        }
+
         <span class="prelude-val">Ok</span>(())
     }
 }

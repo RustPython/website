@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["make_symbol_table",""],["statements_to_symbol_table",""]],"struct":[["Symbol",""],["SymbolScope","Captures all symbols in the current scope, and has a list of subscopes in this scope."],["SymbolTableError",""]]});

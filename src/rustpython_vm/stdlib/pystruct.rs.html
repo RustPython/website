@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/pystruct.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pystruct.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/pystruct.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pystruct.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -452,6 +452,38 @@
 <span id="452">452</span>
 <span id="453">453</span>
 <span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * Python struct module.
@@ -563,19 +595,19 @@
     <span class="ident">objint</span>::<span class="ident">to_int</span>(<span class="ident">vm</span>, <span class="ident">arg</span>, <span class="number">10</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">pack_i8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">pack_i8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">get_int</span>(<span class="ident">vm</span>, <span class="ident">arg</span>)<span class="question-mark">?</span>.<span class="ident">to_i8</span>().<span class="ident">unwrap</span>();
     <span class="ident">data</span>.<span class="ident">write_i8</span>(<span class="ident">v</span>).<span class="ident">unwrap</span>();
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_u8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">pack_u8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">get_int</span>(<span class="ident">vm</span>, <span class="ident">arg</span>)<span class="question-mark">?</span>.<span class="ident">to_u8</span>().<span class="ident">unwrap</span>();
     <span class="ident">data</span>.<span class="ident">write_u8</span>(<span class="ident">v</span>).<span class="ident">unwrap</span>();
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_bool</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">pack_bool</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">arg</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">bool_type</span>()) {
         <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">objbool</span>::<span class="ident">get_value</span>(<span class="ident">arg</span>) { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> };
         <span class="ident">data</span>.<span class="ident">write_u8</span>(<span class="ident">v</span>).<span class="ident">unwrap</span>();
@@ -585,7 +617,11 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">pack_i16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_i16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -594,7 +630,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_u16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_u16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -603,7 +643,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_i32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_i32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -612,7 +656,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_u32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_u32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -621,7 +669,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_i64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_i64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -630,7 +682,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_u64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_u64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -639,7 +695,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_f32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_f32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -648,7 +708,11 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">pack_f64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">fn</span> <span class="ident">pack_f64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(
+    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
+) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -669,7 +733,7 @@
     <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
     <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">FormatCode</span>,
     <span class="ident">arg</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
-    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Write</span>,
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Write</span>,
 ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
@@ -742,28 +806,28 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_i8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">unpack_i8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">match</span> <span class="ident">rdr</span>.<span class="ident">read_i8</span>() {
         <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error in reading {:?}&quot;</span>, <span class="ident">err</span>),
         <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v</span>)),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_u8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">unpack_u8</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">match</span> <span class="ident">rdr</span>.<span class="ident">read_u8</span>() {
         <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error in reading {:?}&quot;</span>, <span class="ident">err</span>),
         <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">v</span>)),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_bool</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+<span class="kw">fn</span> <span class="ident">unpack_bool</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">match</span> <span class="ident">rdr</span>.<span class="ident">read_u8</span>() {
         <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error in reading {:?}&quot;</span>, <span class="ident">err</span>),
         <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">v</span> <span class="op">&gt;</span> <span class="number">0</span>)),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_i16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_i16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -773,7 +837,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_u16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_u16</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -783,7 +847,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_i32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_i32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -793,7 +857,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_u32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_u32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -803,7 +867,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_i64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_i64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -813,7 +877,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_u64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_u64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -823,7 +887,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_f32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_f32</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -833,7 +897,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_f64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_f64</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {
@@ -874,7 +938,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">items</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">unpack_code</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">FormatCode</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
+<span class="kw">fn</span> <span class="ident">unpack_code</span><span class="op">&lt;</span><span class="ident">Endianness</span><span class="op">&gt;</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">FormatCode</span>, <span class="ident">rdr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Read</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span>
 <span class="kw">where</span>
     <span class="ident">Endianness</span>: <span class="ident">byteorder</span>::<span class="ident">ByteOrder</span>,
 {

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `parser/src/lexer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lexer.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_parser/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `parser/src/lexer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lexer.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_parser/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1694,6 +1694,31 @@
 <span id="1694">1694</span>
 <span id="1695">1695</span>
 <span id="1696">1696</span>
+<span id="1697">1697</span>
+<span id="1698">1698</span>
+<span id="1699">1699</span>
+<span id="1700">1700</span>
+<span id="1701">1701</span>
+<span id="1702">1702</span>
+<span id="1703">1703</span>
+<span id="1704">1704</span>
+<span id="1705">1705</span>
+<span id="1706">1706</span>
+<span id="1707">1707</span>
+<span id="1708">1708</span>
+<span id="1709">1709</span>
+<span id="1710">1710</span>
+<span id="1711">1711</span>
+<span id="1712">1712</span>
+<span id="1713">1713</span>
+<span id="1714">1714</span>
+<span id="1715">1715</span>
+<span id="1716">1716</span>
+<span id="1717">1717</span>
+<span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
+<span id="1721">1721</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module takes care of lexing python source text. This means source</span>
 <span class="doccomment">//! code is translated into separate tokens.</span>
@@ -1702,9 +1727,10 @@
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">unicode_xid</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">token</span>::<span class="ident">Tok</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::{<span class="ident">LexicalError</span>, <span class="ident">LexicalErrorType</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">location</span>::<span class="ident">Location</span>;
 <span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">BigInt</span>;
 <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">Num</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
@@ -1712,34 +1738,45 @@
 <span class="kw">use</span> <span class="ident">unicode_xid</span>::<span class="ident">UnicodeXID</span>;
 <span class="kw">use</span> <span class="ident">wtf8</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">struct</span> <span class="ident">IndentationLevel</span> {
     <span class="ident">tabs</span>: <span class="ident">usize</span>,
     <span class="ident">spaces</span>: <span class="ident">usize</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">IndentationLevel</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">IndentationLevel</span> {
-        <span class="ident">IndentationLevel</span> { <span class="ident">tabs</span>: <span class="number">0</span>, <span class="ident">spaces</span>: <span class="number">0</span> }
-    }
-    <span class="kw">fn</span> <span class="ident">compare_strict</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">IndentationLevel</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Ordering</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">compare_strict</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">IndentationLevel</span>,
+        <span class="ident">location</span>: <span class="ident">Location</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Ordering</span>, <span class="ident">LexicalError</span><span class="op">&gt;</span> {
         <span class="comment">// We only know for sure that we&#39;re smaller or bigger if tabs</span>
         <span class="comment">// and spaces both differ in the same direction. Otherwise we&#39;re</span>
         <span class="comment">// dependent on the size of tabs.</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">tabs</span> <span class="op">&lt;</span> <span class="ident">other</span>.<span class="ident">tabs</span> {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">spaces</span> <span class="op">&lt;=</span> <span class="ident">other</span>.<span class="ident">spaces</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Ordering</span>::<span class="ident">Less</span>)
+                <span class="prelude-val">Ok</span>(<span class="ident">Ordering</span>::<span class="ident">Less</span>)
             } <span class="kw">else</span> {
-                <span class="prelude-val">None</span>
+                <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                    <span class="ident">location</span>,
+                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(
+                        <span class="string">&quot;inconsistent use of tabs and spaces in indentation&quot;</span>.<span class="ident">to_string</span>(),
+                    ),
+                })
             }
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">tabs</span> <span class="op">&gt;</span> <span class="ident">other</span>.<span class="ident">tabs</span> {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">spaces</span> <span class="op">&gt;=</span> <span class="ident">other</span>.<span class="ident">spaces</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Ordering</span>::<span class="ident">Greater</span>)
+                <span class="prelude-val">Ok</span>(<span class="ident">Ordering</span>::<span class="ident">Greater</span>)
             } <span class="kw">else</span> {
-                <span class="prelude-val">None</span>
+                <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                    <span class="ident">location</span>,
+                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(
+                        <span class="string">&quot;inconsistent use of tabs and spaces in indentation&quot;</span>.<span class="ident">to_string</span>(),
+                    ),
+                })
             }
         } <span class="kw">else</span> {
-            <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">spaces</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">spaces</span>))
+            <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">spaces</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">spaces</span>))
         }
     }
 }
@@ -1749,46 +1786,11 @@
     <span class="ident">at_begin_of_line</span>: <span class="ident">bool</span>,
     <span class="ident">nesting</span>: <span class="ident">usize</span>, <span class="comment">// Amount of parenthesis</span>
     <span class="ident">indentation_stack</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">IndentationLevel</span><span class="op">&gt;</span>,
-    <span class="ident">pending</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LexResult</span><span class="op">&gt;</span>,
+    <span class="ident">pending</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Spanned</span><span class="op">&gt;</span>,
     <span class="ident">chr0</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>,
     <span class="ident">chr1</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>,
     <span class="ident">location</span>: <span class="ident">Location</span>,
     <span class="ident">keywords</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Tok</span><span class="op">&gt;</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LexicalError</span> {
-    <span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>,
-    <span class="kw">pub</span> <span class="ident">location</span>: <span class="ident">Location</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">LexicalErrorType</span> {
-    <span class="ident">StringError</span>,
-    <span class="ident">UnicodeError</span>,
-    <span class="ident">NestingError</span>,
-    <span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="ident">char</span> },
-    <span class="ident">OtherError</span>(<span class="ident">String</span>),
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Location</span> {
-    <span class="ident">row</span>: <span class="ident">usize</span>,
-    <span class="ident">column</span>: <span class="ident">usize</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">Location</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">row</span>: <span class="ident">usize</span>, <span class="ident">column</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">Location</span> { <span class="ident">row</span>, <span class="ident">column</span> }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">row</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">row</span>
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">column</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">column</span>
-    }
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_keywords</span>() <span class="op">-&gt;</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Tok</span><span class="op">&gt;</span> {
@@ -1965,7 +1967,7 @@
             <span class="ident">chars</span>: <span class="ident">input</span>,
             <span class="ident">at_begin_of_line</span>: <span class="bool-val">true</span>,
             <span class="ident">nesting</span>: <span class="number">0</span>,
-            <span class="ident">indentation_stack</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">IndentationLevel</span>::<span class="ident">new</span>()],
+            <span class="ident">indentation_stack</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Default</span>::<span class="ident">default</span>()],
             <span class="ident">pending</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="ident">chr0</span>: <span class="prelude-val">None</span>,
             <span class="ident">location</span>: <span class="ident">Location</span>::<span class="ident">new</span>(<span class="number">0</span>, <span class="number">0</span>),
@@ -1975,8 +1977,7 @@
         <span class="ident">lxr</span>.<span class="ident">next_char</span>();
         <span class="ident">lxr</span>.<span class="ident">next_char</span>();
         <span class="comment">// Start at top row (=1) left column (=1)</span>
-        <span class="ident">lxr</span>.<span class="ident">location</span>.<span class="ident">row</span> <span class="op">=</span> <span class="number">1</span>;
-        <span class="ident">lxr</span>.<span class="ident">location</span>.<span class="ident">column</span> <span class="op">=</span> <span class="number">1</span>;
+        <span class="ident">lxr</span>.<span class="ident">location</span>.<span class="ident">reset</span>();
         <span class="ident">lxr</span>
     }
 
@@ -2029,6 +2030,7 @@
         }
     }
 
+    <span class="doccomment">/// Numeric lexing. The feast can start!</span>
     <span class="kw">fn</span> <span class="ident">lex_number</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">LexResult</span> {
         <span class="kw">let</span> <span class="ident">start_pos</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39;0&#39;</span>) {
@@ -2055,6 +2057,7 @@
         }
     }
 
+    <span class="doccomment">/// Lex a hex/octal/decimal/binary number without a decimal point.</span>
     <span class="kw">fn</span> <span class="ident">lex_number_radix</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">start_pos</span>: <span class="ident">Location</span>, <span class="ident">radix</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">LexResult</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">value_text</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
 
@@ -2142,8 +2145,8 @@
         }
     }
 
+    <span class="doccomment">/// Skip everything until end of line</span>
     <span class="kw">fn</span> <span class="ident">lex_comment</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="comment">// Skip everything until end of line</span>
         <span class="self">self</span>.<span class="ident">next_char</span>();
         <span class="kw">loop</span> {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
@@ -2164,15 +2167,15 @@
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..=<span class="ident">literal_number</span> {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">next_char</span>() {
                 <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">c</span>.<span class="ident">to_digit</span>(<span class="number">16</span>) {
-                    <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=&gt;</span> <span class="ident">p</span> <span class="op">+=</span> <span class="ident">d</span> <span class="op">&lt;&lt;</span> (<span class="ident">literal_number</span> <span class="op">-</span> <span class="ident">i</span>) <span class="op">*</span> <span class="number">4</span>,
+                    <span class="prelude-val">Some</span>(<span class="ident">d</span>) <span class="op">=&gt;</span> <span class="ident">p</span> <span class="op">+=</span> <span class="ident">d</span> <span class="op">&lt;&lt;</span> ((<span class="ident">literal_number</span> <span class="op">-</span> <span class="ident">i</span>) <span class="op">*</span> <span class="number">4</span>),
                     <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">unicode_error</span>,
                 },
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">unicode_error</span>,
             }
         }
         <span class="kw">match</span> <span class="ident">wtf8</span>::<span class="ident">CodePoint</span>::<span class="ident">from_u32</span>(<span class="ident">p</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">cp</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">cp</span>.<span class="ident">to_char_lossy</span>()),
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">unicode_error</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">cp</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">cp</span>.<span class="ident">to_char_lossy</span>()),
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">unicode_error</span>,
         }
     }
 
@@ -2266,14 +2269,11 @@
                             <span class="kw">break</span>;
                         }
                     } <span class="kw">else</span> {
-                        <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="string">&#39;\n&#39;</span> {
-                            <span class="kw">if</span> <span class="op">!</span><span class="ident">triple_quoted</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">StringError</span>,
-                                    <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                                });
-                            }
-                            <span class="self">self</span>.<span class="ident">new_line</span>();
+                        <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="string">&#39;\n&#39;</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">triple_quoted</span> {
+                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                                <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">StringError</span>,
+                                <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
+                            });
                         }
                         <span class="ident">string_content</span>.<span class="ident">push</span>(<span class="ident">c</span>);
                     }
@@ -2291,7 +2291,10 @@
         <span class="kw">let</span> <span class="ident">tok</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_bytes</span> {
             <span class="kw">if</span> <span class="ident">string_content</span>.<span class="ident">is_ascii</span>() {
                 <span class="ident">Tok</span>::<span class="ident">Bytes</span> {
-                    <span class="ident">value</span>: <span class="ident">lex_byte</span>(<span class="ident">string_content</span>)<span class="question-mark">?</span>,
+                    <span class="ident">value</span>: <span class="ident">lex_byte</span>(<span class="ident">string_content</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">LexicalError</span> {
+                        <span class="ident">error</span>,
+                        <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
+                    })<span class="question-mark">?</span>,
                 }
             } <span class="kw">else</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
@@ -2355,26 +2358,24 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">next_char</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span>;
-        <span class="kw">let</span> <span class="ident">nxt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chars</span>.<span class="ident">next</span>();
-        <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr1</span>;
-        <span class="self">self</span>.<span class="ident">chr1</span> <span class="op">=</span> <span class="ident">nxt</span>;
-        <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">column</span> <span class="op">+=</span> <span class="number">1</span>;
-        <span class="ident">c</span>
-    }
+    <span class="doccomment">/// This is the main entry point. Call this function to retrieve the next token.</span>
+    <span class="doccomment">/// This function is used by the iterator implementation.</span>
+    <span class="kw">fn</span> <span class="ident">inner_next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">LexResult</span> {
+        <span class="comment">// top loop, keep on processing, until we have something pending.</span>
+        <span class="kw">while</span> <span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">is_empty</span>() {
+            <span class="comment">// Detect indentation levels</span>
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">at_begin_of_line</span> {
+                <span class="self">self</span>.<span class="ident">handle_indentations</span>()<span class="question-mark">?</span>;
+            }
 
-    <span class="kw">fn</span> <span class="ident">get_pos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Location</span> {
-        <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">clone</span>()
-    }
+            <span class="self">self</span>.<span class="ident">consume_normal</span>()<span class="question-mark">?</span>;
+        }
 
-    <span class="kw">fn</span> <span class="ident">new_line</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">row</span> <span class="op">+=</span> <span class="number">1</span>;
-        <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">column</span> <span class="op">=</span> <span class="number">1</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">remove</span>(<span class="number">0</span>))
     }
 
     <span class="doccomment">/// Given we are at the start of a line, count the number of spaces and/or tabs until the first character.</span>
-    <span class="kw">fn</span> <span class="ident">determine_indentation</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IndentationLevel</span>, <span class="ident">LexicalError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">eat_indentation</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">IndentationLevel</span>, <span class="ident">LexicalError</span><span class="op">&gt;</span> {
         <span class="comment">// Determine indentation:</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">spaces</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tabs</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
@@ -2415,14 +2416,24 @@
                     <span class="ident">spaces</span> <span class="op">=</span> <span class="number">0</span>;
                     <span class="ident">tabs</span> <span class="op">=</span> <span class="number">0</span>;
                 }
-                <span class="prelude-val">Some</span>(<span class="string">&#39;\n&#39;</span>) <span class="op">=&gt;</span> {
-                    <span class="comment">// Empty line!</span>
+                <span class="prelude-val">Some</span>(<span class="string">&#39;\x0C&#39;</span>) <span class="op">=&gt;</span> {
+                    <span class="comment">// Form feed character!</span>
+                    <span class="comment">// Reset indentation for the Emacs user.</span>
                     <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="self">self</span>.<span class="ident">new_line</span>();
                     <span class="ident">spaces</span> <span class="op">=</span> <span class="number">0</span>;
                     <span class="ident">tabs</span> <span class="op">=</span> <span class="number">0</span>;
                 }
+                <span class="prelude-val">Some</span>(<span class="string">&#39;\n&#39;</span>) <span class="op">=&gt;</span> {
+                    <span class="comment">// Empty line!</span>
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="ident">spaces</span> <span class="op">=</span> <span class="number">0</span>;
+                    <span class="ident">tabs</span> <span class="op">=</span> <span class="number">0</span>;
+                }
+                <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+                    <span class="kw">break</span>;
+                }
                 <span class="kw">_</span> <span class="op">=&gt;</span> {
+                    <span class="self">self</span>.<span class="ident">at_begin_of_line</span> <span class="op">=</span> <span class="bool-val">false</span>;
                     <span class="kw">break</span>;
                 }
             }
@@ -2431,60 +2442,44 @@
         <span class="prelude-val">Ok</span>(<span class="ident">IndentationLevel</span> { <span class="ident">spaces</span>, <span class="ident">tabs</span> })
     }
 
-    <span class="kw">fn</span> <span class="ident">inner_next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">LexResult</span> {
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">remove</span>(<span class="number">0</span>);
-        }
+    <span class="kw">fn</span> <span class="ident">handle_indentations</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LexicalError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">indentation_level</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_indentation</span>()<span class="question-mark">?</span>;
 
-        <span class="lifetime">&#39;top_loop</span>: <span class="kw">loop</span> {
-            <span class="comment">// Detect indentation levels</span>
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">at_begin_of_line</span> {
-                <span class="self">self</span>.<span class="ident">at_begin_of_line</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="comment">// Determine indent or dedent:</span>
+            <span class="kw">let</span> <span class="ident">current_indentation</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">ordering</span> <span class="op">=</span> <span class="ident">indentation_level</span>.<span class="ident">compare_strict</span>(<span class="ident">current_indentation</span>, <span class="self">self</span>.<span class="ident">get_pos</span>())<span class="question-mark">?</span>;
+            <span class="kw">match</span> <span class="ident">ordering</span> {
+                <span class="ident">Ordering</span>::<span class="ident">Equal</span> <span class="op">=&gt;</span> {
+                    <span class="comment">// Same same</span>
+                }
+                <span class="ident">Ordering</span>::<span class="ident">Greater</span> <span class="op">=&gt;</span> {
+                    <span class="comment">// New indentation level:</span>
+                    <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">push</span>(<span class="ident">indentation_level</span>);
+                    <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="ident">tok_start</span>.<span class="ident">clone</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Indent</span>, <span class="ident">tok_end</span>));
+                }
+                <span class="ident">Ordering</span>::<span class="ident">Less</span> <span class="op">=&gt;</span> {
+                    <span class="comment">// One or more dedentations</span>
+                    <span class="comment">// Pop off other levels until col is found:</span>
 
-                <span class="kw">let</span> <span class="ident">indentation_level</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">determine_indentation</span>()<span class="question-mark">?</span>;
-
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
-                    <span class="comment">// Determine indent or dedent:</span>
-                    <span class="kw">let</span> <span class="ident">current_indentation</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>();
-                    <span class="kw">let</span> <span class="ident">ordering</span> <span class="op">=</span> <span class="ident">indentation_level</span>.<span class="ident">compare_strict</span>(<span class="kw-2">&amp;</span><span class="ident">current_indentation</span>);
-                    <span class="kw">match</span> <span class="ident">ordering</span> {
-                        <span class="prelude-val">Some</span>(<span class="ident">Ordering</span>::<span class="ident">Equal</span>) <span class="op">=&gt;</span> {
-                            <span class="comment">// Same same</span>
-                        }
-                        <span class="prelude-val">Some</span>(<span class="ident">Ordering</span>::<span class="ident">Greater</span>) <span class="op">=&gt;</span> {
-                            <span class="comment">// New indentation level:</span>
-                            <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">push</span>(<span class="ident">indentation_level</span>);
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="ident">tok_start</span>.<span class="ident">clone</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Indent</span>, <span class="ident">tok_end</span>));
-                        }
-                        <span class="prelude-val">Some</span>(<span class="ident">Ordering</span>::<span class="ident">Less</span>) <span class="op">=&gt;</span> {
-                            <span class="comment">// One or more dedentations</span>
-                            <span class="comment">// Pop off other levels until col is found:</span>
-
-                            <span class="kw">loop</span> {
-                                <span class="kw">let</span> <span class="ident">ordering</span> <span class="op">=</span> <span class="ident">indentation_level</span>
-                                    .<span class="ident">compare_strict</span>(<span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>());
-                                <span class="kw">match</span> <span class="ident">ordering</span> {
-                                    <span class="prelude-val">Some</span>(<span class="ident">Ordering</span>::<span class="ident">Less</span>) <span class="op">=&gt;</span> {
-                                        <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">pop</span>();
-                                        <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="ident">tok_start</span>.<span class="ident">clone</span>();
-                                        <span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">push</span>(<span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Dedent</span>, <span class="ident">tok_end</span>)));
-                                    }
-                                    <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
-                                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                            <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(<span class="string">&quot;inconsistent use of tabs and spaces in indentation&quot;</span>.<span class="ident">to_string</span>()),
-                                            <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                                        });
-                                    }
-                                    <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                        <span class="kw">break</span>;
-                                    }
-                                };
+                    <span class="kw">loop</span> {
+                        <span class="kw">let</span> <span class="ident">current_indentation</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>();
+                        <span class="kw">let</span> <span class="ident">ordering</span> <span class="op">=</span> <span class="ident">indentation_level</span>
+                            .<span class="ident">compare_strict</span>(<span class="ident">current_indentation</span>, <span class="self">self</span>.<span class="ident">get_pos</span>())<span class="question-mark">?</span>;
+                        <span class="kw">match</span> <span class="ident">ordering</span> {
+                            <span class="ident">Ordering</span>::<span class="ident">Less</span> <span class="op">=&gt;</span> {
+                                <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">pop</span>();
+                                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="ident">tok_start</span>.<span class="ident">clone</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Dedent</span>, <span class="ident">tok_end</span>));
                             }
-
-                            <span class="kw">if</span> <span class="ident">indentation_level</span> <span class="op">!=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>() {
+                            <span class="ident">Ordering</span>::<span class="ident">Equal</span> <span class="op">=&gt;</span> {
+                                <span class="comment">// We arrived at proper level of indentation.</span>
+                                <span class="kw">break</span>;
+                            }
+                            <span class="ident">Ordering</span>::<span class="ident">Greater</span> <span class="op">=&gt;</span> {
                                 <span class="comment">// TODO: handle wrong indentations</span>
                                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
                                     <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(
@@ -2493,408 +2488,453 @@
                                     <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
                                 });
                             }
-
-                            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">remove</span>(<span class="number">0</span>);
-                        }
-                        <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(
-                                    <span class="string">&quot;inconsistent use of tabs and spaces in indentation&quot;</span>
-                                        .<span class="ident">to_string</span>(),
-                                ),
-                                <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                            });
                         }
                     }
                 }
-            }
-
-            <span class="comment">// Check if we have some character:</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                <span class="comment">// First check identifier:</span>
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_identifier_start</span>(<span class="ident">c</span>) {
-                    <span class="kw">return</span> <span class="self">self</span>.<span class="ident">lex_identifier</span>();
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">is_emoji_presentation</span>(<span class="ident">c</span>) {
-                    <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((
-                        <span class="ident">tok_start</span>,
-                        <span class="ident">Tok</span>::<span class="ident">Name</span> {
-                            <span class="ident">name</span>: <span class="ident">c</span>.<span class="ident">to_string</span>(),
-                        },
-                        <span class="ident">tok_end</span>,
-                    ));
-                } <span class="kw">else</span> {
-                    <span class="kw">match</span> <span class="ident">c</span> {
-                        <span class="string">&#39;0&#39;</span>..=<span class="string">&#39;9&#39;</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">lex_number</span>(),
-                        <span class="string">&#39;#&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="self">self</span>.<span class="ident">lex_comment</span>();
-                            <span class="kw">continue</span>;
-                        }
-                        <span class="string">&#39;&quot;&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">lex_string</span>(<span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-                        }
-                        <span class="string">&#39;\&#39;&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">lex_string</span>(<span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-                        }
-                        <span class="string">&#39;=&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">EqEqual</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Equal</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;+&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PlusEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Plus</span>, <span class="ident">tok_end</span>));
-                            }
-                        }
-                        <span class="string">&#39;*&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">StarEqual</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;*&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleStarEqual</span>, <span class="ident">tok_end</span>));
-                                        }
-                                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleStar</span>, <span class="ident">tok_end</span>));
-                                        }
-                                    }
-                                }
-                                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Star</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;/&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">SlashEqual</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;/&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleSlashEqual</span>, <span class="ident">tok_end</span>));
-                                        }
-                                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleSlash</span>, <span class="ident">tok_end</span>));
-                                        }
-                                    }
-                                }
-                                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Slash</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;%&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PercentEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Percent</span>, <span class="ident">tok_end</span>));
-                            }
-                        }
-                        <span class="string">&#39;|&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">VbarEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Vbar</span>, <span class="ident">tok_end</span>));
-                            }
-                        }
-                        <span class="string">&#39;^&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumflexEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumFlex</span>, <span class="ident">tok_end</span>));
-                            }
-                        }
-                        <span class="string">&#39;&amp;&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AmperEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Amper</span>, <span class="ident">tok_end</span>));
-                            }
-                        }
-                        <span class="string">&#39;-&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">MinusEqual</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;&gt;&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Rarrow</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Minus</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;@&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AtEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">At</span>, <span class="ident">tok_end</span>));
-                            }
-                        }
-                        <span class="string">&#39;!&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">NotEqual</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="string">&#39;!&#39;</span> },
-                                    <span class="ident">location</span>: <span class="ident">tok_start</span>,
-                                });
-                            }
-                        }
-                        <span class="string">&#39;~&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Tilde</span>);
-                        }
-                        <span class="string">&#39;(&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Lpar</span>);
-                            <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">+=</span> <span class="number">1</span>;
-                            <span class="kw">return</span> <span class="ident">result</span>;
-                        }
-                        <span class="string">&#39;)&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Rpar</span>);
-                            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
-                                    <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                                });
-                            }
-                            <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">-=</span> <span class="number">1</span>;
-                            <span class="kw">return</span> <span class="ident">result</span>;
-                        }
-                        <span class="string">&#39;[&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Lsqb</span>);
-                            <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">+=</span> <span class="number">1</span>;
-                            <span class="kw">return</span> <span class="ident">result</span>;
-                        }
-                        <span class="string">&#39;]&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Rsqb</span>);
-                            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
-                                    <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                                });
-                            }
-                            <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">-=</span> <span class="number">1</span>;
-                            <span class="kw">return</span> <span class="ident">result</span>;
-                        }
-                        <span class="string">&#39;{&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Lbrace</span>);
-                            <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">+=</span> <span class="number">1</span>;
-                            <span class="kw">return</span> <span class="ident">result</span>;
-                        }
-                        <span class="string">&#39;}&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Rbrace</span>);
-                            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
-                                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
-                                    <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                                });
-                            }
-                            <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">-=</span> <span class="number">1</span>;
-                            <span class="kw">return</span> <span class="ident">result</span>;
-                        }
-                        <span class="string">&#39;:&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Colon</span>);
-                        }
-                        <span class="string">&#39;;&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Semi</span>);
-                        }
-                        <span class="string">&#39;&lt;&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;&lt;&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">LeftShiftEqual</span>, <span class="ident">tok_end</span>));
-                                        }
-                                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">LeftShift</span>, <span class="ident">tok_end</span>));
-                                        }
-                                    }
-                                }
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">LessEqual</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Less</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;&gt;&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;&gt;&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
-                                        <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">RightShiftEqual</span>, <span class="ident">tok_end</span>));
-                                        }
-                                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">RightShift</span>, <span class="ident">tok_end</span>));
-                                        }
-                                    }
-                                }
-                                <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">GreaterEqual</span>, <span class="ident">tok_end</span>));
-                                }
-                                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Greater</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;,&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Comma</span>, <span class="ident">tok_end</span>));
-                        }
-                        <span class="string">&#39;.&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;0&#39;</span>..=<span class="string">&#39;9&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr1</span> {
-                                <span class="kw">return</span> <span class="self">self</span>.<span class="ident">lex_number</span>();
-                            } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                <span class="self">self</span>.<span class="ident">next_char</span>();
-                                <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>), <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>)) <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chr0</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chr1</span>) {
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="self">self</span>.<span class="ident">next_char</span>();
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Ellipsis</span>, <span class="ident">tok_end</span>));
-                                } <span class="kw">else</span> {
-                                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Dot</span>, <span class="ident">tok_end</span>));
-                                }
-                            }
-                        }
-                        <span class="string">&#39;\n&#39;</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                            <span class="self">self</span>.<span class="ident">new_line</span>();
-
-                            <span class="comment">// Depending on the nesting level, we emit newline or not:</span>
-                            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
-                                <span class="self">self</span>.<span class="ident">at_begin_of_line</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Newline</span>, <span class="ident">tok_end</span>));
-                            } <span class="kw">else</span> {
-                                <span class="kw">continue</span>;
-                            }
-                        }
-                        <span class="string">&#39; &#39;</span> <span class="op">=&gt;</span> {
-                            <span class="comment">// Skip whitespaces</span>
-                            <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">continue</span>;
-                        }
-                        <span class="kw">_</span> <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_char</span>();
-                            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                                <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="ident">c</span>.<span class="ident">unwrap</span>() },
-                                <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
-                            });
-                        } <span class="comment">// Ignore all the rest..</span>
-                    }
-                }
-            } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">tok_pos</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-                <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">tok_pos</span>.<span class="ident">clone</span>(), <span class="ident">Tok</span>::<span class="ident">EndOfFile</span>, <span class="ident">tok_pos</span>));
             }
         }
+
+        <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">eat_single_char</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">ty</span>: <span class="ident">Tok</span>) <span class="op">-&gt;</span> <span class="ident">LexResult</span> {
+    <span class="doccomment">/// Take a look at the next character, if any, and decide upon the next steps.</span>
+    <span class="kw">fn</span> <span class="ident">consume_normal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LexicalError</span><span class="op">&gt;</span> {
+        <span class="comment">// Check if we have some character:</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+            <span class="comment">// First check identifier:</span>
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_identifier_start</span>(<span class="ident">c</span>) {
+                <span class="kw">let</span> <span class="ident">identifier</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lex_identifier</span>()<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">identifier</span>);
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">is_emoji_presentation</span>(<span class="ident">c</span>) {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">emit</span>((
+                    <span class="ident">tok_start</span>,
+                    <span class="ident">Tok</span>::<span class="ident">Name</span> {
+                        <span class="ident">name</span>: <span class="ident">c</span>.<span class="ident">to_string</span>(),
+                    },
+                    <span class="ident">tok_end</span>,
+                ));
+            } <span class="kw">else</span> {
+                <span class="self">self</span>.<span class="ident">consume_character</span>(<span class="ident">c</span>)<span class="question-mark">?</span>;
+            }
+        } <span class="kw">else</span> {
+            <span class="comment">// We reached end of file.</span>
+            <span class="kw">let</span> <span class="ident">tok_pos</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+
+            <span class="comment">// First of all, we need all nestings to be finished.</span>
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
+                    <span class="ident">location</span>: <span class="ident">tok_pos</span>,
+                });
+            }
+
+            <span class="comment">// Next, insert a trailing newline, if required.</span>
+            <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">at_begin_of_line</span> {
+                <span class="self">self</span>.<span class="ident">at_begin_of_line</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_pos</span>.<span class="ident">clone</span>(), <span class="ident">Tok</span>::<span class="ident">Newline</span>, <span class="ident">tok_pos</span>.<span class="ident">clone</span>()));
+            }
+
+            <span class="comment">// Next, flush the indentation stack to zero.</span>
+            <span class="kw">while</span> <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> {
+                <span class="self">self</span>.<span class="ident">indentation_stack</span>.<span class="ident">pop</span>();
+                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_pos</span>.<span class="ident">clone</span>(), <span class="ident">Tok</span>::<span class="ident">Dedent</span>, <span class="ident">tok_pos</span>.<span class="ident">clone</span>()));
+            }
+
+            <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_pos</span>.<span class="ident">clone</span>(), <span class="ident">Tok</span>::<span class="ident">EndOfFile</span>, <span class="ident">tok_pos</span>));
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="doccomment">/// Okay, we are facing a weird character, what is it? Determine that.</span>
+    <span class="kw">fn</span> <span class="ident">consume_character</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">c</span>: <span class="ident">char</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LexicalError</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident">c</span> {
+            <span class="string">&#39;0&#39;</span>..=<span class="string">&#39;9&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lex_number</span>()<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">number</span>);
+            }
+            <span class="string">&#39;#&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">lex_comment</span>();
+            }
+            <span class="string">&#39;&quot;&#39;</span> <span class="op">|</span> <span class="string">&#39;\&#39;&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lex_string</span>(<span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">string</span>);
+            }
+            <span class="string">&#39;=&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">EqEqual</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="kw">_</span> <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Equal</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;+&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PlusEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Plus</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39;*&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">StarEqual</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;*&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                            <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                                <span class="self">self</span>.<span class="ident">next_char</span>();
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleStarEqual</span>, <span class="ident">tok_end</span>));
+                            }
+                            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleStar</span>, <span class="ident">tok_end</span>));
+                            }
+                        }
+                    }
+                    <span class="kw">_</span> <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Star</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;/&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">SlashEqual</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;/&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                            <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                                <span class="self">self</span>.<span class="ident">next_char</span>();
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleSlashEqual</span>, <span class="ident">tok_end</span>));
+                            }
+                            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">DoubleSlash</span>, <span class="ident">tok_end</span>));
+                            }
+                        }
+                    }
+                    <span class="kw">_</span> <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Slash</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;%&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">PercentEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Percent</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39;|&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">VbarEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Vbar</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39;^&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumflexEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">CircumFlex</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39;&amp;&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AmperEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Amper</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39;-&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">MinusEqual</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;&gt;&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Rarrow</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="kw">_</span> <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Minus</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;@&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">AtEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">At</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39;!&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">NotEqual</span>, <span class="ident">tok_end</span>));
+                } <span class="kw">else</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="string">&#39;!&#39;</span> },
+                        <span class="ident">location</span>: <span class="ident">tok_start</span>,
+                    });
+                }
+            }
+            <span class="string">&#39;~&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Tilde</span>);
+            }
+            <span class="string">&#39;(&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Lpar</span>);
+                <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">+=</span> <span class="number">1</span>;
+            }
+            <span class="string">&#39;)&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Rpar</span>);
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
+                        <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
+                    });
+                }
+                <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">-=</span> <span class="number">1</span>;
+            }
+            <span class="string">&#39;[&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Lsqb</span>);
+                <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">+=</span> <span class="number">1</span>;
+            }
+            <span class="string">&#39;]&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Rsqb</span>);
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
+                        <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
+                    });
+                }
+                <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">-=</span> <span class="number">1</span>;
+            }
+            <span class="string">&#39;{&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Lbrace</span>);
+                <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">+=</span> <span class="number">1</span>;
+            }
+            <span class="string">&#39;}&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Rbrace</span>);
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">NestingError</span>,
+                        <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
+                    });
+                }
+                <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">-=</span> <span class="number">1</span>;
+            }
+            <span class="string">&#39;:&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Colon</span>);
+            }
+            <span class="string">&#39;;&#39;</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">eat_single_char</span>(<span class="ident">Tok</span>::<span class="ident">Semi</span>);
+            }
+            <span class="string">&#39;&lt;&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;&lt;&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                            <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                                <span class="self">self</span>.<span class="ident">next_char</span>();
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">LeftShiftEqual</span>, <span class="ident">tok_end</span>));
+                            }
+                            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">LeftShift</span>, <span class="ident">tok_end</span>));
+                            }
+                        }
+                    }
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">LessEqual</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="kw">_</span> <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Less</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;&gt;&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;&gt;&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chr0</span> {
+                            <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                                <span class="self">self</span>.<span class="ident">next_char</span>();
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">RightShiftEqual</span>, <span class="ident">tok_end</span>));
+                            }
+                            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">RightShift</span>, <span class="ident">tok_end</span>));
+                            }
+                        }
+                    }
+                    <span class="prelude-val">Some</span>(<span class="string">&#39;=&#39;</span>) <span class="op">=&gt;</span> {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">GreaterEqual</span>, <span class="ident">tok_end</span>));
+                    }
+                    <span class="kw">_</span> <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Greater</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;,&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Comma</span>, <span class="ident">tok_end</span>));
+            }
+            <span class="string">&#39;.&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;0&#39;</span>..=<span class="string">&#39;9&#39;</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr1</span> {
+                    <span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lex_number</span>()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.<span class="ident">emit</span>(<span class="ident">number</span>);
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                    <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>), <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>)) <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chr0</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chr1</span>) {
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="self">self</span>.<span class="ident">next_char</span>();
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Ellipsis</span>, <span class="ident">tok_end</span>));
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Dot</span>, <span class="ident">tok_end</span>));
+                    }
+                }
+            }
+            <span class="string">&#39;\n&#39;</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
+
+                <span class="comment">// Depending on the nesting level, we emit newline or not:</span>
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">nesting</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="self">self</span>.<span class="ident">at_begin_of_line</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                    <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">Tok</span>::<span class="ident">Newline</span>, <span class="ident">tok_end</span>));
+                }
+            }
+            <span class="string">&#39; &#39;</span> <span class="op">|</span> <span class="string">&#39;\t&#39;</span> <span class="op">|</span> <span class="string">&#39;\x0C&#39;</span> <span class="op">=&gt;</span> {
+                <span class="comment">// Skip whitespaces</span>
+                <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">while</span> <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39; &#39;</span>) <span class="op">||</span> <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39;\t&#39;</span>) <span class="op">||</span> <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39;\x0C&#39;</span>)
+                {
+                    <span class="self">self</span>.<span class="ident">next_char</span>();
+                }
+            }
+            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_char</span>();
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
+                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">UnrecognizedToken</span> { <span class="ident">tok</span>: <span class="ident">c</span>.<span class="ident">unwrap</span>() },
+                    <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
+                });
+            } <span class="comment">// Ignore all the rest..</span>
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn</span> <span class="ident">eat_single_char</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">ty</span>: <span class="ident">Tok</span>) {
         <span class="kw">let</span> <span class="ident">tok_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-        <span class="self">self</span>.<span class="ident">next_char</span>();
+        <span class="self">self</span>.<span class="ident">next_char</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">tok_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pos</span>();
-        <span class="prelude-val">Ok</span>((<span class="ident">tok_start</span>, <span class="ident">ty</span>, <span class="ident">tok_end</span>))
+        <span class="self">self</span>.<span class="ident">emit</span>((<span class="ident">tok_start</span>, <span class="ident">ty</span>, <span class="ident">tok_end</span>));
+    }
+
+    <span class="doccomment">/// Helper function to go to the next character coming up.</span>
+    <span class="kw">fn</span> <span class="ident">next_char</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr0</span>;
+        <span class="kw">let</span> <span class="ident">nxt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chars</span>.<span class="ident">next</span>();
+        <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chr1</span>;
+        <span class="self">self</span>.<span class="ident">chr1</span> <span class="op">=</span> <span class="ident">nxt</span>;
+        <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39;\n&#39;</span>) {
+            <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">newline</span>();
+        } <span class="kw">else</span> {
+            <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">go_right</span>();
+        }
+        <span class="ident">c</span>
+    }
+
+    <span class="doccomment">/// Helper function to retrieve the current position.</span>
+    <span class="kw">fn</span> <span class="ident">get_pos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Location</span> {
+        <span class="self">self</span>.<span class="ident">location</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="doccomment">/// Helper function to emit a lexed token to the queue of tokens.</span>
+    <span class="kw">fn</span> <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">spanned</span>: <span class="ident">Spanned</span>) {
+        <span class="self">self</span>.<span class="ident">pending</span>.<span class="ident">push</span>(<span class="ident">spanned</span>);
     }
 }
 
@@ -2928,7 +2968,7 @@ token.
     }
 }
 
-<span class="kw">fn</span> <span class="ident">lex_byte</span>(<span class="ident">s</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">LexicalError</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">lex_byte</span>(<span class="ident">s</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">LexicalErrorType</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">escape</span> <span class="op">=</span> <span class="bool-val">false</span>; <span class="comment">//flag if previous was \</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hex_on</span> <span class="op">=</span> <span class="bool-val">false</span>; <span class="comment">// hex mode on or off</span>
@@ -2947,10 +2987,7 @@ token.
                     <span class="ident">hex_value</span>.<span class="ident">clear</span>();
                 }
             } <span class="kw">else</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                    <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">StringError</span>,
-                    <span class="ident">location</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
-                });
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalErrorType</span>::<span class="ident">StringError</span>);
             }
         } <span class="kw">else</span> {
             <span class="kw">match</span> (<span class="ident">c</span>, <span class="ident">escape</span>) {
@@ -3019,7 +3056,8 @@ token.
                 <span class="ident">Tok</span>::<span class="ident">String</span> {
                     <span class="ident">value</span>: <span class="string">&quot;\\&quot;</span>.<span class="ident">to_string</span>(),
                     <span class="ident">is_fstring</span>: <span class="bool-val">false</span>,
-                }
+                },
+                <span class="ident">Tok</span>::<span class="ident">Newline</span>,
             ]
         );
     }
@@ -3052,6 +3090,7 @@ token.
                     <span class="ident">real</span>: <span class="number">0.0</span>,
                     <span class="ident">imag</span>: <span class="number">2.2</span>,
                 },
+                <span class="ident">Tok</span>::<span class="ident">Newline</span>,
             ]
         );
     }
@@ -3063,7 +3102,7 @@ token.
             <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>() {
                 <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">r&quot;99232  # {}&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">eol</span>));
                 <span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lex_source</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Int</span> { <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">99232</span>) }]);
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Int</span> { <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">99232</span>) }, <span class="ident">Tok</span>::<span class="ident">Newline</span>]);
             }
             )<span class="op">*</span>
         }
@@ -3089,6 +3128,7 @@ token.
                         <span class="ident">Tok</span>::<span class="ident">Int</span> { <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">123</span>) },
                         <span class="ident">Tok</span>::<span class="ident">Newline</span>,
                         <span class="ident">Tok</span>::<span class="ident">Int</span> { <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">456</span>) },
+                        <span class="ident">Tok</span>::<span class="ident">Newline</span>,
                     ]
                 )
             }
@@ -3124,6 +3164,7 @@ token.
                 <span class="ident">Tok</span>::<span class="ident">Int</span> {
                     <span class="ident">value</span>: <span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">0</span>)
                 },
+                <span class="ident">Tok</span>::<span class="ident">Newline</span>,
             ]
         );
     }
@@ -3297,6 +3338,7 @@ token.
                 <span class="ident">Tok</span>::<span class="ident">DoubleSlashEqual</span>,
                 <span class="ident">Tok</span>::<span class="ident">Slash</span>,
                 <span class="ident">Tok</span>::<span class="ident">Slash</span>,
+                <span class="ident">Tok</span>::<span class="ident">Newline</span>,
             ]
         );
     }
@@ -3336,6 +3378,7 @@ token.
                     <span class="ident">value</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;raw\&#39;&quot;</span>),
                     <span class="ident">is_fstring</span>: <span class="bool-val">false</span>,
                 },
+                <span class="ident">Tok</span>::<span class="ident">Newline</span>,
             ]
         );
     }
@@ -3354,6 +3397,7 @@ token.
                             <span class="ident">value</span>: <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;abcdef&quot;</span>),
                             <span class="ident">is_fstring</span>: <span class="bool-val">false</span>,
                         },
+                        <span class="ident">Tok</span>::<span class="ident">Newline</span>,
                     ]
                 )
             }
@@ -3368,27 +3412,33 @@ token.
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_byte</span>() {
+    <span class="kw">fn</span> <span class="ident">test_single_quoted_byte</span>() {
         <span class="comment">// single quote</span>
         <span class="kw">let</span> <span class="ident">all</span> <span class="op">=</span> <span class="string">r##&quot;b&#39;\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !&quot;#$%&amp;\&#39;()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff&#39;&quot;##</span>;
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">all</span>);
         <span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lex_source</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>);
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> (<span class="number">0</span>..=<span class="number">255</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">res</span> }]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">res</span> }, <span class="ident">Tok</span>::<span class="ident">Newline</span>]);
+    }
 
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_double_quoted_byte</span>() {
         <span class="comment">// double quote</span>
         <span class="kw">let</span> <span class="ident">all</span> <span class="op">=</span> <span class="string">r##&quot;b&quot;\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\&quot;#$%&amp;&#39;()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff&quot;&quot;##</span>;
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">all</span>);
         <span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lex_source</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>);
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> (<span class="number">0</span>..=<span class="number">255</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span>();
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">res</span> }]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">res</span> }, <span class="ident">Tok</span>::<span class="ident">Newline</span>]);
+    }
 
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_escape_char_in_byte_literal</span>() {
         <span class="comment">// backslash doesnt escape</span>
         <span class="kw">let</span> <span class="ident">all</span> <span class="op">=</span> <span class="string">r##&quot;b&quot;omkmok\Xaa&quot;&quot;##</span>;
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="ident">all</span>);
         <span class="kw">let</span> <span class="ident">tokens</span> <span class="op">=</span> <span class="ident">lex_source</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>);
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">111</span>, <span class="number">109</span>, <span class="number">107</span>, <span class="number">109</span>, <span class="number">111</span>, <span class="number">107</span>, <span class="number">92</span>, <span class="number">88</span>, <span class="number">97</span>, <span class="number">97</span>];
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">res</span> }]);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tokens</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Tok</span>::<span class="ident">Bytes</span> { <span class="ident">value</span>: <span class="ident">res</span> }, <span class="ident">Tok</span>::<span class="ident">Newline</span>]);
     }
 }
 </pre></div>

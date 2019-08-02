@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/macros.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>macros.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/macros.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>macros.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -256,6 +256,23 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// count number of tokens given as arguments.</span>
 <span class="comment">// see: https://danielkeep.github.io/tlborm/book/blk-counting.html</span>
@@ -447,7 +464,7 @@
 <span class="doccomment">/// use rustpython_vm::obj::objint::PyInt;</span>
 <span class="doccomment">/// use rustpython_vm::pyobject::PyValue;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let vm = VirtualMachine::new();</span>
+<span class="doccomment">/// let vm: VirtualMachine = Default::default();</span>
 <span class="doccomment">/// let obj = PyInt::new(0).into_ref(&amp;vm).into_object();</span>
 <span class="doccomment">/// assert_eq!(</span>
 <span class="doccomment">///     &quot;int&quot;,</span>
@@ -472,7 +489,7 @@
 <span class="doccomment">/// use rustpython_vm::obj::objint::PyInt;</span>
 <span class="doccomment">/// use rustpython_vm::pyobject::PyValue;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let vm = VirtualMachine::new();</span>
+<span class="doccomment">/// let vm: VirtualMachine = Default::default();</span>
 <span class="doccomment">/// let obj = PyInt::new(0).into_ref(&amp;vm).into_object();</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// let int_value = match_class!(obj,</span>
@@ -513,6 +530,23 @@
         } <span class="kw">else</span> {
             <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">match_class</span><span class="op">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">obj</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
         }
+    };
+}
+
+<span class="doccomment">/// Super detailed logging. Might soon overflow your logbuffers</span>
+<span class="doccomment">/// Default, this logging is discarded, except when a the `vm-tracing-logging`</span>
+<span class="doccomment">/// build feature is enabled.</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">vm_trace</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">tt</span>)<span class="op">+</span>) <span class="op">=&gt;</span> {
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;vm-tracing-logging&quot;</span>)]</span>
+        <span class="macro">trace</span><span class="macro">!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>)<span class="op">+</span>);
+    }
+}
+
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">flame_guard</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">expr</span>) <span class="op">=&gt;</span> {
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flame-it&quot;</span>)]</span>
+        <span class="kw">let</span> <span class="ident">_guard</span> <span class="op">=</span> ::<span class="ident">flame</span>::<span class="ident">start_guard</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
     };
 }
 </pre></div>

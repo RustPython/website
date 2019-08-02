@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["ExecutionResult",""]],"struct":[["Frame",""],["Scope",""]],"trait":[["NameProtocol",""]],"type":[["FrameRef",""],["FrameResult","A valid execution result, or an exception"]]});

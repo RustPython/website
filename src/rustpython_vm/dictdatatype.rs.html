@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/dictdatatype.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dictdatatype.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/dictdatatype.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dictdatatype.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -316,11 +316,94 @@
 <span id="316">316</span>
 <span id="317">317</span>
 <span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbool</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>::<span class="ident">PyString</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyhash</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">IdProtocol</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
+<span class="kw">use</span> <span class="ident">num_bigint</span>::<span class="ident">ToBigInt</span>;
 <span class="doccomment">/// Ordered dictionary implementation.</span>
 <span class="doccomment">/// Inspired by: https://morepypy.blogspot.com/2015/01/faster-more-memory-efficient-and-more.html</span>
 <span class="doccomment">/// And: https://www.youtube.com/watch?v=p33CVV29OG8</span>
@@ -412,7 +495,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">DictKey</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">K</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">LookupResult</span>::<span class="ident">Existing</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">lookup</span>(<span class="ident">vm</span>, <span class="ident">key</span>)<span class="question-mark">?</span> {
             <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
         } <span class="kw">else</span> {
@@ -429,7 +512,8 @@
     }
 
     <span class="doccomment">/// Retrieve a key</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flame-it&quot;</span>, <span class="ident">flame</span>(<span class="string">&quot;Dict&quot;</span>))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">DictKey</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">K</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">LookupResult</span>::<span class="ident">Existing</span>(<span class="ident">index</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">lookup</span>(<span class="ident">vm</span>, <span class="ident">key</span>)<span class="question-mark">?</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">unchecked_get</span>(<span class="ident">index</span>)))
         } <span class="kw">else</span> {
@@ -467,7 +551,7 @@
         <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>,
         <span class="ident">value</span>: <span class="ident">T</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">lookup</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>)<span class="question-mark">?</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">lookup</span>(<span class="ident">vm</span>, <span class="ident">key</span>)<span class="question-mark">?</span> {
             <span class="ident">LookupResult</span>::<span class="ident">Existing</span>(<span class="ident">entry_index</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">unchecked_delete</span>(<span class="ident">entry_index</span>),
             <span class="ident">LookupResult</span>::<span class="ident">NewIndex</span> {
                 <span class="ident">hash_value</span>,
@@ -507,7 +591,7 @@
         <span class="ident">position</span>.<span class="ident">size</span> <span class="op">!=</span> <span class="self">self</span>.<span class="ident">size</span> <span class="op">||</span> <span class="self">self</span>.<span class="ident">entries</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="ident">position</span>.<span class="ident">entries_size</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keys</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keys</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">Box</span>::<span class="ident">new</span>(
             <span class="self">self</span>.<span class="ident">entries</span>
                 .<span class="ident">iter</span>()
@@ -516,8 +600,9 @@
     }
 
     <span class="doccomment">/// Lookup the index for the given key.</span>
-    <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">LookupResult</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">hash_value</span> <span class="op">=</span> <span class="ident">collection_hash</span>(<span class="ident">vm</span>, <span class="ident">key</span>)<span class="question-mark">?</span>;
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flame-it&quot;</span>, <span class="ident">flame</span>(<span class="string">&quot;Dict&quot;</span>))]</span>
+    <span class="kw">fn</span> <span class="ident">lookup</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">DictKey</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">K</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">LookupResult</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">hash_value</span> <span class="op">=</span> <span class="ident">key</span>.<span class="ident">do_hash</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">perturb</span> <span class="op">=</span> <span class="ident">hash_value</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash_index</span>: <span class="ident">HashIndex</span> <span class="op">=</span> <span class="ident">hash_value</span>;
         <span class="kw">loop</span> {
@@ -526,11 +611,11 @@
                 <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">indices</span>[<span class="kw-2">&amp;</span><span class="ident">hash_index</span>];
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">entry</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">entries</span>[<span class="ident">index</span>] {
                     <span class="comment">// Okay, we have an entry at this place</span>
-                    <span class="kw">if</span> <span class="ident">entry</span>.<span class="ident">key</span>.<span class="ident">is</span>(<span class="ident">key</span>) {
+                    <span class="kw">if</span> <span class="ident">key</span>.<span class="ident">do_is</span>(<span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">key</span>) {
                         <span class="comment">// Literally the same object</span>
                         <span class="kw">break</span> <span class="prelude-val">Ok</span>(<span class="ident">LookupResult</span>::<span class="ident">Existing</span>(<span class="ident">index</span>));
                     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">entry</span>.<span class="ident">hash</span> <span class="op">==</span> <span class="ident">hash_value</span> {
-                        <span class="kw">if</span> <span class="ident">do_eq</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">key</span>, <span class="ident">key</span>)<span class="question-mark">?</span> {
+                        <span class="kw">if</span> <span class="ident">key</span>.<span class="ident">do_eq</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">entry</span>.<span class="ident">key</span>)<span class="question-mark">?</span> {
                             <span class="kw">break</span> <span class="prelude-val">Ok</span>(<span class="ident">LookupResult</span>::<span class="ident">Existing</span>(<span class="ident">index</span>));
                         } <span class="kw">else</span> {
                             <span class="comment">// entry mismatch.</span>
@@ -559,13 +644,13 @@
     }
 
     <span class="doccomment">/// Retrieve and delete a key</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop</span><span class="op">&lt;</span><span class="ident">K</span>: <span class="ident">DictKey</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">K</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">LookupResult</span>::<span class="ident">Existing</span>(<span class="ident">index</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">lookup</span>(<span class="ident">vm</span>, <span class="ident">key</span>)<span class="question-mark">?</span> {
             <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unchecked_get</span>(<span class="ident">index</span>);
             <span class="self">self</span>.<span class="ident">unchecked_delete</span>(<span class="ident">index</span>);
-            <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">value</span>))
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_key_error</span>(<span class="ident">key</span>.<span class="ident">clone</span>()))
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
         }
     }
 
@@ -590,49 +675,126 @@
     <span class="ident">Existing</span>(<span class="ident">EntryIndex</span>), <span class="comment">// Existing record, index into entries</span>
 }
 
-<span class="kw">fn</span> <span class="ident">collection_hash</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">object</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">HashValue</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">_hash</span>(<span class="ident">object</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">DefaultHasher</span>::<span class="ident">new</span>();
-    <span class="ident">raw_hash</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">hasher</span>.<span class="ident">finish</span>() <span class="kw">as</span> <span class="ident">HashValue</span>)
+<span class="doccomment">/// Types implementing this trait can be used to index</span>
+<span class="doccomment">/// the dictionary. Typical usecases are:</span>
+<span class="doccomment">/// - PyObjectRef -&gt; arbitrary python type used as key</span>
+<span class="doccomment">/// - str -&gt; string reference used as key, this is often used internally</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DictKey</span> {
+    <span class="kw">fn</span> <span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">HashValue</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">do_is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">do_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">other_key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>;
 }
 
-<span class="doccomment">/// Invoke __eq__ on two keys</span>
-<span class="kw">fn</span> <span class="ident">do_eq</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">key1</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>, <span class="ident">key2</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">_eq</span>(<span class="ident">key1</span>.<span class="ident">clone</span>(), <span class="ident">key2</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-    <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">result</span>)
+<span class="doccomment">/// Implement trait for PyObjectRef such that we can use python objects</span>
+<span class="doccomment">/// to index dictionaries.</span>
+<span class="kw">impl</span> <span class="ident">DictKey</span> <span class="kw">for</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">fn</span> <span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">HashValue</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">_hash</span>(<span class="self">self</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">DefaultHasher</span>::<span class="ident">new</span>();
+        <span class="ident">raw_hash</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
+        <span class="prelude-val">Ok</span>(<span class="ident">hasher</span>.<span class="ident">finish</span>() <span class="kw">as</span> <span class="ident">HashValue</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">do_is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">is</span>(<span class="ident">other</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">do_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">other_key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">_eq</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">other_key</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
+        <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">result</span>)
+    }
+}
+
+<span class="doccomment">/// Implement trait for the str type, so that we can use strings</span>
+<span class="doccomment">/// to index dictionaries.</span>
+<span class="kw">impl</span> <span class="ident">DictKey</span> <span class="kw">for</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">HashValue</span><span class="op">&gt;</span> {
+        <span class="comment">// follow a similar route as the hashing of PyStringRef</span>
+        <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_value</span>(<span class="self">self</span>).<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_bigint</span>(<span class="kw-2">&amp;</span><span class="ident">raw_hash</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">DefaultHasher</span>::<span class="ident">new</span>();
+        <span class="ident">raw_hash</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
+        <span class="prelude-val">Ok</span>(<span class="ident">hasher</span>.<span class="ident">finish</span>() <span class="kw">as</span> <span class="ident">HashValue</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">do_is</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_other</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="comment">// No matter who the other pyobject is, we are never the same thing, since</span>
+        <span class="comment">// we are a str, not a pyobject.</span>
+        <span class="bool-val">false</span>
+    }
+
+    <span class="kw">fn</span> <span class="ident">do_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">other_key</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">py_str_value</span>) <span class="op">=</span> <span class="ident">other_key</span>.<span class="ident">payload</span>::<span class="op">&lt;</span><span class="ident">PyString</span><span class="op">&gt;</span>() {
+            <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span><span class="ident">py_str_value</span>.<span class="ident">value</span> <span class="op">==</span> <span class="self">self</span>)
+        } <span class="kw">else</span> {
+            <span class="comment">// Fall back to PyString implementation.</span>
+            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">to_string</span>());
+            <span class="ident">s</span>.<span class="ident">do_eq</span>(<span class="ident">vm</span>, <span class="ident">other_key</span>)
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Dict</span>, <span class="ident">VirtualMachine</span>};
+    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Dict</span>, <span class="ident">DictKey</span>, <span class="ident">VirtualMachine</span>};
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_insert</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vm</span> <span class="op">=</span> <span class="ident">VirtualMachine</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="ident">vm</span>: <span class="ident">VirtualMachine</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dict</span> <span class="op">=</span> <span class="ident">Dict</span>::<span class="ident">default</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
         <span class="kw">let</span> <span class="ident">key1</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>);
         <span class="kw">let</span> <span class="ident">value1</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;abc&quot;</span>.<span class="ident">to_string</span>());
-        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value1</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
+        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value1</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
         <span class="kw">let</span> <span class="ident">key2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;x&quot;</span>.<span class="ident">to_string</span>());
         <span class="kw">let</span> <span class="ident">value2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;def&quot;</span>.<span class="ident">to_string</span>());
-        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key2</span>, <span class="ident">value2</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
+        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key2</span>, <span class="ident">value2</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
-        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value2</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
+        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value2</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
-        <span class="ident">dict</span>.<span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>).<span class="ident">unwrap</span>();
+        <span class="ident">dict</span>.<span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
-        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value2</span>).<span class="ident">unwrap</span>();
+        <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value2</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="bool-val">true</span>, <span class="ident">dict</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="bool-val">true</span>, <span class="ident">dict</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>).<span class="ident">unwrap</span>());
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="bool-val">true</span>, <span class="ident">dict</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="string">&quot;x&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>());
+
+        <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">dict</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="string">&quot;x&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+        <span class="ident">vm</span>.<span class="ident">_eq</span>(<span class="ident">val</span>, <span class="ident">value2</span>)
+            .<span class="ident">expect</span>(<span class="string">&quot;retrieved value must be equal to inserted value.&quot;</span>);
+    }
+
+    <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">hash_tests</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">example_hash</span>:<span class="ident">expr</span>,)<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
+            $(
+                <span class="attribute">#[<span class="ident">test</span>]</span>
+                <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>() {
+                    <span class="ident">check_hash_equivalence</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">example_hash</span>);
+                }
+            )<span class="op">*</span>
+        }
+    }
+
+    <span class="macro">hash_tests</span><span class="macro">!</span> {
+        <span class="ident">test_abc</span>: <span class="string">&quot;abc&quot;</span>,
+        <span class="ident">test_x</span>: <span class="string">&quot;x&quot;</span>,
+    }
+
+    <span class="kw">fn</span> <span class="ident">check_hash_equivalence</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+        <span class="kw">let</span> <span class="ident">vm</span>: <span class="ident">VirtualMachine</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
+        <span class="kw">let</span> <span class="ident">value1</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">to_string</span>();
+        <span class="kw">let</span> <span class="ident">value2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">value1</span>.<span class="ident">clone</span>());
+
+        <span class="kw">let</span> <span class="ident">hash1</span> <span class="op">=</span> <span class="ident">value1</span>.<span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>).<span class="ident">expect</span>(<span class="string">&quot;Hash should not fail.&quot;</span>);
+        <span class="kw">let</span> <span class="ident">hash2</span> <span class="op">=</span> <span class="ident">value2</span>.<span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>).<span class="ident">expect</span>(<span class="string">&quot;Hash should not fail.&quot;</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">hash1</span>, <span class="ident">hash2</span>);
     }
 }
 </pre></div>

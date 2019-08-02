@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/builtins.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builtins.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/builtins.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builtins.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -957,6 +957,14 @@
 <span id="957">957</span>
 <span id="958">958</span>
 <span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Builtin function definitions.</span>
 <span class="doccomment">//!</span>
@@ -981,12 +989,13 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rustpython-compiler&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">rustpython_compiler</span>::<span class="ident">compile</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frame</span>::<span class="ident">Scope</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">get_compile_mode</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::{<span class="ident">single_or_tuple_any</span>, <span class="ident">Args</span>, <span class="ident">KwArgs</span>, <span class="ident">OptionalArg</span>, <span class="ident">PyFuncArgs</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
     <span class="ident">Either</span>, <span class="ident">IdProtocol</span>, <span class="ident">IntoPyObject</span>, <span class="ident">ItemProtocol</span>, <span class="ident">PyIterable</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>,
     <span class="ident">TryFromObject</span>, <span class="ident">TypeProtocol</span>,
 };
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">scope</span>::<span class="ident">Scope</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbyteinner</span>::<span class="ident">PyByteInner</span>;
@@ -1018,7 +1027,24 @@
     <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
 }
 
-<span class="comment">// builtin_ascii</span>
+<span class="kw">fn</span> <span class="ident">builtin_ascii</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">repr</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ascii</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
+    <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="ident">repr</span>.<span class="ident">value</span>.<span class="ident">chars</span>() {
+        <span class="kw">if</span> <span class="ident">c</span>.<span class="ident">is_ascii</span>() {
+            <span class="ident">ascii</span>.<span class="ident">push</span>(<span class="ident">c</span>)
+        } <span class="kw">else</span> {
+            <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">c</span> <span class="kw">as</span> <span class="ident">i64</span>;
+            <span class="kw">let</span> <span class="ident">hex</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">c</span> <span class="op">&lt;</span> <span class="number">0x10000</span> {
+                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\\u{:04x}&quot;</span>, <span class="ident">c</span>)
+            } <span class="kw">else</span> {
+                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;\\U{:08x}&quot;</span>, <span class="ident">c</span>)
+            };
+            <span class="ident">ascii</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">hex</span>)
+        }
+    }
+    <span class="prelude-val">Ok</span>(<span class="ident">ascii</span>)
+}
 
 <span class="kw">fn</span> <span class="ident">builtin_bin</span>(<span class="ident">x</span>: <span class="ident">PyIntRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">as_bigint</span>();
@@ -1067,23 +1093,7 @@
         <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">bytes</span>) <span class="op">=&gt;</span> <span class="ident">str</span>::<span class="ident">from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>).<span class="ident">unwrap</span>().<span class="ident">to_string</span>(),
     };
 
-    <span class="comment">// TODO: fix this newline bug:</span>
-    <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">source</span>);
-
-    <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> {
-        <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">mode</span>.<span class="ident">value</span>;
-        <span class="kw">if</span> <span class="ident">mode</span> <span class="op">==</span> <span class="string">&quot;exec&quot;</span> {
-            <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Exec</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">mode</span> <span class="op">==</span> <span class="string">&quot;eval&quot;</span> {
-            <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Eval</span>
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">mode</span> <span class="op">==</span> <span class="string">&quot;single&quot;</span> {
-            <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Single</span>
-        } <span class="kw">else</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;compile() mode must be &#39;exec&#39;, &#39;eval&#39; or single&#39;&quot;</span>.<span class="ident">to_string</span>())
-            );
-        }
-    };
+    <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">get_compile_mode</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">mode</span>.<span class="ident">value</span>)<span class="question-mark">?</span>;
 
     <span class="ident">vm</span>.<span class="ident">compile</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">mode</span>, <span class="ident">args</span>.<span class="ident">filename</span>.<span class="ident">value</span>.<span class="ident">to_string</span>())
         .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_syntax_error</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>))
@@ -1133,8 +1143,6 @@
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
         <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Eval</span>;
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">source</span>);
-        <span class="comment">// TODO: fix this newline bug:</span>
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">source</span>);
         <span class="ident">vm</span>.<span class="ident">compile</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">mode</span>, <span class="string">&quot;&lt;string&gt;&quot;</span>.<span class="ident">to_string</span>())
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_syntax_error</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>))<span class="question-mark">?</span>
     } <span class="kw">else</span> {
@@ -1162,8 +1170,6 @@
     <span class="kw">let</span> <span class="ident">code_obj</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
         <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Exec</span>;
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">objstr</span>::<span class="ident">get_value</span>(<span class="ident">source</span>);
-        <span class="comment">// TODO: fix this newline bug:</span>
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">source</span>);
         <span class="ident">vm</span>.<span class="ident">compile</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">mode</span>, <span class="string">&quot;&lt;string&gt;&quot;</span>.<span class="ident">to_string</span>())
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_syntax_error</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>))<span class="question-mark">?</span>
     } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">code_obj</span>) <span class="op">=</span> <span class="ident">PyCodeRef</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">source</span>.<span class="ident">clone</span>()) {
@@ -1673,7 +1679,7 @@
         <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">reversed_method</span><span class="question-mark">?</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">default</span>())
     } <span class="kw">else</span> {
         <span class="ident">vm</span>.<span class="ident">get_method_or_type_error</span>(<span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="string">&quot;__getitem__&quot;</span>, <span class="op">||</span> {
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;argument to reversed() must be a sequence&quot;</span>)
+            <span class="string">&quot;argument to reversed() must be a sequence&quot;</span>.<span class="ident">to_string</span>()
         })<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">clone</span>(), <span class="string">&quot;__len__&quot;</span>, <span class="ident">PyFuncArgs</span>::<span class="ident">default</span>())<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">obj_iterator</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">PySequenceIterator</span> {
@@ -1758,13 +1764,16 @@
         });
     }
 
+    <span class="kw">let</span> <span class="ident">debug_mode</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">settings</span>.<span class="ident">optimize</span> <span class="op">==</span> <span class="number">0</span>;
     <span class="macro">extend_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">module</span>, {
+        <span class="string">&quot;__debug__&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="ident">debug_mode</span>),
         <span class="comment">//set __name__ fixes: https://github.com/RustPython/RustPython/issues/146</span>
         <span class="string">&quot;__name__&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;__main__&quot;</span>)),
 
         <span class="string">&quot;abs&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_abs</span>),
         <span class="string">&quot;all&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_all</span>),
         <span class="string">&quot;any&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_any</span>),
+        <span class="string">&quot;ascii&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_ascii</span>),
         <span class="string">&quot;bin&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">builtin_bin</span>),
         <span class="string">&quot;bool&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">bool_type</span>(),
         <span class="string">&quot;bytearray&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">bytearray_type</span>(),
@@ -1846,9 +1855,16 @@
         <span class="string">&quot;ValueError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;IndexError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">index_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;ImportError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">import_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;LookupError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">lookup_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;FileNotFoundError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">file_not_found_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;FileExistsError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">file_exists_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;StopIteration&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">stop_iteration</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;SystemError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">system_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;PermissionError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">permission_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;UnicodeError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">unicode_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;UnicodeDecodeError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">unicode_decode_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;UnicodeEncodeError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">unicode_encode_error</span>.<span class="ident">clone</span>(),
+        <span class="string">&quot;UnicodeTranslateError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">unicode_translate_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;ZeroDivisionError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">zero_division_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;KeyError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">key_error</span>.<span class="ident">clone</span>(),
         <span class="string">&quot;OSError&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">os_error</span>.<span class="ident">clone</span>(),

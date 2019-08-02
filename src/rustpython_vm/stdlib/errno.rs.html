@@ -1,0 +1,519 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/errno.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>errno.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">ItemProtocol</span>, <span class="ident">PyObjectRef</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">VirtualMachine</span>;
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">let</span> <span class="ident">errorcode</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_dict</span>();
+    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="string">&quot;errno&quot;</span>, {
+        <span class="string">&quot;errorcode&quot;</span> <span class="op">=&gt;</span> <span class="ident">errorcode</span>.<span class="ident">clone</span>(),
+    });
+    <span class="kw">for</span> (<span class="ident">name</span>, <span class="ident">code</span>) <span class="kw">in</span> <span class="ident">ERROR_CODES</span> {
+        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>((<span class="kw-2">*</span><span class="ident">name</span>).<span class="ident">to_owned</span>());
+        <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="kw-2">*</span><span class="ident">code</span>);
+        <span class="ident">errorcode</span>.<span class="ident">set_item</span>(<span class="ident">code</span>.<span class="ident">clone</span>(), <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">vm</span>).<span class="ident">unwrap</span>();
+        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>, <span class="ident">name</span>, <span class="ident">code</span>).<span class="ident">unwrap</span>();
+    }
+    <span class="ident">module</span>
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;linux&quot;</span>)]</span>
+<span class="kw">const</span> <span class="ident">ERROR_CODES</span>: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">i32</span>)] <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    (<span class="string">&quot;ENODEV&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENODEV</span>),
+    (<span class="string">&quot;ENOCSI&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOCSI</span>),
+    (<span class="string">&quot;EHOSTUNREACH&quot;</span>, <span class="ident">libc</span>::<span class="ident">EHOSTUNREACH</span>),
+    (<span class="string">&quot;ENOMSG&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOMSG</span>),
+    (<span class="string">&quot;EUCLEAN&quot;</span>, <span class="ident">libc</span>::<span class="ident">EUCLEAN</span>),
+    (<span class="string">&quot;EL2NSYNC&quot;</span>, <span class="ident">libc</span>::<span class="ident">EL2NSYNC</span>),
+    (<span class="string">&quot;EL2HLT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EL2HLT</span>),
+    (<span class="string">&quot;ENODATA&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENODATA</span>),
+    (<span class="string">&quot;ENOTBLK&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTBLK</span>),
+    (<span class="string">&quot;ENOSYS&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOSYS</span>),
+    (<span class="string">&quot;EPIPE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EPIPE</span>),
+    (<span class="string">&quot;EINVAL&quot;</span>, <span class="ident">libc</span>::<span class="ident">EINVAL</span>),
+    (<span class="string">&quot;EOVERFLOW&quot;</span>, <span class="ident">libc</span>::<span class="ident">EOVERFLOW</span>),
+    (<span class="string">&quot;EADV&quot;</span>, <span class="ident">libc</span>::<span class="ident">EADV</span>),
+    (<span class="string">&quot;EINTR&quot;</span>, <span class="ident">libc</span>::<span class="ident">EINTR</span>),
+    (<span class="string">&quot;EUSERS&quot;</span>, <span class="ident">libc</span>::<span class="ident">EUSERS</span>),
+    (<span class="string">&quot;ENOTEMPTY&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTEMPTY</span>),
+    (<span class="string">&quot;ENOBUFS&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOBUFS</span>),
+    (<span class="string">&quot;EPROTO&quot;</span>, <span class="ident">libc</span>::<span class="ident">EPROTO</span>),
+    (<span class="string">&quot;EREMOTE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EREMOTE</span>),
+    (<span class="string">&quot;ENAVAIL&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENAVAIL</span>),
+    (<span class="string">&quot;ECHILD&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECHILD</span>),
+    (<span class="string">&quot;ELOOP&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELOOP</span>),
+    (<span class="string">&quot;EXDEV&quot;</span>, <span class="ident">libc</span>::<span class="ident">EXDEV</span>),
+    (<span class="string">&quot;E2BIG&quot;</span>, <span class="ident">libc</span>::<span class="ident">E2BIG</span>),
+    (<span class="string">&quot;ESRCH&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESRCH</span>),
+    (<span class="string">&quot;EMSGSIZE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EMSGSIZE</span>),
+    (<span class="string">&quot;EAFNOSUPPORT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EAFNOSUPPORT</span>),
+    (<span class="string">&quot;EBADR&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADR</span>),
+    (<span class="string">&quot;EHOSTDOWN&quot;</span>, <span class="ident">libc</span>::<span class="ident">EHOSTDOWN</span>),
+    (<span class="string">&quot;EPFNOSUPPORT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EPFNOSUPPORT</span>),
+    (<span class="string">&quot;ENOPROTOOPT&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOPROTOOPT</span>),
+    (<span class="string">&quot;EBUSY&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBUSY</span>),
+    (<span class="string">&quot;EAGAIN&quot;</span>, <span class="ident">libc</span>::<span class="ident">EAGAIN</span>),
+    (<span class="string">&quot;EBADFD&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADFD</span>),
+    (<span class="string">&quot;EDOTDOT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EDOTDOT</span>),
+    (<span class="string">&quot;EISCONN&quot;</span>, <span class="ident">libc</span>::<span class="ident">EISCONN</span>),
+    (<span class="string">&quot;ENOANO&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOANO</span>),
+    (<span class="string">&quot;ESHUTDOWN&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESHUTDOWN</span>),
+    (<span class="string">&quot;ECHRNG&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECHRNG</span>),
+    (<span class="string">&quot;ELIBBAD&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELIBBAD</span>),
+    (<span class="string">&quot;ENONET&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENONET</span>),
+    (<span class="string">&quot;EBADE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADE</span>),
+    (<span class="string">&quot;EBADF&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADF</span>),
+    (<span class="string">&quot;EMULTIHOP&quot;</span>, <span class="ident">libc</span>::<span class="ident">EMULTIHOP</span>),
+    (<span class="string">&quot;EIO&quot;</span>, <span class="ident">libc</span>::<span class="ident">EIO</span>),
+    (<span class="string">&quot;EUNATCH&quot;</span>, <span class="ident">libc</span>::<span class="ident">EUNATCH</span>),
+    (<span class="string">&quot;EPROTOTYPE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EPROTOTYPE</span>),
+    (<span class="string">&quot;ENOSPC&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOSPC</span>),
+    (<span class="string">&quot;ENOEXEC&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOEXEC</span>),
+    (<span class="string">&quot;EALREADY&quot;</span>, <span class="ident">libc</span>::<span class="ident">EALREADY</span>),
+    (<span class="string">&quot;ENETDOWN&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENETDOWN</span>),
+    (<span class="string">&quot;ENOTNAM&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTNAM</span>),
+    (<span class="string">&quot;EACCES&quot;</span>, <span class="ident">libc</span>::<span class="ident">EACCES</span>),
+    (<span class="string">&quot;ELNRNG&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELNRNG</span>),
+    (<span class="string">&quot;EILSEQ&quot;</span>, <span class="ident">libc</span>::<span class="ident">EILSEQ</span>),
+    (<span class="string">&quot;ENOTDIR&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTDIR</span>),
+    (<span class="string">&quot;ENOTUNIQ&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTUNIQ</span>),
+    (<span class="string">&quot;EPERM&quot;</span>, <span class="ident">libc</span>::<span class="ident">EPERM</span>),
+    (<span class="string">&quot;EDOM&quot;</span>, <span class="ident">libc</span>::<span class="ident">EDOM</span>),
+    (<span class="string">&quot;EXFULL&quot;</span>, <span class="ident">libc</span>::<span class="ident">EXFULL</span>),
+    (<span class="string">&quot;ECONNREFUSED&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECONNREFUSED</span>),
+    (<span class="string">&quot;EISDIR&quot;</span>, <span class="ident">libc</span>::<span class="ident">EISDIR</span>),
+    (<span class="string">&quot;EPROTONOSUPPORT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EPROTONOSUPPORT</span>),
+    (<span class="string">&quot;EROFS&quot;</span>, <span class="ident">libc</span>::<span class="ident">EROFS</span>),
+    (<span class="string">&quot;EADDRNOTAVAIL&quot;</span>, <span class="ident">libc</span>::<span class="ident">EADDRNOTAVAIL</span>),
+    (<span class="string">&quot;EIDRM&quot;</span>, <span class="ident">libc</span>::<span class="ident">EIDRM</span>),
+    (<span class="string">&quot;ECOMM&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECOMM</span>),
+    (<span class="string">&quot;ESRMNT&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESRMNT</span>),
+    (<span class="string">&quot;EREMOTEIO&quot;</span>, <span class="ident">libc</span>::<span class="ident">EREMOTEIO</span>),
+    (<span class="string">&quot;EL3RST&quot;</span>, <span class="ident">libc</span>::<span class="ident">EL3RST</span>),
+    (<span class="string">&quot;EBADMSG&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADMSG</span>),
+    (<span class="string">&quot;ENFILE&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENFILE</span>),
+    (<span class="string">&quot;ELIBMAX&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELIBMAX</span>),
+    (<span class="string">&quot;ESPIPE&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESPIPE</span>),
+    (<span class="string">&quot;ENOLINK&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOLINK</span>),
+    (<span class="string">&quot;ENETRESET&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENETRESET</span>),
+    (<span class="string">&quot;ETIMEDOUT&quot;</span>, <span class="ident">libc</span>::<span class="ident">ETIMEDOUT</span>),
+    (<span class="string">&quot;ENOENT&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOENT</span>),
+    (<span class="string">&quot;EEXIST&quot;</span>, <span class="ident">libc</span>::<span class="ident">EEXIST</span>),
+    (<span class="string">&quot;EDQUOT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EDQUOT</span>),
+    (<span class="string">&quot;ENOSTR&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOSTR</span>),
+    (<span class="string">&quot;EBADSLT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADSLT</span>),
+    (<span class="string">&quot;EBADRQC&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBADRQC</span>),
+    (<span class="string">&quot;ELIBACC&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELIBACC</span>),
+    (<span class="string">&quot;EFAULT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EFAULT</span>),
+    (<span class="string">&quot;EFBIG&quot;</span>, <span class="ident">libc</span>::<span class="ident">EFBIG</span>),
+    (<span class="string">&quot;EDEADLOCK&quot;</span>, <span class="ident">libc</span>::<span class="ident">EDEADLOCK</span>),
+    (<span class="string">&quot;ENOTCONN&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTCONN</span>),
+    (<span class="string">&quot;EDESTADDRREQ&quot;</span>, <span class="ident">libc</span>::<span class="ident">EDESTADDRREQ</span>),
+    (<span class="string">&quot;ELIBSCN&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELIBSCN</span>),
+    (<span class="string">&quot;ENOLCK&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOLCK</span>),
+    (<span class="string">&quot;EISNAM&quot;</span>, <span class="ident">libc</span>::<span class="ident">EISNAM</span>),
+    (<span class="string">&quot;ECONNABORTED&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECONNABORTED</span>),
+    (<span class="string">&quot;ENETUNREACH&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENETUNREACH</span>),
+    (<span class="string">&quot;ESTALE&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESTALE</span>),
+    (<span class="string">&quot;ENOSR&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOSR</span>),
+    (<span class="string">&quot;ENOMEM&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOMEM</span>),
+    (<span class="string">&quot;ENOTSOCK&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTSOCK</span>),
+    (<span class="string">&quot;ESTRPIPE&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESTRPIPE</span>),
+    (<span class="string">&quot;EMLINK&quot;</span>, <span class="ident">libc</span>::<span class="ident">EMLINK</span>),
+    (<span class="string">&quot;ERANGE&quot;</span>, <span class="ident">libc</span>::<span class="ident">ERANGE</span>),
+    (<span class="string">&quot;ELIBEXEC&quot;</span>, <span class="ident">libc</span>::<span class="ident">ELIBEXEC</span>),
+    (<span class="string">&quot;EL3HLT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EL3HLT</span>),
+    (<span class="string">&quot;ECONNRESET&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECONNRESET</span>),
+    (<span class="string">&quot;EADDRINUSE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EADDRINUSE</span>),
+    (<span class="string">&quot;ENOTSUP&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTSUP</span>),
+    (<span class="string">&quot;EREMCHG&quot;</span>, <span class="ident">libc</span>::<span class="ident">EREMCHG</span>),
+    (<span class="string">&quot;ENAMETOOLONG&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENAMETOOLONG</span>),
+    (<span class="string">&quot;ENOTTY&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTTY</span>),
+    (<span class="string">&quot;ERESTART&quot;</span>, <span class="ident">libc</span>::<span class="ident">ERESTART</span>),
+    (<span class="string">&quot;ESOCKTNOSUPPORT&quot;</span>, <span class="ident">libc</span>::<span class="ident">ESOCKTNOSUPPORT</span>),
+    (<span class="string">&quot;ETIME&quot;</span>, <span class="ident">libc</span>::<span class="ident">ETIME</span>),
+    (<span class="string">&quot;EBFONT&quot;</span>, <span class="ident">libc</span>::<span class="ident">EBFONT</span>),
+    (<span class="string">&quot;ETOOMANYREFS&quot;</span>, <span class="ident">libc</span>::<span class="ident">ETOOMANYREFS</span>),
+    (<span class="string">&quot;EMFILE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EMFILE</span>),
+    (<span class="string">&quot;ETXTBSY&quot;</span>, <span class="ident">libc</span>::<span class="ident">ETXTBSY</span>),
+    (<span class="string">&quot;EINPROGRESS&quot;</span>, <span class="ident">libc</span>::<span class="ident">EINPROGRESS</span>),
+    (<span class="string">&quot;ENXIO&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENXIO</span>),
+    (<span class="string">&quot;ENOPKG&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOPKG</span>),
+    (<span class="string">&quot;ENOMEDIUM&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOMEDIUM</span>),
+    (<span class="string">&quot;EMEDIUMTYPE&quot;</span>, <span class="ident">libc</span>::<span class="ident">EMEDIUMTYPE</span>),
+    (<span class="string">&quot;ECANCELED&quot;</span>, <span class="ident">libc</span>::<span class="ident">ECANCELED</span>),
+    (<span class="string">&quot;ENOKEY&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOKEY</span>),
+    (<span class="string">&quot;EKEYEXPIRED&quot;</span>, <span class="ident">libc</span>::<span class="ident">EKEYEXPIRED</span>),
+    (<span class="string">&quot;EKEYREVOKED&quot;</span>, <span class="ident">libc</span>::<span class="ident">EKEYREVOKED</span>),
+    (<span class="string">&quot;EKEYREJECTED&quot;</span>, <span class="ident">libc</span>::<span class="ident">EKEYREJECTED</span>),
+    (<span class="string">&quot;EOWNERDEAD&quot;</span>, <span class="ident">libc</span>::<span class="ident">EOWNERDEAD</span>),
+    (<span class="string">&quot;ENOTRECOVERABLE&quot;</span>, <span class="ident">libc</span>::<span class="ident">ENOTRECOVERABLE</span>),
+    (<span class="string">&quot;ERFKILL&quot;</span>, <span class="ident">libc</span>::<span class="ident">ERFKILL</span>),
+];
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
+<span class="kw">const</span> <span class="ident">ERROR_CODES</span>: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">i32</span>)] <span class="op">=</span> <span class="kw-2">&amp;</span>[
+    (<span class="string">&quot;ENODEV&quot;</span>, <span class="number">19</span>),
+    (<span class="string">&quot;WSAEHOSTUNREACH&quot;</span>, <span class="number">10065</span>),
+    (<span class="string">&quot;ENOMSG&quot;</span>, <span class="number">122</span>),
+    (<span class="string">&quot;ENODATA&quot;</span>, <span class="number">120</span>),
+    (<span class="string">&quot;ENOSYS&quot;</span>, <span class="number">40</span>),
+    (<span class="string">&quot;EPIPE&quot;</span>, <span class="number">32</span>),
+    (<span class="string">&quot;EINVAL&quot;</span>, <span class="number">22</span>),
+    (<span class="string">&quot;EOVERFLOW&quot;</span>, <span class="number">132</span>),
+    (<span class="string">&quot;EINTR&quot;</span>, <span class="number">4</span>),
+    (<span class="string">&quot;WSAEUSERS&quot;</span>, <span class="number">10068</span>),
+    (<span class="string">&quot;ENOTEMPTY&quot;</span>, <span class="number">41</span>),
+    (<span class="string">&quot;WSAENOBUFS&quot;</span>, <span class="number">10055</span>),
+    (<span class="string">&quot;EPROTO&quot;</span>, <span class="number">134</span>),
+    (<span class="string">&quot;WSAEREMOTE&quot;</span>, <span class="number">10071</span>),
+    (<span class="string">&quot;ECHILD&quot;</span>, <span class="number">10</span>),
+    (<span class="string">&quot;WSAELOOP&quot;</span>, <span class="number">10062</span>),
+    (<span class="string">&quot;EXDEV&quot;</span>, <span class="number">18</span>),
+    (<span class="string">&quot;E2BIG&quot;</span>, <span class="number">7</span>),
+    (<span class="string">&quot;ESRCH&quot;</span>, <span class="number">3</span>),
+    (<span class="string">&quot;WSAEMSGSIZE&quot;</span>, <span class="number">10040</span>),
+    (<span class="string">&quot;WSAEAFNOSUPPORT&quot;</span>, <span class="number">10047</span>),
+    (<span class="string">&quot;WSAEHOSTDOWN&quot;</span>, <span class="number">10064</span>),
+    (<span class="string">&quot;WSAEPFNOSUPPORT&quot;</span>, <span class="number">10046</span>),
+    (<span class="string">&quot;WSAENOPROTOOPT&quot;</span>, <span class="number">10042</span>),
+    (<span class="string">&quot;EBUSY&quot;</span>, <span class="number">16</span>),
+    (<span class="string">&quot;WSAEWOULDBLOCK&quot;</span>, <span class="number">10035</span>),
+    (<span class="string">&quot;WSAEISCONN&quot;</span>, <span class="number">10056</span>),
+    (<span class="string">&quot;WSAESHUTDOWN&quot;</span>, <span class="number">10058</span>),
+    (<span class="string">&quot;EBADF&quot;</span>, <span class="number">9</span>),
+    (<span class="string">&quot;EIO&quot;</span>, <span class="number">5</span>),
+    (<span class="string">&quot;WSAEPROTOTYPE&quot;</span>, <span class="number">10041</span>),
+    (<span class="string">&quot;ENOSPC&quot;</span>, <span class="number">28</span>),
+    (<span class="string">&quot;ENOEXEC&quot;</span>, <span class="number">8</span>),
+    (<span class="string">&quot;WSAEALREADY&quot;</span>, <span class="number">10037</span>),
+    (<span class="string">&quot;WSAENETDOWN&quot;</span>, <span class="number">10050</span>),
+    (<span class="string">&quot;EACCES&quot;</span>, <span class="number">13</span>),
+    (<span class="string">&quot;EILSEQ&quot;</span>, <span class="number">42</span>),
+    (<span class="string">&quot;ENOTDIR&quot;</span>, <span class="number">20</span>),
+    (<span class="string">&quot;EPERM&quot;</span>, <span class="number">1</span>),
+    (<span class="string">&quot;EDOM&quot;</span>, <span class="number">33</span>),
+    (<span class="string">&quot;WSAECONNREFUSED&quot;</span>, <span class="number">10061</span>),
+    (<span class="string">&quot;EISDIR&quot;</span>, <span class="number">21</span>),
+    (<span class="string">&quot;WSAEPROTONOSUPPORT&quot;</span>, <span class="number">10043</span>),
+    (<span class="string">&quot;EROFS&quot;</span>, <span class="number">30</span>),
+    (<span class="string">&quot;WSAEADDRNOTAVAIL&quot;</span>, <span class="number">10049</span>),
+    (<span class="string">&quot;EIDRM&quot;</span>, <span class="number">111</span>),
+    (<span class="string">&quot;EBADMSG&quot;</span>, <span class="number">104</span>),
+    (<span class="string">&quot;ENFILE&quot;</span>, <span class="number">23</span>),
+    (<span class="string">&quot;ESPIPE&quot;</span>, <span class="number">29</span>),
+    (<span class="string">&quot;ENOLINK&quot;</span>, <span class="number">121</span>),
+    (<span class="string">&quot;WSAENETRESET&quot;</span>, <span class="number">10052</span>),
+    (<span class="string">&quot;WSAETIMEDOUT&quot;</span>, <span class="number">10060</span>),
+    (<span class="string">&quot;ENOENT&quot;</span>, <span class="number">2</span>),
+    (<span class="string">&quot;EEXIST&quot;</span>, <span class="number">17</span>),
+    (<span class="string">&quot;WSAEDQUOT&quot;</span>, <span class="number">10069</span>),
+    (<span class="string">&quot;ENOSTR&quot;</span>, <span class="number">125</span>),
+    (<span class="string">&quot;EFAULT&quot;</span>, <span class="number">14</span>),
+    (<span class="string">&quot;EFBIG&quot;</span>, <span class="number">27</span>),
+    (<span class="string">&quot;EDEADLOCK&quot;</span>, <span class="number">36</span>),
+    (<span class="string">&quot;WSAENOTCONN&quot;</span>, <span class="number">10057</span>),
+    (<span class="string">&quot;WSAEDESTADDRREQ&quot;</span>, <span class="number">10039</span>),
+    (<span class="string">&quot;ENOLCK&quot;</span>, <span class="number">39</span>),
+    (<span class="string">&quot;WSAECONNABORTED&quot;</span>, <span class="number">10053</span>),
+    (<span class="string">&quot;WSAENETUNREACH&quot;</span>, <span class="number">10051</span>),
+    (<span class="string">&quot;WSAESTALE&quot;</span>, <span class="number">10070</span>),
+    (<span class="string">&quot;ENOSR&quot;</span>, <span class="number">124</span>),
+    (<span class="string">&quot;ENOMEM&quot;</span>, <span class="number">12</span>),
+    (<span class="string">&quot;WSAENOTSOCK&quot;</span>, <span class="number">10038</span>),
+    (<span class="string">&quot;EMLINK&quot;</span>, <span class="number">31</span>),
+    (<span class="string">&quot;ERANGE&quot;</span>, <span class="number">34</span>),
+    (<span class="string">&quot;WSAECONNRESET&quot;</span>, <span class="number">10054</span>),
+    (<span class="string">&quot;WSAEADDRINUSE&quot;</span>, <span class="number">10048</span>),
+    (<span class="string">&quot;WSAEOPNOTSUPP&quot;</span>, <span class="number">10045</span>),
+    (<span class="string">&quot;EAGAIN&quot;</span>, <span class="number">11</span>),
+    (<span class="string">&quot;ENAMETOOLONG&quot;</span>, <span class="number">38</span>),
+    (<span class="string">&quot;ENOTTY&quot;</span>, <span class="number">25</span>),
+    (<span class="string">&quot;WSAESOCKTNOSUPPORT&quot;</span>, <span class="number">10044</span>),
+    (<span class="string">&quot;ETIME&quot;</span>, <span class="number">137</span>),
+    (<span class="string">&quot;WSAETOOMANYREFS&quot;</span>, <span class="number">10059</span>),
+    (<span class="string">&quot;EMFILE&quot;</span>, <span class="number">24</span>),
+    (<span class="string">&quot;ETXTBSY&quot;</span>, <span class="number">139</span>),
+    (<span class="string">&quot;WSAEINPROGRESS&quot;</span>, <span class="number">10036</span>),
+    (<span class="string">&quot;ENXIO&quot;</span>, <span class="number">6</span>),
+    (<span class="string">&quot;WSAEMFILE&quot;</span>, <span class="number">10024</span>),
+    (<span class="string">&quot;WSAVERNOTSUPPORTED&quot;</span>, <span class="number">10092</span>),
+    (<span class="string">&quot;WSAEPROCLIM&quot;</span>, <span class="number">10067</span>),
+    (<span class="string">&quot;WSAEFAULT&quot;</span>, <span class="number">10014</span>),
+    (<span class="string">&quot;WSANOTINITIALISED&quot;</span>, <span class="number">10093</span>),
+    (<span class="string">&quot;WSAENAMETOOLONG&quot;</span>, <span class="number">10063</span>),
+    (<span class="string">&quot;WSAENOTEMPTY&quot;</span>, <span class="number">10066</span>),
+    (<span class="string">&quot;WSAEACCES&quot;</span>, <span class="number">10013</span>),
+    (<span class="string">&quot;WSABASEERR&quot;</span>, <span class="number">10000</span>),
+    (<span class="string">&quot;WSAEBADF&quot;</span>, <span class="number">10009</span>),
+    (<span class="string">&quot;WSAEDISCON&quot;</span>, <span class="number">10101</span>),
+    (<span class="string">&quot;WSAEINTR&quot;</span>, <span class="number">10004</span>),
+    (<span class="string">&quot;WSASYSNOTREADY&quot;</span>, <span class="number">10091</span>),
+    (<span class="string">&quot;WSAEINVAL&quot;</span>, <span class="number">10022</span>),
+    (<span class="string">&quot;ECANCELED&quot;</span>, <span class="number">105</span>),
+    (<span class="string">&quot;EOWNERDEAD&quot;</span>, <span class="number">133</span>),
+    (<span class="string">&quot;ENOTRECOVERABLE&quot;</span>, <span class="number">127</span>),
+    (<span class="string">&quot;ENOTSUP&quot;</span>, <span class="number">129</span>),
+];
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">any</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;linux&quot;</span>, <span class="ident">windows</span>)))]</span>
+<span class="kw">const</span> <span class="ident">ERROR_CODES</span>: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">i32</span>)] <span class="op">=</span> <span class="kw-2">&amp;</span>[];
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
