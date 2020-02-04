@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["parse_expression","Parses a python expression"],["parse_program",""],["parse_statement",""]]});
+initSidebarItems({"fn":[["parse",""],["parse_expression","Parses a python expression"],["parse_program","Parse a full python program, containing usually multiple lines."],["parse_statement","Parse a single statement."]]});

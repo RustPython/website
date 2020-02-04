@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PyClassSlots",""],["PyTpFlags",""]],"trait":[["PyBuiltinCallable",""],["PyBuiltinDescriptor",""]]});

@@ -6,5 +6,4 @@ implementors["rustpython_vm"] = [];
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

@@ -1,11 +1,10 @@
 (function() {var implementors = {};
-implementors["rustpython_bytecode"] = [{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"rustpython_bytecode/bytecode/struct.FunctionOpArg.html\" title=\"struct rustpython_bytecode::bytecode::FunctionOpArg\">FunctionOpArg</a>",synthetic:false,types:["rustpython_bytecode::bytecode::FunctionOpArg"]},];
-implementors["rustpython_vm"] = [{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"rustpython_vm/cformat/struct.CConversionFlags.html\" title=\"struct rustpython_vm::cformat::CConversionFlags\">CConversionFlags</a>",synthetic:false,types:["rustpython_vm::cformat::CConversionFlags"]},];
+implementors["rustpython_bytecode"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"rustpython_bytecode/bytecode/struct.CodeFlags.html\" title=\"struct rustpython_bytecode::bytecode::CodeFlags\">CodeFlags</a>","synthetic":false,"types":["rustpython_bytecode::bytecode::CodeFlags"]}];
+implementors["rustpython_vm"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"rustpython_vm/cformat/struct.CConversionFlags.html\" title=\"struct rustpython_vm::cformat::CConversionFlags\">CConversionFlags</a>","synthetic":false,"types":["rustpython_vm::cformat::CConversionFlags"]},{"text":"impl&lt;T:&nbsp;<a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"enum\" href=\"rustpython_vm/pyobject/enum.PyArithmaticValue.html\" title=\"enum rustpython_vm::pyobject::PyArithmaticValue\">PyArithmaticValue</a>&lt;T&gt;","synthetic":false,"types":["rustpython_vm::pyobject::PyArithmaticValue"]},{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"rustpython_vm/slots/struct.PyTpFlags.html\" title=\"struct rustpython_vm::slots::PyTpFlags\">PyTpFlags</a>","synthetic":false,"types":["rustpython_vm::slots::PyTpFlags"]}];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

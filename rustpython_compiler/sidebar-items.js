@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["compile","Take an AST and transform it into bytecode"],["error",""],["symboltable",""]]});
+initSidebarItems({"macro":[["apply_optimizations",""]],"mod":[["compile","Take an AST and transform it into bytecode"],["error",""],["mode",""],["peephole",""],["symboltable",""]]});

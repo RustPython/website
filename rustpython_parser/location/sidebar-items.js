@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Location",""]]});
+initSidebarItems({"struct":[["Location","A location somewhere in the sourcecode."]]});

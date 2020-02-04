@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["make_module",""]],"struct":[["Socket",""]]});
+initSidebarItems({"fn":[["make_module",""]],"struct":[["PySocket",""]],"type":[["PySocketRef",""]]});

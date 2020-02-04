@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["PyBuiltinFunction",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyBuiltinFunction",""],["PyBuiltinMethod",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["create_type",""],["initialize_types","Fill attributes of builtin types."]],"struct":[["TypeZoo","Holder of references to builtin types."]]});

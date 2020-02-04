@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_keywords",""],["make_tokenizer",""]],"struct":[["Lexer",""],["LineContinationHandler",""],["NewlineHandler",""]],"type":[["LexResult",""],["Spanned",""]]});
+initSidebarItems({"fn":[["get_keywords",""],["make_tokenizer",""]],"struct":[["Lexer",""],["NewlineHandler",""]],"type":[["LexResult",""],["Spanned",""]]});

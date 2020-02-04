@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/cformat.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>cformat.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/cformat.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>cformat.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -805,8 +805,103 @@
 <span id="805">805</span>
 <span id="806">806</span>
 <span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">format</span>::<span class="ident">get_num_digits</span>;
 <span class="doccomment">/// Implementation of Printf-Style string formatting</span>
 <span class="doccomment">/// [https://docs.python.org/3/library/stdtypes.html#printf-style-string-formatting]</span>
 <span class="kw">use</span> <span class="ident">num_bigint</span>::{<span class="ident">BigInt</span>, <span class="ident">Sign</span>};
@@ -814,6 +909,8 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
+
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">format</span>::<span class="ident">get_num_digits</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CFormatErrorType</span> {
@@ -835,17 +932,17 @@
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">CFormatError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">use</span> <span class="ident">CFormatErrorType</span>::<span class="kw-2">*</span>;
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">typ</span> {
-            <span class="ident">UnmatchedKeyParentheses</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;incomplete format key&quot;</span>),
-            <span class="ident">CFormatErrorType</span>::<span class="ident">IncompleteFormat</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;incomplete format&quot;</span>),
-            <span class="ident">UnsupportedFormatChar</span>(<span class="ident">c</span>) <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(
+            <span class="ident">UnmatchedKeyParentheses</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;incomplete format key&quot;</span>),
+            <span class="ident">CFormatErrorType</span>::<span class="ident">IncompleteFormat</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;incomplete format&quot;</span>),
+            <span class="ident">UnsupportedFormatChar</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(
                 <span class="ident">f</span>,
                 <span class="string">&quot;unsupported format character &#39;{}&#39; ({:#x}) at index {}&quot;</span>,
                 <span class="ident">c</span>, <span class="ident">c</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="self">self</span>.<span class="ident">index</span>
             ),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;unexpected error parsing format string&quot;</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;unexpected error parsing format string&quot;</span>),
         }
     }
 }
@@ -855,6 +952,7 @@
     <span class="ident">Repr</span>,
     <span class="ident">Str</span>,
     <span class="ident">Ascii</span>,
+    <span class="ident">Bytes</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
@@ -913,7 +1011,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CFormatSpec</span> {
-    <span class="kw">fn</span> <span class="ident">compute_fill_string</span>(<span class="ident">fill_char</span>: <span class="ident">char</span>, <span class="ident">fill_chars_needed</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">compute_fill_string</span>(<span class="ident">fill_char</span>: <span class="ident">char</span>, <span class="ident">fill_chars_needed</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         (<span class="number">0</span>..<span class="ident">fill_chars_needed</span>)
             .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">fill_char</span>)
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>()
@@ -924,16 +1022,16 @@
         <span class="ident">string</span>: <span class="ident">String</span>,
         <span class="ident">fill_char</span>: <span class="ident">char</span>,
         <span class="ident">num_prefix_chars</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">num_chars</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">chars</span>().<span class="ident">count</span>();
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">num_prefix_chars</span>) <span class="op">=</span> <span class="ident">num_prefix_chars</span> {
-            <span class="ident">num_chars</span> <span class="op">+=</span> <span class="ident">num_prefix_chars</span>;
+            <span class="ident">num_chars</span> <span class="op">+</span><span class="op">=</span> <span class="ident">num_prefix_chars</span>;
         }
         <span class="kw">let</span> <span class="ident">num_chars</span> <span class="op">=</span> <span class="ident">num_chars</span>;
 
         <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">min_field_width</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="ident">width</span>)) <span class="op">=&gt;</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">width</span>, <span class="ident">num_chars</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">num_chars</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="ident">width</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">width</span>, <span class="ident">num_chars</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">num_chars</span>,
         };
         <span class="kw">let</span> <span class="ident">fill_chars_needed</span> <span class="op">=</span> <span class="ident">width</span> <span class="op">-</span> <span class="ident">num_chars</span>;
         <span class="kw">let</span> <span class="ident">fill_string</span> <span class="op">=</span> <span class="ident">CFormatSpec</span>::<span class="ident">compute_fill_string</span>(<span class="ident">fill_char</span>, <span class="ident">fill_chars_needed</span>);
@@ -949,7 +1047,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">string</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">string</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">string</span>;
         <span class="comment">// truncate if needed</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="ident">precision</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">precision</span> {
@@ -960,36 +1058,36 @@
         <span class="self">self</span>.<span class="ident">fill_string</span>(<span class="ident">string</span>, <span class="string">&#39; &#39;</span>, <span class="prelude-val">None</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format_number</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">num</span>: <span class="kw-2">&amp;</span><span class="ident">BigInt</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format_number</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">num</span>: <span class="kw-2">&amp;</span><span class="ident">BigInt</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">use</span> <span class="ident">CFormatCase</span>::{<span class="ident">Lowercase</span>, <span class="ident">Uppercase</span>};
         <span class="kw">use</span> <span class="ident">CNumberType</span>::<span class="kw-2">*</span>;
         <span class="kw">let</span> <span class="ident">magnitude</span> <span class="op">=</span> <span class="ident">num</span>.<span class="ident">abs</span>();
         <span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">ALTERNATE_FORM</span>) {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">format_type</span> {
-                <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Octal</span>) <span class="op">=&gt;</span> <span class="string">&quot;0o&quot;</span>,
-                <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Lowercase</span>)) <span class="op">=&gt;</span> <span class="string">&quot;0x&quot;</span>,
-                <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Uppercase</span>)) <span class="op">=&gt;</span> <span class="string">&quot;0X&quot;</span>,
-                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="string">&quot;&quot;</span>,
+                <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Octal</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;0o&quot;</span>,
+                <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Lowercase</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;0x&quot;</span>,
+                <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Uppercase</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;0X&quot;</span>,
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;&quot;</span>,
             }
         } <span class="kw">else</span> {
             <span class="string">&quot;&quot;</span>
         };
 
         <span class="kw">let</span> <span class="ident">magnitude_string</span>: <span class="ident">String</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">format_type</span> {
-            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Decimal</span>) <span class="op">=&gt;</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">10</span>),
-            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Octal</span>) <span class="op">=&gt;</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">8</span>),
-            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Lowercase</span>)) <span class="op">=&gt;</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">16</span>),
-            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Uppercase</span>)) <span class="op">=&gt;</span> {
+            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Decimal</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">10</span>),
+            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Octal</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">8</span>),
+            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Lowercase</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">16</span>),
+            <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Uppercase</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">magnitude</span>.<span class="ident">to_str_radix</span>(<span class="number">16</span>);
                 <span class="ident">result</span>.<span class="ident">make_ascii_uppercase</span>();
                 <span class="ident">result</span>
             }
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(), <span class="comment">// Should not happen because caller has to make sure that this is a number</span>
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(), <span class="comment">// Should not happen because caller has to make sure that this is a number</span>
         };
 
         <span class="kw">let</span> <span class="ident">sign_string</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">num</span>.<span class="ident">sign</span>() {
-            <span class="ident">Sign</span>::<span class="ident">Minus</span> <span class="op">=&gt;</span> <span class="string">&quot;-&quot;</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> {
+            <span class="ident">Sign</span>::<span class="ident">Minus</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;-&quot;</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">SIGN_CHAR</span>) {
                     <span class="string">&quot;+&quot;</span>
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">BLANK_SIGN</span>) {
@@ -1017,6 +1115,58 @@
             <span class="self">self</span>.<span class="ident">fill_string</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">prefix</span>, <span class="ident">magnitude_string</span>), <span class="string">&#39; &#39;</span>, <span class="prelude-val">None</span>)
         }
     }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">format_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">num</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">magnitude</span> <span class="op">=</span> <span class="ident">num</span>.<span class="ident">abs</span>();
+
+        <span class="kw">let</span> <span class="ident">sign_string</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">num</span>.<span class="ident">is_sign_positive</span>() {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">SIGN_CHAR</span>) {
+                <span class="string">&quot;+&quot;</span>
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">BLANK_SIGN</span>) {
+                <span class="string">&quot; &quot;</span>
+            } <span class="kw">else</span> {
+                <span class="string">&quot;&quot;</span>
+            }
+        } <span class="kw">else</span> {
+            <span class="string">&quot;-&quot;</span>
+        };
+
+        <span class="kw">let</span> <span class="ident">magnitude_string</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">format_type</span> {
+            <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">CFloatType</span>::<span class="ident">PointDecimal</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">precision</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">precision</span> {
+                    <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="ident">p</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">p</span>,
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">6</span>,
+                };
+                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.*}&quot;</span>, <span class="ident">precision</span>, <span class="ident">magnitude</span>)
+            }
+            <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">CFloatType</span>::<span class="ident">Exponent</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Not yet implemented for %e and %E&quot;</span>.<span class="ident">to_string</span>())
+            }
+            <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">CFloatType</span>::<span class="ident">General</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Not yet implemented for %g and %G&quot;</span>.<span class="ident">to_string</span>())
+            }
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        };
+
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">ZERO_PAD</span>) {
+            <span class="kw">let</span> <span class="ident">fill_char</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">CConversionFlags</span>::<span class="ident">LEFT_ADJUST</span>) {
+                <span class="string">&#39;0&#39;</span>
+            } <span class="kw">else</span> {
+                <span class="string">&#39; &#39;</span>
+            };
+            <span class="prelude-val">Ok</span>(<span class="macro">format</span><span class="macro">!</span>(
+                <span class="string">&quot;{}{}&quot;</span>,
+                <span class="ident">sign_string</span>,
+                <span class="self">self</span>.<span class="ident">fill_string</span>(
+                    <span class="ident">magnitude_string</span>,
+                    <span class="ident">fill_char</span>,
+                    <span class="prelude-val">Some</span>(<span class="ident">sign_string</span>.<span class="ident">chars</span>().<span class="ident">count</span>())
+                )
+            ))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">fill_string</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">sign_string</span>, <span class="ident">magnitude_string</span>), <span class="string">&#39; &#39;</span>, <span class="prelude-val">None</span>))
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
@@ -1026,17 +1176,17 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CFormatPart</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_specifier</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_specifier</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">CFormatPart</span>::<span class="ident">Spec</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">CFormatPart</span>::<span class="ident">Spec</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">CFormatPart</span>::<span class="ident">Spec</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">s</span>.<span class="ident">mapping_key</span>.<span class="ident">is_some</span>(),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">CFormatPart</span>::<span class="ident">Spec</span>(<span class="ident">s</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">s</span>.<span class="ident">mapping_key</span>.<span class="ident">is_some</span>(),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
 }
@@ -1049,7 +1199,7 @@
 <span class="kw">impl</span> <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">CFormatString</span> {
     <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">CFormatError</span>;
 
-    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="prelude-val">Err</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="prelude-val">Err</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cur_text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="ident">text</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">parts</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">CFormatPart</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
@@ -1058,7 +1208,7 @@
                 .<span class="ident">or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">parse_specifier</span>(<span class="ident">cur_text</span>))
                 .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">format_part</span>, <span class="ident">new_text</span>, <span class="ident">consumed</span>)<span class="op">|</span> {
                     <span class="ident">parts</span>.<span class="ident">push</span>((<span class="ident">index</span>, <span class="ident">format_part</span>));
-                    <span class="ident">index</span> <span class="op">+=</span> <span class="ident">consumed</span>;
+                    <span class="ident">index</span> <span class="op">+</span><span class="op">=</span> <span class="ident">consumed</span>;
                     <span class="ident">new_text</span>
                 })
                 .<span class="ident">map_err</span>(<span class="op">|</span>(<span class="ident">e</span>, <span class="ident">consumed</span>)<span class="op">|</span> <span class="ident">CFormatError</span> {
@@ -1073,13 +1223,13 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_quantity</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CFormatQuantity</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+<span class="kw">fn</span> <span class="ident">parse_quantity</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CFormatQuantity</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
     <span class="kw">let</span> <span class="ident">num_digits</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">get_num_digits</span>(<span class="ident">text</span>);
-    <span class="kw">if</span> <span class="ident">num_digits</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">num_digits</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
         <span class="kw">return</span> <span class="kw">match</span> <span class="ident">chars</span>.<span class="ident">next</span>() {
-            <span class="prelude-val">Some</span>(<span class="string">&#39;*&#39;</span>) <span class="op">=&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">FromValuesTuple</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
-            <span class="kw">_</span> <span class="op">=&gt;</span> (<span class="prelude-val">None</span>, <span class="ident">text</span>),
+            <span class="prelude-val">Some</span>(<span class="string">&#39;*&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">FromValuesTuple</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">None</span>, <span class="ident">text</span>),
         };
     }
     <span class="comment">// This should never fail</span>
@@ -1091,53 +1241,49 @@
     )
 }
 
-<span class="kw">fn</span> <span class="ident">parse_precision</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CFormatQuantity</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+<span class="kw">fn</span> <span class="ident">parse_precision</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CFormatQuantity</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
     <span class="kw">match</span> <span class="ident">chars</span>.<span class="ident">next</span>() {
-        <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>) <span class="op">=&gt;</span> <span class="ident">parse_quantity</span>(<span class="kw-2">&amp;</span><span class="ident">chars</span>.<span class="ident">as_str</span>()),
-        <span class="kw">_</span> <span class="op">=&gt;</span> (<span class="prelude-val">None</span>, <span class="ident">text</span>),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">parse_quantity</span>(<span class="kw-2">&amp;</span><span class="ident">chars</span>.<span class="ident">as_str</span>()),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">None</span>, <span class="ident">text</span>),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_literal_single</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">char</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>), <span class="ident">CFormatErrorType</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_literal_single</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">char</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>), <span class="ident">CFormatErrorType</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
     <span class="comment">// TODO get rid of the unwrap</span>
     <span class="kw">let</span> <span class="ident">first_char</span> <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>();
-    <span class="kw">if</span> <span class="ident">first_char</span> <span class="op">==</span> <span class="string">&#39;%&#39;</span> {
+    <span class="kw">if</span> <span class="ident">first_char</span> <span class="op">=</span><span class="op">=</span> <span class="string">&#39;%&#39;</span> {
         <span class="comment">// if we see a %, it has to be escaped</span>
         <span class="kw">match</span> <span class="ident">chars</span>.<span class="ident">next</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">next_char</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="ident">next_char</span> <span class="op">!=</span> <span class="ident">first_char</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">next_char</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="ident">next_char</span> <span class="op">!</span><span class="op">=</span> <span class="ident">first_char</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">UnescapedModuloSignInLiteral</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Ok</span>((<span class="ident">first_char</span>, <span class="ident">chars</span>.<span class="ident">as_str</span>()))
                 }
             }
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">IncompleteFormat</span>),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">IncompleteFormat</span>),
         }
     } <span class="kw">else</span> {
         <span class="prelude-val">Ok</span>((<span class="ident">first_char</span>, <span class="ident">chars</span>.<span class="ident">as_str</span>()))
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_literal</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">CFormatPart</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">usize</span>), <span class="ident">ParsingError</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_literal</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">CFormatPart</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">usize</span>), <span class="ident">ParsingError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cur_text</span> <span class="op">=</span> <span class="ident">text</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result_string</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">consumed</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">while</span> <span class="op">!</span><span class="ident">cur_text</span>.<span class="ident">is_empty</span>() {
         <span class="kw">match</span> <span class="ident">parse_literal_single</span>(<span class="ident">cur_text</span>) {
-            <span class="prelude-val">Ok</span>((<span class="ident">next_char</span>, <span class="ident">remaining</span>)) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Ok</span>((<span class="ident">next_char</span>, <span class="ident">remaining</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">result_string</span>.<span class="ident">push</span>(<span class="ident">next_char</span>);
-                <span class="ident">consumed</span> <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">consumed</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 <span class="ident">cur_text</span> <span class="op">=</span> <span class="ident">remaining</span>;
             }
-            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">result_string</span>.<span class="ident">is_empty</span>() {
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((
-                        <span class="ident">CFormatPart</span>::<span class="ident">Literal</span>(<span class="ident">result_string</span>.<span class="ident">to_string</span>()),
-                        <span class="ident">cur_text</span>,
-                        <span class="ident">consumed</span>,
-                    ));
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">CFormatPart</span>::<span class="ident">Literal</span>(<span class="ident">result_string</span>), <span class="ident">cur_text</span>, <span class="ident">consumed</span>));
                 } <span class="kw">else</span> {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="ident">err</span>, <span class="ident">consumed</span>));
                 }
@@ -1145,13 +1291,13 @@
         }
     }
     <span class="prelude-val">Ok</span>((
-        <span class="ident">CFormatPart</span>::<span class="ident">Literal</span>(<span class="ident">result_string</span>.<span class="ident">to_string</span>()),
+        <span class="ident">CFormatPart</span>::<span class="ident">Literal</span>(<span class="ident">result_string</span>),
         <span class="string">&quot;&quot;</span>,
         <span class="ident">text</span>.<span class="ident">chars</span>().<span class="ident">count</span>(),
     ))
 }
 
-<span class="kw">fn</span> <span class="ident">parse_text_inside_parentheses</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>)<span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_text_inside_parentheses</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">counter</span> <span class="op">=</span> <span class="number">1</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">contained_text</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
@@ -1159,16 +1305,16 @@
         <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">next</span>();
 
         <span class="kw">match</span> <span class="ident">c</span> {
-            <span class="prelude-val">Some</span>(<span class="string">&#39;(&#39;</span>) <span class="op">=&gt;</span> {
-                <span class="ident">counter</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="prelude-val">Some</span>(<span class="string">&#39;(&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">counter</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             }
-            <span class="prelude-val">Some</span>(<span class="string">&#39;)&#39;</span>) <span class="op">=&gt;</span> {
-                <span class="ident">counter</span> <span class="op">-=</span> <span class="number">1</span>;
+            <span class="prelude-val">Some</span>(<span class="string">&#39;)&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">counter</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
             }
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
-            <span class="kw">_</span> <span class="op">=&gt;</span> (),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (),
         }
 
         <span class="kw">if</span> <span class="ident">counter</span> <span class="op">&gt;</span> <span class="number">0</span> {
@@ -1179,43 +1325,43 @@
     <span class="prelude-val">Some</span>((<span class="ident">contained_text</span>, <span class="ident">chars</span>.<span class="ident">as_str</span>()))
 }
 
-<span class="kw">fn</span> <span class="ident">parse_spec_mapping_key</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>), <span class="ident">CFormatErrorType</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_spec_mapping_key</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>), <span class="ident">CFormatErrorType</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
 
     <span class="kw">let</span> <span class="ident">next_char</span> <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">next</span>();
-    <span class="kw">if</span> <span class="ident">next_char</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39;(&#39;</span>) {
+    <span class="kw">if</span> <span class="ident">next_char</span> <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&#39;(&#39;</span>) {
         <span class="kw">match</span> <span class="ident">parse_text_inside_parentheses</span>(<span class="ident">chars</span>.<span class="ident">as_str</span>()) {
-            <span class="prelude-val">Some</span>((<span class="ident">key</span>, <span class="ident">remaining_text</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((<span class="prelude-val">Some</span>(<span class="ident">key</span>), <span class="ident">remaining_text</span>)),
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">UnmatchedKeyParentheses</span>),
+            <span class="prelude-val">Some</span>((<span class="ident">key</span>, <span class="ident">remaining_text</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="prelude-val">Some</span>(<span class="ident">key</span>), <span class="ident">remaining_text</span>)),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">UnmatchedKeyParentheses</span>),
         }
     } <span class="kw">else</span> {
         <span class="prelude-val">Ok</span>((<span class="prelude-val">None</span>, <span class="ident">text</span>))
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_flag_single</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CConversionFlags</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+<span class="kw">fn</span> <span class="ident">parse_flag_single</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CConversionFlags</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
     <span class="kw">match</span> <span class="ident">chars</span>.<span class="ident">next</span>() {
-        <span class="prelude-val">Some</span>(<span class="string">&#39;#&#39;</span>) <span class="op">=&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">ALTERNATE_FORM</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;0&#39;</span>) <span class="op">=&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">ZERO_PAD</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;-&#39;</span>) <span class="op">=&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">LEFT_ADJUST</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
-        <span class="prelude-val">Some</span>(<span class="string">&#39; &#39;</span>) <span class="op">=&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">BLANK_SIGN</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;+&#39;</span>) <span class="op">=&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">SIGN_CHAR</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
-        <span class="kw">_</span> <span class="op">=&gt;</span> (<span class="prelude-val">None</span>, <span class="ident">text</span>),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;#&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">ALTERNATE_FORM</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;0&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">ZERO_PAD</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;-&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">LEFT_ADJUST</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
+        <span class="prelude-val">Some</span>(<span class="string">&#39; &#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">BLANK_SIGN</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;+&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">Some</span>(<span class="ident">CConversionFlags</span>::<span class="ident">SIGN_CHAR</span>), <span class="ident">chars</span>.<span class="ident">as_str</span>()),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="prelude-val">None</span>, <span class="ident">text</span>),
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_flags</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> (<span class="ident">CConversionFlags</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+<span class="kw">fn</span> <span class="ident">parse_flags</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">CConversionFlags</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>) {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flags</span> <span class="op">=</span> <span class="ident">CConversionFlags</span>::<span class="ident">empty</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cur_text</span> <span class="op">=</span> <span class="ident">text</span>;
     <span class="kw">while</span> <span class="op">!</span><span class="ident">cur_text</span>.<span class="ident">is_empty</span>() {
         <span class="kw">match</span> <span class="ident">parse_flag_single</span>(<span class="ident">cur_text</span>) {
-            (<span class="prelude-val">Some</span>(<span class="ident">flag</span>), <span class="ident">text</span>) <span class="op">=&gt;</span> {
-                <span class="ident">flags</span> <span class="op">|=</span> <span class="ident">flag</span>;
+            (<span class="prelude-val">Some</span>(<span class="ident">flag</span>), <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">flag</span>;
                 <span class="ident">cur_text</span> <span class="op">=</span> <span class="ident">text</span>;
             }
 
-            (<span class="prelude-val">None</span>, <span class="ident">text</span>) <span class="op">=&gt;</span> {
+            (<span class="prelude-val">None</span>, <span class="ident">text</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> (<span class="ident">flags</span>, <span class="ident">text</span>);
             }
         }
@@ -1224,102 +1370,107 @@
     (<span class="ident">flags</span>, <span class="string">&quot;&quot;</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">consume_length</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+<span class="kw">fn</span> <span class="ident">consume_length</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
     <span class="kw">match</span> <span class="ident">chars</span>.<span class="ident">next</span>() {
-        <span class="prelude-val">Some</span>(<span class="string">&#39;h&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;l&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;L&#39;</span>) <span class="op">=&gt;</span> <span class="ident">chars</span>.<span class="ident">as_str</span>(),
-        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">text</span>,
+        <span class="prelude-val">Some</span>(<span class="string">&#39;h&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;l&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;L&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">chars</span>.<span class="ident">as_str</span>(),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">text</span>,
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_format_type</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">CFormatType</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">char</span>), <span class="ident">CFormatErrorType</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_format_type</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">CFormatType</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">char</span>), <span class="ident">CFormatErrorType</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">CFloatType</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident">CFormatCase</span>::{<span class="ident">Lowercase</span>, <span class="ident">Uppercase</span>};
     <span class="kw">use</span> <span class="ident">CNumberType</span>::<span class="kw-2">*</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
     <span class="kw">let</span> <span class="ident">next_char</span> <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">next</span>();
     <span class="kw">match</span> <span class="ident">next_char</span> {
-        <span class="prelude-val">Some</span>(<span class="string">&#39;d&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;i&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;u&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;d&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;i&#39;</span>) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="string">&#39;u&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Decimal</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;o&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;o&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Octal</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;x&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;x&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Lowercase</span>)),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;X&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;X&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Number</span>(<span class="ident">Hex</span>(<span class="ident">Uppercase</span>)),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;e&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;e&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">Exponent</span>(<span class="ident">Lowercase</span>)),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;E&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;E&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">Exponent</span>(<span class="ident">Uppercase</span>)),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;f&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;f&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">PointDecimal</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;F&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;F&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">PointDecimal</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;g&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;g&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">General</span>(<span class="ident">Lowercase</span>)),
             <span class="ident">text</span>,
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;G&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;G&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="ident">General</span>(<span class="ident">Uppercase</span>)),
             <span class="ident">text</span>,
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;c&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((<span class="ident">CFormatType</span>::<span class="ident">Character</span>, <span class="ident">chars</span>.<span class="ident">as_str</span>(), <span class="ident">next_char</span>.<span class="ident">unwrap</span>())),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;r&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;c&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="ident">CFormatType</span>::<span class="ident">Character</span>, <span class="ident">chars</span>.<span class="ident">as_str</span>(), <span class="ident">next_char</span>.<span class="ident">unwrap</span>())),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;r&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">String</span>(<span class="ident">CFormatPreconversor</span>::<span class="ident">Repr</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;s&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;s&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">String</span>(<span class="ident">CFormatPreconversor</span>::<span class="ident">Str</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="string">&#39;a&#39;</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>((
+        <span class="prelude-val">Some</span>(<span class="string">&#39;b&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
+            <span class="ident">CFormatType</span>::<span class="ident">String</span>(<span class="ident">CFormatPreconversor</span>::<span class="ident">Bytes</span>),
+            <span class="ident">chars</span>.<span class="ident">as_str</span>(),
+            <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
+        )),
+        <span class="prelude-val">Some</span>(<span class="string">&#39;a&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((
             <span class="ident">CFormatType</span>::<span class="ident">String</span>(<span class="ident">CFormatPreconversor</span>::<span class="ident">Ascii</span>),
             <span class="ident">chars</span>.<span class="ident">as_str</span>(),
             <span class="ident">next_char</span>.<span class="ident">unwrap</span>(),
         )),
-        <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">UnsupportedFormatChar</span>(<span class="ident">c</span>)),
-        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">IncompleteFormat</span>), <span class="comment">// should not happen because it is handled earlier in the parsing</span>
+        <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">UnsupportedFormatChar</span>(<span class="ident">c</span>)),
+        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">CFormatErrorType</span>::<span class="ident">IncompleteFormat</span>), <span class="comment">// should not happen because it is handled earlier in the parsing</span>
     }
 }
 
-<span class="kw">fn</span> <span class="ident">calc_consumed</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">b</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+<span class="kw">fn</span> <span class="ident">calc_consumed</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">b</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
     <span class="ident">a</span>.<span class="ident">chars</span>().<span class="ident">count</span>() <span class="op">-</span> <span class="ident">b</span>.<span class="ident">chars</span>().<span class="ident">count</span>()
 }
 
 <span class="kw">impl</span> <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">CFormatSpec</span> {
     <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="ident">ParsingError</span>;
 
-    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="prelude-val">Err</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="prelude-val">Err</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">chars</span>();
-        <span class="kw">if</span> <span class="ident">chars</span>.<span class="ident">next</span>() <span class="op">!=</span> <span class="prelude-val">Some</span>(<span class="string">&#39;%&#39;</span>) {
+        <span class="kw">if</span> <span class="ident">chars</span>.<span class="ident">next</span>() <span class="op">!</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&#39;%&#39;</span>) {
             <span class="kw">return</span> <span class="prelude-val">Err</span>((<span class="ident">CFormatErrorType</span>::<span class="ident">MissingModuloSign</span>, <span class="number">1</span>));
         }
 
@@ -1337,10 +1488,10 @@
 
         <span class="comment">// apply default precision for float types</span>
         <span class="kw">let</span> <span class="ident">precision</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">precision</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">precision</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">precision</span>),
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">format_type</span> {
-                <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="number">6</span>)),
-                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">precision</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">precision</span>),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">format_type</span> {
+                <span class="ident">CFormatType</span>::<span class="ident">Float</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="number">6</span>)),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
             },
         };
 
@@ -1356,7 +1507,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">parse_specifier</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">CFormatPart</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">usize</span>), <span class="ident">ParsingError</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">parse_specifier</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">CFormatPart</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">usize</span>), <span class="ident">ParsingError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">spec</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">CFormatSpec</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">chars_consumed</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">chars_consumed</span>;
     <span class="prelude-val">Ok</span>((
@@ -1572,6 +1723,47 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_parse_and_format_float</span>() {
+        <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="string">&quot;%f&quot;</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">CFormatSpec</span><span class="op">&gt;</span>()
+                .<span class="ident">unwrap</span>()
+                .<span class="ident">format_float</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="number">1.2345</span>))
+                .<span class="ident">ok</span>(),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;1.234500&quot;</span>.<span class="ident">to_string</span>())
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="string">&quot;%+f&quot;</span>
+                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">CFormatSpec</span><span class="op">&gt;</span>()
+                .<span class="ident">unwrap</span>()
+                .<span class="ident">format_float</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="number">1.2345</span>))
+                .<span class="ident">ok</span>(),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;+1.234500&quot;</span>.<span class="ident">to_string</span>())
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="string">&quot;% f&quot;</span>
+                .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">CFormatSpec</span><span class="op">&gt;</span>()
+                .<span class="ident">unwrap</span>()
+                .<span class="ident">format_float</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="number">1.2345</span>))
+                .<span class="ident">ok</span>(),
+            <span class="prelude-val">Some</span>(<span class="string">&quot; 1.234500&quot;</span>.<span class="ident">to_string</span>())
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="string">&quot;%f&quot;</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">CFormatSpec</span><span class="op">&gt;</span>()
+                .<span class="ident">unwrap</span>()
+                .<span class="ident">format_float</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="op">-</span><span class="number">1.2345</span>))
+                .<span class="ident">ok</span>(),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;-1.234500&quot;</span>.<span class="ident">to_string</span>())
+        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(
+            <span class="string">&quot;%f&quot;</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">CFormatSpec</span><span class="op">&gt;</span>()
+                .<span class="ident">unwrap</span>()
+                .<span class="ident">format_float</span>(<span class="ident">f64</span>::<span class="ident">from</span>(<span class="number">1.2345678901</span>))
+                .<span class="ident">ok</span>(),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;1.234568&quot;</span>.<span class="ident">to_string</span>())
+        );
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_format_parse</span>() {
         <span class="kw">let</span> <span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Hello, my name is %s and I&#39;m %d years old&quot;</span>;
         <span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="prelude-val">Ok</span>(<span class="ident">CFormatString</span> {
@@ -1614,4 +1806,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

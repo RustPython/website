@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/symtable.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>symtable.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/stdlib/symtable.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>symtable.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -186,26 +186,54 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">eval</span>::<span class="ident">get_compile_mode</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+
+<span class="kw">use</span> <span class="ident">rustpython_compiler</span>::{<span class="ident">compile</span>, <span class="ident">error</span>::<span class="ident">CompileError</span>, <span class="ident">symboltable</span>};
+<span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">parser</span>;
+
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objstr</span>::<span class="ident">PyStringRef</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>::<span class="ident">PyClassRef</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyClassImpl</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
-<span class="kw">use</span> <span class="ident">rustpython_compiler</span>::{<span class="ident">compile</span>, <span class="ident">error</span>::<span class="ident">CompileError</span>, <span class="ident">symboltable</span>};
-<span class="kw">use</span> <span class="ident">rustpython_parser</span>::<span class="ident">parser</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>;
 
     <span class="kw">let</span> <span class="ident">symbol_table_type</span> <span class="op">=</span> <span class="ident">PySymbolTable</span>::<span class="ident">make_class</span>(<span class="ident">ctx</span>);
     <span class="kw">let</span> <span class="ident">symbol_type</span> <span class="op">=</span> <span class="ident">PySymbol</span>::<span class="ident">make_class</span>(<span class="ident">ctx</span>);
 
     <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="string">&quot;symtable&quot;</span>, {
-        <span class="string">&quot;symtable&quot;</span> <span class="op">=&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">symtable_symtable</span>),
-        <span class="string">&quot;SymbolTable&quot;</span> <span class="op">=&gt;</span> <span class="ident">symbol_table_type</span>,
-        <span class="string">&quot;Symbol&quot;</span> <span class="op">=&gt;</span> <span class="ident">symbol_type</span>,
+        <span class="string">&quot;symtable&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">symtable_symtable</span>),
+        <span class="string">&quot;SymbolTable&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">symbol_table_type</span>,
+        <span class="string">&quot;Symbol&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">symbol_type</span>,
     })
 }
 
@@ -213,28 +241,33 @@
 <span class="doccomment">/// See docs: https://docs.python.org/3/library/symtable.html?highlight=symtable#symtable.symtable</span>
 <span class="kw">fn</span> <span class="ident">symtable_symtable</span>(
     <span class="ident">source</span>: <span class="ident">PyStringRef</span>,
-    <span class="ident">_filename</span>: <span class="ident">PyStringRef</span>,
+    <span class="ident">filename</span>: <span class="ident">PyStringRef</span>,
     <span class="ident">mode</span>: <span class="ident">PyStringRef</span>,
     <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PySymbolTableRef</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">get_compile_mode</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">mode</span>.<span class="ident">value</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">symtable</span> <span class="op">=</span>
-        <span class="ident">source_to_symtable</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>.<span class="ident">value</span>, <span class="ident">mode</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_syntax_error</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>))<span class="question-mark">?</span>;
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PySymbolTableRef</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">mode</span>
+        .<span class="ident">as_str</span>()
+        .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">compile</span>::<span class="ident">Mode</span><span class="op">&gt;</span>()
+        .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="ident">err</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">symtable</span> <span class="op">=</span> <span class="ident">source_to_symtable</span>(<span class="ident">source</span>.<span class="ident">as_str</span>(), <span class="ident">mode</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">err</span><span class="op">|</span> {
+        <span class="ident">err</span>.<span class="ident">update_source_path</span>(<span class="ident">filename</span>.<span class="ident">as_str</span>());
+        <span class="ident">vm</span>.<span class="ident">new_syntax_error</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>)
+    })<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="ident">py_symbol_table</span> <span class="op">=</span> <span class="ident">to_py_symbol_table</span>(<span class="string">&quot;top&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">symtable</span>);
+    <span class="kw">let</span> <span class="ident">py_symbol_table</span> <span class="op">=</span> <span class="ident">to_py_symbol_table</span>(<span class="ident">symtable</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">py_symbol_table</span>.<span class="ident">into_ref</span>(<span class="ident">vm</span>))
 }
 
 <span class="kw">fn</span> <span class="ident">source_to_symtable</span>(
     <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
     <span class="ident">mode</span>: <span class="ident">compile</span>::<span class="ident">Mode</span>,
-) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">symboltable</span>::<span class="ident">SymbolScope</span>, <span class="ident">CompileError</span><span class="op">&gt;</span> {
+) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">symboltable</span>::<span class="ident">SymbolTable</span>, <span class="ident">CompileError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">symtable</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mode</span> {
-        <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Exec</span> <span class="op">|</span> <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Single</span> <span class="op">=&gt;</span> {
+        <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Exec</span> <span class="op">|</span> <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Single</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_program</span>(<span class="ident">source</span>)<span class="question-mark">?</span>;
             <span class="ident">symboltable</span>::<span class="ident">make_symbol_table</span>(<span class="kw-2">&amp;</span><span class="ident">ast</span>)<span class="question-mark">?</span>
         }
-        <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Eval</span> <span class="op">=&gt;</span> {
+        <span class="ident">compile</span>::<span class="ident">Mode</span>::<span class="ident">Eval</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">statement</span> <span class="op">=</span> <span class="ident">parser</span>::<span class="ident">parse_statement</span>(<span class="ident">source</span>)<span class="question-mark">?</span>;
             <span class="ident">symboltable</span>::<span class="ident">statements_to_symbol_table</span>(<span class="kw-2">&amp;</span><span class="ident">statement</span>)<span class="question-mark">?</span>
         }
@@ -243,8 +276,8 @@
     <span class="prelude-val">Ok</span>(<span class="ident">symtable</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">to_py_symbol_table</span>(<span class="ident">name</span>: <span class="ident">String</span>, <span class="ident">symtable</span>: <span class="ident">symboltable</span>::<span class="ident">SymbolScope</span>) <span class="op">-&gt;</span> <span class="ident">PySymbolTable</span> {
-    <span class="ident">PySymbolTable</span> { <span class="ident">name</span>, <span class="ident">symtable</span> }
+<span class="kw">fn</span> <span class="ident">to_py_symbol_table</span>(<span class="ident">symtable</span>: <span class="ident">symboltable</span>::<span class="ident">SymbolTable</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PySymbolTable</span> {
+    <span class="ident">PySymbolTable</span> { <span class="ident">symtable</span> }
 }
 
 <span class="kw">type</span> <span class="ident">PySymbolTableRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">PySymbolTable</span><span class="op">&gt;</span>;
@@ -252,18 +285,17 @@
 
 <span class="attribute">#[<span class="ident">pyclass</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;SymbolTable&quot;</span>)]</span>
 <span class="kw">struct</span> <span class="ident">PySymbolTable</span> {
-    <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="ident">symtable</span>: <span class="ident">symboltable</span>::<span class="ident">SymbolScope</span>,
+    <span class="ident">symtable</span>: <span class="ident">symboltable</span>::<span class="ident">SymbolTable</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">PySymbolTable</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;SymbolTable()&quot;</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">PySymbolTable</span> {
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyClassRef</span> {
         <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;symtable&quot;</span>, <span class="string">&quot;SymbolTable&quot;</span>)
     }
 }
@@ -271,25 +303,46 @@
 <span class="attribute">#[<span class="ident">pyimpl</span>]</span>
 <span class="kw">impl</span> <span class="ident">PySymbolTable</span> {
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_name&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>()))
+    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="self">self</span>.<span class="ident">symtable</span>.<span class="ident">name</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_type&quot;</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">get_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="self">self</span>.<span class="ident">symtable</span>.<span class="ident">typ</span>.<span class="ident">to_string</span>()
+    }
+
+    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_lineno&quot;</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">get_lineno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="ident">symtable</span>.<span class="ident">line_number</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;lookup&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PySymbolRef</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">value</span>;
+    <span class="kw">fn</span> <span class="ident">lookup</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PySymbolRef</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">as_str</span>();
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">symbol</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">symtable</span>.<span class="ident">symbols</span>.<span class="ident">get</span>(<span class="ident">name</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">PySymbol</span> {
                 <span class="ident">symbol</span>: <span class="ident">symbol</span>.<span class="ident">clone</span>(),
             }
             .<span class="ident">into_ref</span>(<span class="ident">vm</span>))
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_lookup_error</span>(<span class="ident">name</span>.<span class="ident">to_string</span>()))
         }
     }
 
+    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_identifiers&quot;</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">get_identifiers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">symtable</span>
+            .<span class="ident">symbols</span>
+            .<span class="ident">keys</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">s</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">collect</span>();
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">symbols</span>))
+    }
+
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_symbols&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">get_symbols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">fn</span> <span class="ident">get_symbols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">symtable</span>
             .<span class="ident">symbols</span>
@@ -299,17 +352,18 @@
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">symbols</span>))
     }
 
+    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;has_children&quot;</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">has_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="op">!</span><span class="self">self</span>.<span class="ident">symtable</span>.<span class="ident">sub_tables</span>.<span class="ident">is_empty</span>()
+    }
+
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_children&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">get_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">fn</span> <span class="ident">get_children</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">let</span> <span class="ident">children</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">symtable</span>
-            .<span class="ident">sub_scopes</span>
+            .<span class="ident">sub_tables</span>
             .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
-                <span class="ident">to_py_symbol_table</span>(<span class="string">&quot;bla&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">s</span>.<span class="ident">clone</span>())
-                    .<span class="ident">into_ref</span>(<span class="ident">vm</span>)
-                    .<span class="ident">into_object</span>()
-            })
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">t</span><span class="op">|</span> <span class="ident">to_py_symbol_table</span>(<span class="ident">t</span>.<span class="ident">clone</span>()).<span class="ident">into_ref</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>())
             .<span class="ident">collect</span>();
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">children</span>))
     }
@@ -321,13 +375,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">PySymbol</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Symbol()&quot;</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">PySymbol</span> {
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyClassRef</span> {
         <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;symtable&quot;</span>, <span class="string">&quot;Symbol&quot;</span>)
     }
 }
@@ -335,45 +389,45 @@
 <span class="attribute">#[<span class="ident">pyimpl</span>]</span>
 <span class="kw">impl</span> <span class="ident">PySymbol</span> {
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;get_name&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">name</span>.<span class="ident">clone</span>()))
+    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">name</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_global&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_global</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_global</span>))
+    <span class="kw">fn</span> <span class="ident">is_global</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_global</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_local&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_local</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_local</span>))
+    <span class="kw">fn</span> <span class="ident">is_local</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_local</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_referenced&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_referenced</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_referenced</span>))
+    <span class="kw">fn</span> <span class="ident">is_referenced</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_referenced</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_assigned&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_assigned</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_assigned</span>))
+    <span class="kw">fn</span> <span class="ident">is_assigned</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_assigned</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_parameter&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_parameter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_parameter</span>))
+    <span class="kw">fn</span> <span class="ident">is_parameter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_parameter</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_free&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_free</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_free</span>))
+    <span class="kw">fn</span> <span class="ident">is_free</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">symbol</span>.<span class="ident">is_free</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_namespace&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_namespace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
+    <span class="kw">fn</span> <span class="ident">is_namespace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="comment">// TODO</span>
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>))
+        <span class="bool-val">false</span>
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

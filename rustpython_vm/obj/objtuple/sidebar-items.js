@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""]],"struct":[["PyTuple",""],["PyTupleIterator",""]],"type":[["PyTupleRef",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyTuple","tuple() -> empty tuple tuple(iterable) -> tuple initialized from iterable's items"],["PyTupleIterator",""]],"type":[["PyTupleRef",""]]});

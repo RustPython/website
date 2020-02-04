@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["DictIter",""],["PyDict",""]],"type":[["DictContentType",""],["PyDictRef",""]]});
+initSidebarItems({"struct":[["DictIter",""],["PyDict",""]],"type":[["DictContentType",""],["PyDictRef",""]]});

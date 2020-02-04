@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""],["new_instance",""],["object_dir",""]],"struct":[["PyInstance",""]]});
+initSidebarItems({"fn":[["init",""]],"struct":[["PyBaseObject","The most base type"]]});

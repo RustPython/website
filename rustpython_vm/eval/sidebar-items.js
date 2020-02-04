@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["eval",""],["get_compile_mode",""]]});
+initSidebarItems({"fn":[["eval",""]]});

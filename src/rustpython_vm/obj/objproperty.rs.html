@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/obj/objproperty.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>objproperty.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/obj/objproperty.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>objproperty.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -296,17 +296,54 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/*! Python `property` descriptor class.
 
 */</span>
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::{<span class="ident">IntoPyNativeFunc</span>, <span class="ident">OptionalArg</span>, <span class="ident">PyFuncArgs</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>::<span class="ident">PyClassRef</span>;
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtype</span>::<span class="ident">PyClassRef</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::{<span class="ident">IntoPyNativeFunc</span>, <span class="ident">OptionalArg</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
     <span class="ident">IdProtocol</span>, <span class="ident">PyClassImpl</span>, <span class="ident">PyContext</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>,
     <span class="ident">TypeProtocol</span>,
 };
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">slots</span>::<span class="ident">PyBuiltinDescriptor</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="comment">// Read-only property, doesn&#39;t have __set__ or __delete__</span>
@@ -317,29 +354,34 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">PyReadOnlyProperty</span> {
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyClassRef</span> {
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">readonly_property_type</span>()
     }
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyReadOnlyPropertyRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">PyReadOnlyProperty</span><span class="op">&gt;</span>;
 
-<span class="attribute">#[<span class="ident">pyimpl</span>]</span>
-<span class="kw">impl</span> <span class="ident">PyReadOnlyProperty</span> {
-    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__get__&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">PyBuiltinDescriptor</span> <span class="kw">for</span> <span class="ident">PyReadOnlyProperty</span> {
     <span class="kw">fn</span> <span class="ident">get</span>(
         <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
-        <span class="ident">_owner</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyClassRef</span><span class="op">&gt;</span>,
+        <span class="ident">cls</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">if</span> <span class="ident">obj</span>.<span class="ident">is</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>.<span class="ident">as_object</span>()) {
-            <span class="prelude-val">Ok</span>(<span class="ident">zelf</span>.<span class="ident">into_object</span>())
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">if</span> <span class="ident">vm</span>.<span class="ident">is_none</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>) {
+            <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">_cls_is</span>(<span class="kw-2">&amp;</span><span class="ident">cls</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">types</span>.<span class="ident">type_type</span>) {
+                <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="kw-2">&amp;</span><span class="ident">zelf</span>.<span class="ident">getter</span>, <span class="ident">cls</span>.<span class="ident">unwrap</span>())
+            } <span class="kw">else</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">zelf</span>.<span class="ident">into_object</span>())
+            }
         } <span class="kw">else</span> {
-            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">clone</span>(), <span class="ident">obj</span>)
+            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="kw-2">&amp;</span><span class="ident">zelf</span>.<span class="ident">getter</span>, <span class="ident">obj</span>)
         }
     }
 }
+
+<span class="attribute">#[<span class="ident">pyimpl</span>(<span class="ident">with</span>(<span class="ident">PyBuiltinDescriptor</span>))]</span>
+<span class="kw">impl</span> <span class="ident">PyReadOnlyProperty</span> {}
 
 <span class="doccomment">/// Property attribute.</span>
 <span class="doccomment">///</span>
@@ -379,47 +421,57 @@
     <span class="ident">getter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
     <span class="ident">setter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
     <span class="ident">deleter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
-    <span class="ident">doc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="ident">doc</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">PyProperty</span> {
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyClassRef</span> {
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">property_type</span>()
     }
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyPropertyRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">PyProperty</span><span class="op">&gt;</span>;
 
-<span class="attribute">#[<span class="ident">pyimpl</span>]</span>
-<span class="kw">impl</span> <span class="ident">PyProperty</span> {
-    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__new__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">new_property</span>(
-        <span class="ident">cls</span>: <span class="ident">PyClassRef</span>,
-        <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">FromArgs</span>)]</span>
+<span class="kw">struct</span> <span class="ident">PropertyArgs</span> {
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">positional_or_keyword</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">fget</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">positional_or_keyword</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">fset</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">positional_or_keyword</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">fdel</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">pyarg</span>(<span class="ident">positional_or_keyword</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;None&quot;</span>)]</span>
+    <span class="ident">doc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">PyBuiltinDescriptor</span> <span class="kw">for</span> <span class="ident">PyProperty</span> {
+    <span class="kw">fn</span> <span class="ident">get</span>(
+        <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
+        <span class="ident">_cls</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
-        <span class="macro">arg_check</span><span class="macro">!</span>(
-            <span class="ident">vm</span>,
-            <span class="ident">args</span>,
-            <span class="ident">required</span> <span class="op">=</span> [],
-            <span class="ident">optional</span> <span class="op">=</span> [(<span class="ident">fget</span>, <span class="prelude-val">None</span>), (<span class="ident">fset</span>, <span class="prelude-val">None</span>), (<span class="ident">fdel</span>, <span class="prelude-val">None</span>), (<span class="ident">doc</span>, <span class="prelude-val">None</span>)]
-        );
-
-        <span class="kw">fn</span> <span class="ident">into_option</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">arg</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-            <span class="ident">arg</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">arg</span><span class="op">|</span> {
-                <span class="kw">if</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>().<span class="ident">is</span>(<span class="ident">arg</span>) {
-                    <span class="prelude-val">None</span>
-                } <span class="kw">else</span> {
-                    <span class="prelude-val">Some</span>(<span class="ident">arg</span>.<span class="ident">clone</span>())
-                }
-            })
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">getter</span>) <span class="op">=</span> <span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">as_ref</span>() {
+            <span class="kw">if</span> <span class="ident">obj</span>.<span class="ident">is</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>.<span class="ident">as_object</span>()) {
+                <span class="prelude-val">Ok</span>(<span class="ident">zelf</span>.<span class="ident">into_object</span>())
+            } <span class="kw">else</span> {
+                <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="kw-2">&amp;</span><span class="ident">getter</span>, <span class="ident">obj</span>)
+            }
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="string">&quot;unreadable attribute&quot;</span>.<span class="ident">to_string</span>()))
         }
+    }
+}
 
+<span class="attribute">#[<span class="ident">pyimpl</span>(<span class="ident">with</span>(<span class="ident">PyBuiltinDescriptor</span>), <span class="ident">flags</span>(<span class="ident">BASETYPE</span>))]</span>
+<span class="kw">impl</span> <span class="ident">PyProperty</span> {
+    <span class="attribute">#[<span class="ident">pyslot</span>]</span>
+    <span class="kw">fn</span> <span class="ident">tp_new</span>(<span class="ident">cls</span>: <span class="ident">PyClassRef</span>, <span class="ident">args</span>: <span class="ident">PropertyArgs</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
         <span class="ident">PyProperty</span> {
-            <span class="ident">getter</span>: <span class="ident">into_option</span>(<span class="ident">vm</span>, <span class="ident">fget</span>),
-            <span class="ident">setter</span>: <span class="ident">into_option</span>(<span class="ident">vm</span>, <span class="ident">fset</span>),
-            <span class="ident">deleter</span>: <span class="ident">into_option</span>(<span class="ident">vm</span>, <span class="ident">fdel</span>),
-            <span class="ident">doc</span>: <span class="ident">into_option</span>(<span class="ident">vm</span>, <span class="ident">doc</span>),
+            <span class="ident">getter</span>: <span class="ident">args</span>.<span class="ident">fget</span>,
+            <span class="ident">setter</span>: <span class="ident">args</span>.<span class="ident">fset</span>,
+            <span class="ident">deleter</span>: <span class="ident">args</span>.<span class="ident">fdel</span>,
+            <span class="ident">doc</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">args</span>.<span class="ident">doc</span>),
         }
         .<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">cls</span>)
     }
@@ -427,45 +479,27 @@
     <span class="comment">// Descriptor methods</span>
 
     <span class="comment">// specialised version that doesn&#39;t check for None</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">instance_binding_get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">getter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">getter</span>.<span class="ident">as_ref</span>() {
-            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">getter</span>.<span class="ident">clone</span>(), <span class="ident">obj</span>)
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="string">&quot;unreadable attribute&quot;</span>.<span class="ident">to_string</span>()))
-        }
-    }
-
-    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__get__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">get</span>(
-        <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
-        <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
-        <span class="ident">_owner</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyClassRef</span><span class="op">&gt;</span>,
-        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">getter</span>) <span class="op">=</span> <span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">as_ref</span>() {
-            <span class="kw">if</span> <span class="ident">obj</span>.<span class="ident">is</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>.<span class="ident">as_object</span>()) {
-                <span class="prelude-val">Ok</span>(<span class="ident">zelf</span>.<span class="ident">into_object</span>())
-            } <span class="kw">else</span> {
-                <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">getter</span>.<span class="ident">clone</span>(), <span class="ident">obj</span>)
-            }
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">instance_binding_get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">getter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">getter</span>.<span class="ident">as_ref</span>() {
+            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">getter</span>, <span class="ident">obj</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="string">&quot;unreadable attribute&quot;</span>.<span class="ident">to_string</span>()))
         }
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__set__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">setter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">setter</span>.<span class="ident">as_ref</span>() {
-            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">setter</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">obj</span>, <span class="ident">value</span>])
+    <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">setter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">setter</span>.<span class="ident">as_ref</span>() {
+            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">setter</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">obj</span>, <span class="ident">value</span>])
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="string">&quot;can&#39;t set attribute&quot;</span>.<span class="ident">to_string</span>()))
         }
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__delete__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">deleter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deleter</span>.<span class="ident">as_ref</span>() {
-            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">deleter</span>.<span class="ident">clone</span>(), <span class="ident">obj</span>)
+    <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">deleter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deleter</span>.<span class="ident">as_ref</span>() {
+            <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">deleter</span>, <span class="ident">obj</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="string">&quot;can&#39;t delete attribute&quot;</span>.<span class="ident">to_string</span>()))
         }
@@ -474,18 +508,26 @@
     <span class="comment">// Access functions</span>
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">fget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fget</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">getter</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">fset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">setter</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">fdel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fdel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">deleter</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">fn</span> <span class="ident">doc_getter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">doc</span>.<span class="ident">borrow</span>().<span class="ident">clone</span>()
+    }
+
+    <span class="kw">fn</span> <span class="ident">doc_setter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+        <span class="self">self</span>.<span class="ident">doc</span>.<span class="ident">replace</span>(<span class="ident">py_none_to_option</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>));
     }
 
     <span class="comment">// Python builder functions</span>
@@ -495,12 +537,12 @@
         <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">getter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
         <span class="ident">PyProperty</span> {
-            <span class="ident">getter</span>: <span class="ident">getter</span>.<span class="ident">or_else</span>(<span class="op">||</span> <span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">clone</span>()),
+            <span class="ident">getter</span>: <span class="ident">getter</span>.<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">clone</span>()),
             <span class="ident">setter</span>: <span class="ident">zelf</span>.<span class="ident">setter</span>.<span class="ident">clone</span>(),
             <span class="ident">deleter</span>: <span class="ident">zelf</span>.<span class="ident">deleter</span>.<span class="ident">clone</span>(),
-            <span class="ident">doc</span>: <span class="prelude-val">None</span>,
+            <span class="ident">doc</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>),
         }
         .<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">TypeProtocol</span>::<span class="ident">class</span>(<span class="kw-2">&amp;</span><span class="ident">zelf</span>))
     }
@@ -510,12 +552,12 @@
         <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">setter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
         <span class="ident">PyProperty</span> {
             <span class="ident">getter</span>: <span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">clone</span>(),
-            <span class="ident">setter</span>: <span class="ident">setter</span>.<span class="ident">or_else</span>(<span class="op">||</span> <span class="ident">zelf</span>.<span class="ident">setter</span>.<span class="ident">clone</span>()),
+            <span class="ident">setter</span>: <span class="ident">setter</span>.<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">zelf</span>.<span class="ident">setter</span>.<span class="ident">clone</span>()),
             <span class="ident">deleter</span>: <span class="ident">zelf</span>.<span class="ident">deleter</span>.<span class="ident">clone</span>(),
-            <span class="ident">doc</span>: <span class="prelude-val">None</span>,
+            <span class="ident">doc</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>),
         }
         .<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">TypeProtocol</span>::<span class="ident">class</span>(<span class="kw-2">&amp;</span><span class="ident">zelf</span>))
     }
@@ -525,14 +567,23 @@
         <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
         <span class="ident">deleter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyPropertyRef</span><span class="op">&gt;</span> {
         <span class="ident">PyProperty</span> {
             <span class="ident">getter</span>: <span class="ident">zelf</span>.<span class="ident">getter</span>.<span class="ident">clone</span>(),
             <span class="ident">setter</span>: <span class="ident">zelf</span>.<span class="ident">setter</span>.<span class="ident">clone</span>(),
-            <span class="ident">deleter</span>: <span class="ident">deleter</span>.<span class="ident">or_else</span>(<span class="op">||</span> <span class="ident">zelf</span>.<span class="ident">deleter</span>.<span class="ident">clone</span>()),
-            <span class="ident">doc</span>: <span class="prelude-val">None</span>,
+            <span class="ident">deleter</span>: <span class="ident">deleter</span>.<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">zelf</span>.<span class="ident">deleter</span>.<span class="ident">clone</span>()),
+            <span class="ident">doc</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>),
         }
         .<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">TypeProtocol</span>::<span class="ident">class</span>(<span class="kw-2">&amp;</span><span class="ident">zelf</span>))
+    }
+}
+
+<span class="doccomment">/// Take a python object and turn it into an option object, where python None maps to rust None.</span>
+<span class="kw">fn</span> <span class="ident">py_none_to_option</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">if</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">none</span>().<span class="ident">is</span>(<span class="ident">value</span>) {
+        <span class="prelude-val">None</span>
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">clone</span>())
     }
 }
 
@@ -542,8 +593,13 @@
     <span class="ident">setter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
 }
 
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PropertySetterResult</span> {}
+
+<span class="kw">impl</span> <span class="ident">PropertySetterResult</span> <span class="kw">for</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {}
+<span class="kw">impl</span> <span class="ident">PropertySetterResult</span> <span class="kw">for</span> () {}
+
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PropertyBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyContext</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyContext</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">ctx</span>,
             <span class="ident">getter</span>: <span class="prelude-val">None</span>,
@@ -551,8 +607,8 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_getter</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">V</span>, <span class="ident">F</span>: <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">V</span><span class="op">&gt;&gt;</span>(<span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">func</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_getter</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">V</span>, <span class="ident">VM</span>, <span class="ident">F</span>: <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">V</span>, <span class="ident">VM</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">func</span>);
         <span class="self">Self</span> {
             <span class="ident">ctx</span>: <span class="self">self</span>.<span class="ident">ctx</span>,
             <span class="ident">getter</span>: <span class="prelude-val">Some</span>(<span class="ident">func</span>),
@@ -560,8 +616,11 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_setter</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">V</span>, <span class="ident">F</span>: <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>(<span class="ident">I</span>, <span class="ident">V</span>), <span class="ident">PyResult</span><span class="op">&gt;&gt;</span>(<span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ctx</span>.<span class="ident">new_rustfunc</span>(<span class="ident">func</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_setter</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">V</span>, <span class="ident">VM</span>, <span class="ident">F</span>: <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>(<span class="ident">I</span>, <span class="ident">V</span>), <span class="kw">impl</span> <span class="ident">PropertySetterResult</span>, <span class="ident">VM</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+        <span class="self">self</span>,
+        <span class="ident">func</span>: <span class="ident">F</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">func</span>);
         <span class="self">Self</span> {
             <span class="ident">ctx</span>: <span class="self">self</span>.<span class="ident">ctx</span>,
             <span class="ident">getter</span>: <span class="self">self</span>.<span class="ident">getter</span>,
@@ -569,13 +628,13 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">setter</span>.<span class="ident">is_some</span>() {
             <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">PyProperty</span> {
                 <span class="ident">getter</span>: <span class="self">self</span>.<span class="ident">getter</span>.<span class="ident">clone</span>(),
                 <span class="ident">setter</span>: <span class="self">self</span>.<span class="ident">setter</span>.<span class="ident">clone</span>(),
                 <span class="ident">deleter</span>: <span class="prelude-val">None</span>,
-                <span class="ident">doc</span>: <span class="prelude-val">None</span>,
+                <span class="ident">doc</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>),
             };
 
             <span class="ident">PyObject</span>::<span class="ident">new</span>(<span class="ident">payload</span>, <span class="self">self</span>.<span class="ident">ctx</span>.<span class="ident">property_type</span>(), <span class="prelude-val">None</span>)
@@ -592,8 +651,19 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
-    <span class="ident">PyReadOnlyProperty</span>::<span class="ident">extend_class</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">readonly_property_type</span>);
-    <span class="ident">PyProperty</span>::<span class="ident">extend_class</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">property_type</span>);
+    <span class="ident">PyReadOnlyProperty</span>::<span class="ident">extend_class</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">types</span>.<span class="ident">readonly_property_type</span>);
+
+    <span class="ident">PyProperty</span>::<span class="ident">extend_class</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">types</span>.<span class="ident">property_type</span>);
+
+    <span class="comment">// This is a bit unfortunate, but this instance attribute overlaps with the</span>
+    <span class="comment">// class __doc__ string..</span>
+    <span class="macro">extend_class</span><span class="macro">!</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">types</span>.<span class="ident">property_type</span>, {
+        <span class="string">&quot;__doc__&quot;</span> <span class="op">=</span><span class="op">&gt;</span>
+        <span class="ident">PropertyBuilder</span>::<span class="ident">new</span>(<span class="ident">context</span>)
+            .<span class="ident">add_getter</span>(<span class="ident">PyProperty</span>::<span class="ident">doc_getter</span>)
+            .<span class="ident">add_setter</span>(<span class="ident">PyProperty</span>::<span class="ident">doc_setter</span>)
+            .<span class="ident">create</span>(),
+    });
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

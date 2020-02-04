@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/function.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>function.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/function.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>function.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -555,13 +555,32 @@
 <span id="555">555</span>
 <span id="556">556</span>
 <span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">RangeInclusive</span>;
 
 <span class="kw">use</span> <span class="ident">indexmap</span>::<span class="ident">IndexMap</span>;
+<span class="kw">use</span> <span class="ident">result_like</span>::<span class="ident">impl_option_like</span>;
 
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">exceptions</span>::<span class="ident">PyBaseExceptionRef</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtuple</span>::<span class="ident">PyTuple</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objtype</span>::{<span class="ident">isinstance</span>, <span class="ident">PyClassRef</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
@@ -582,8 +601,8 @@
 }
 
 <span class="doccomment">/// Conversion from vector of python objects to function arguments.</span>
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">PyFuncArgs</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PyFuncArgs</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">PyFuncArgs</span> {
             <span class="ident">args</span>,
             <span class="ident">kwargs</span>: <span class="ident">IndexMap</span>::<span class="ident">new</span>(),
@@ -592,7 +611,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PyFuncArgs</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">arg</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">arg</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">PyFuncArgs</span> {
             <span class="ident">args</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">arg</span>],
             <span class="ident">kwargs</span>: <span class="ident">IndexMap</span>::<span class="ident">new</span>(),
@@ -601,7 +620,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">Args</span>, <span class="kw-2">&amp;</span><span class="ident">KwArgs</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PyFuncArgs</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">arg</span>: (<span class="kw-2">&amp;</span><span class="ident">Args</span>, <span class="kw-2">&amp;</span><span class="ident">KwArgs</span>)) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">arg</span>: (<span class="kw-2">&amp;</span><span class="ident">Args</span>, <span class="kw-2">&amp;</span><span class="ident">KwArgs</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">Args</span>(<span class="ident">args</span>) <span class="op">=</span> <span class="ident">arg</span>.<span class="number">0</span>;
         <span class="kw">let</span> <span class="ident">KwArgs</span>(<span class="ident">kwargs</span>) <span class="op">=</span> <span class="ident">arg</span>.<span class="number">1</span>;
         <span class="ident">PyFuncArgs</span> {
@@ -612,13 +631,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">FromArgs</span> <span class="kw">for</span> <span class="ident">PyFuncArgs</span> {
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">args</span>, <span class="ident">Default</span>::<span class="ident">default</span>()))
     }
 }
 
 <span class="kw">impl</span> <span class="ident">PyFuncArgs</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>, <span class="ident">kwarg_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyFuncArgs</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>, <span class="ident">kwarg_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFuncArgs</span> {
         <span class="comment">// last `kwarg_names.len()` elements of args in order of appearance in the call signature</span>
         <span class="kw">let</span> <span class="ident">kwarg_values</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">drain</span>((<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">kwarg_names</span>.<span class="ident">len</span>())..);
 
@@ -629,7 +648,7 @@
         <span class="ident">PyFuncArgs</span> { <span class="ident">args</span>, <span class="ident">kwargs</span> }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyFuncArgs</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFuncArgs</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">PyFuncArgs</span> {
             <span class="ident">args</span>: <span class="self">self</span>.<span class="ident">args</span>.<span class="ident">clone</span>(),
             <span class="ident">kwargs</span>: <span class="self">self</span>.<span class="ident">kwargs</span>.<span class="ident">clone</span>(),
@@ -638,18 +657,18 @@
         <span class="ident">args</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shift</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shift</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">args</span>.<span class="ident">remove</span>(<span class="number">0</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_kwarg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">default</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_kwarg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">default</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">kwargs</span>
             .<span class="ident">get</span>(<span class="ident">key</span>)
             .<span class="ident">cloned</span>()
-            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">default</span>.<span class="ident">clone</span>())
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">default</span>.<span class="ident">clone</span>())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_optional_kwarg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_optional_kwarg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">kwargs</span>.<span class="ident">get</span>(<span class="ident">key</span>).<span class="ident">cloned</span>()
     }
 
@@ -658,9 +677,9 @@
         <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
         <span class="ident">ty</span>: <span class="ident">PyClassRef</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>, <span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_optional_kwarg</span>(<span class="ident">key</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">kwarg</span>) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">kwarg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">kwarg</span>, <span class="kw-2">&amp;</span><span class="ident">ty</span>) {
                     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">kwarg</span>))
                 } <span class="kw">else</span> {
@@ -672,11 +691,11 @@
                     )))
                 }
             }
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_positional</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_positional</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">args</span>.<span class="ident">is_empty</span>() {
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
@@ -684,17 +703,17 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_positional_keyword</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">take_positional</span>().<span class="ident">or_else</span>(<span class="op">||</span> <span class="self">self</span>.<span class="ident">take_keyword</span>(<span class="ident">name</span>))
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_positional_keyword</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">take_positional</span>().<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">take_keyword</span>(<span class="ident">name</span>))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_keyword</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">kwargs</span>.<span class="ident">remove</span>(<span class="ident">name</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_keyword</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">kwargs</span>.<span class="ident">swap_remove</span>(<span class="ident">name</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remaining_keywords</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>,
-    ) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">String</span>, <span class="ident">PyObjectRef</span>)<span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">String</span>, <span class="ident">PyObjectRef</span>)<span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
         <span class="self">self</span>.<span class="ident">kwargs</span>.<span class="ident">drain</span>(..)
     }
 
@@ -706,31 +725,31 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the given `FromArgs` includes any conversions, exceptions raised</span>
     <span class="doccomment">/// during the conversion will halt the binding and return the error.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">FromArgs</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">FromArgs</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">given_args</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">args</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">bound</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">T</span>::<span class="ident">from_args</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">args</span>) <span class="op">=&gt;</span> <span class="ident">args</span>,
-            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">TooFewArgs</span>) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">args</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">args</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">TooFewArgs</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
                     <span class="string">&quot;Expected at least {} arguments ({} given)&quot;</span>,
                     <span class="ident">T</span>::<span class="ident">arity</span>().<span class="ident">start</span>(),
                     <span class="ident">given_args</span>,
                 )));
             }
-            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">TooManyArgs</span>) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">TooManyArgs</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(
                     <span class="string">&quot;Expected at most {} arguments ({} given)&quot;</span>,
                     <span class="ident">T</span>::<span class="ident">arity</span>().<span class="ident">end</span>(),
                     <span class="ident">given_args</span>,
                 )));
             }
-            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">InvalidKeywordArgument</span>(<span class="ident">name</span>)) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">InvalidKeywordArgument</span>(<span class="ident">name</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} is an invalid keyword argument&quot;</span>, <span class="ident">name</span>)));
             }
-            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">RequiredKeywordArgument</span>(<span class="ident">name</span>)) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">RequiredKeywordArgument</span>(<span class="ident">name</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Required keyqord only argument {}&quot;</span>, <span class="ident">name</span>)));
             }
-            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">Exception</span>(<span class="ident">ex</span>)) <span class="op">=&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">ArgumentError</span>::<span class="ident">Exception</span>(<span class="ident">ex</span>)) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ex</span>);
             }
         };
@@ -765,11 +784,11 @@
     <span class="ident">RequiredKeywordArgument</span>(<span class="ident">String</span>),
     <span class="doccomment">/// An exception was raised while binding arguments to the function</span>
     <span class="doccomment">/// parameters.</span>
-    <span class="ident">Exception</span>(<span class="ident">PyObjectRef</span>),
+    <span class="ident">Exception</span>(<span class="ident">PyBaseExceptionRef</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ArgumentError</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ex</span>: <span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PyBaseExceptionRef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ArgumentError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ex</span>: <span class="ident">PyBaseExceptionRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">ArgumentError</span>::<span class="ident">Exception</span>(<span class="ident">ex</span>)
     }
 }
@@ -781,12 +800,12 @@
     <span class="doccomment">/// The range of positional arguments permitted by the function signature.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Returns an empty range if not applicable.</span>
-    <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="number">0</span>..=<span class="number">0</span>
+    <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="number">0</span>..<span class="op">=</span><span class="number">0</span>
     }
 
     <span class="doccomment">/// Extracts this item from the next argument(s).</span>
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// A map of keyword arguments to their values.</span>
@@ -806,7 +825,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KwArgs</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident">PyObjectRef</span><span class="op">&gt;</span>(<span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">T</span><span class="op">&gt;</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">KwArgs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop_kwarg</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop_kwarg</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">remove</span>(<span class="ident">name</span>)
     }
 }
@@ -815,7 +834,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">TryFromObject</span>,
 {
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kwargs</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
         <span class="kw">for</span> (<span class="ident">name</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">args</span>.<span class="ident">remaining_keywords</span>() {
             <span class="ident">kwargs</span>.<span class="ident">insert</span>(<span class="ident">name</span>, <span class="ident">T</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>);
@@ -828,14 +847,14 @@
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> (<span class="ident">String</span>, <span class="ident">T</span>);
     <span class="kw">type</span> <span class="ident">IntoIter</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">hash_map</span>::<span class="ident">IntoIter</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">IntoIter</span> {
+    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">IntoIter</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">into_iter</span>()
     }
 }
 
 <span class="doccomment">/// A list of positional argument values.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// A built-in function with a `Args` parameter is analagous to a Python</span>
+<span class="doccomment">/// A built-in function with a `Args` parameter is analogous to a Python</span>
 <span class="doccomment">/// function with `*args`. All remaining positional arguments are extracted</span>
 <span class="doccomment">/// (and hence the function will permit an arbitrary number of them).</span>
 <span class="doccomment">///</span>
@@ -844,8 +863,14 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident">PyObjectRef</span><span class="op">&gt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PyValue</span><span class="op">&gt;</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_tuple</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_vec</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="number">0</span>
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PyValue</span><span class="op">&gt;</span> <span class="ident">Args</span><span class="op">&lt;</span><span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_tuple</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="ident">vm</span>.<span class="ident">ctx</span>
             .<span class="ident">new_tuple</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">PyRef</span>::<span class="ident">into_object</span>).<span class="ident">collect</span>())
     }
@@ -855,7 +880,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">TryFromObject</span>,
 {
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">varargs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">take_positional</span>() {
             <span class="ident">varargs</span>.<span class="ident">push</span>(<span class="ident">T</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>);
@@ -868,7 +893,7 @@
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span>;
     <span class="kw">type</span> <span class="ident">IntoIter</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">vec</span>::<span class="ident">IntoIter</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">IntoIter</span> {
+    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">IntoIter</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">into_iter</span>()
     }
 }
@@ -877,11 +902,11 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">TryFromObject</span>,
 {
-    <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="number">1</span>..=<span class="number">1</span>
+    <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="number">1</span>..<span class="op">=</span><span class="number">1</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">take_positional</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">T</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>)
         } <span class="kw">else</span> {
@@ -893,54 +918,22 @@
 <span class="doccomment">/// An argument that may or may not be provided by the caller.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This style of argument is not possible in pure Python.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">is_macro</span>::<span class="ident">Is</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
     <span class="ident">Present</span>(<span class="ident">T</span>),
     <span class="ident">Missing</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="macro">impl_option_like</span><span class="macro">!</span>(<span class="ident">OptionalArg</span>, <span class="ident">Present</span>, <span class="ident">Missing</span>);
+
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">OptionalOption</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">OptionalOption</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_present</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">flat_option</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Present</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">Missing</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-        }
-    }
-
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_option</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Present</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>),
-            <span class="ident">Missing</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unwrap_or</span>(<span class="self">self</span>, <span class="ident">default</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Present</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">value</span>,
-            <span class="ident">Missing</span> <span class="op">=&gt;</span> <span class="ident">default</span>,
-        }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unwrap_or_else</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">T</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-&gt;</span> <span class="ident">T</span>,
-    {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Present</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">value</span>,
-            <span class="ident">Missing</span> <span class="op">=&gt;</span> <span class="ident">f</span>(),
-        }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_or_else</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="ident">D</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">default</span>: <span class="ident">D</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">U</span>
-    <span class="kw">where</span>
-        <span class="ident">D</span>: <span class="ident">FnOnce</span>() <span class="op">-&gt;</span> <span class="ident">U</span>,
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">U</span>,
-    {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Present</span>(<span class="ident">value</span>) <span class="op">=&gt;</span> <span class="ident">f</span>(<span class="ident">value</span>),
-            <span class="ident">Missing</span> <span class="op">=&gt;</span> <span class="ident">default</span>(),
+            <span class="ident">Present</span>(<span class="prelude-val">Some</span>(<span class="ident">value</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
         }
     }
 }
@@ -949,11 +942,11 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">TryFromObject</span>,
 {
-    <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="number">0</span>..=<span class="number">1</span>
+    <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="number">0</span>..<span class="op">=</span><span class="number">1</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">take_positional</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">Present</span>(<span class="ident">T</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">value</span>)<span class="question-mark">?</span>))
         } <span class="kw">else</span> {
@@ -965,7 +958,7 @@
 <span class="comment">// For functions that accept no arguments. Implemented explicitly instead of via</span>
 <span class="comment">// macro below to avoid unused warnings.</span>
 <span class="kw">impl</span> <span class="ident">FromArgs</span> <span class="kw">for</span> () {
-    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">_args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">_args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -977,23 +970,23 @@
 <span class="comment">// so this actually represents a tree of values to be bound from arguments, but</span>
 <span class="comment">// in practice this is only used for the top-level parameters.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">tuple_from_py_func_args</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>),<span class="op">+</span>) <span class="op">=&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>),<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> {
         <span class="kw">impl</span><span class="op">&lt;</span>$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>),<span class="op">+</span><span class="op">&gt;</span> <span class="ident">FromArgs</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">+</span>)
         <span class="kw">where</span>
             $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">FromArgs</span>),<span class="op">+</span>
         {
-            <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+            <span class="kw">fn</span> <span class="ident">arity</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">min</span> <span class="op">=</span> <span class="number">0</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max</span> <span class="op">=</span> <span class="number">0</span>;
                 $(
                     <span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">end</span>) <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>::<span class="ident">arity</span>().<span class="ident">into_inner</span>();
-                    <span class="ident">min</span> <span class="op">+=</span> <span class="ident">start</span>;
-                    <span class="ident">max</span> <span class="op">+=</span> <span class="ident">end</span>;
+                    <span class="ident">min</span> <span class="op">+</span><span class="op">=</span> <span class="ident">start</span>;
+                    <span class="ident">max</span> <span class="op">+</span><span class="op">=</span> <span class="ident">end</span>;
                 )<span class="op">+</span>
-                <span class="ident">min</span>..=<span class="ident">max</span>
+                <span class="ident">min</span>..<span class="op">=</span><span class="ident">max</span>
             }
 
-            <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
+            <span class="kw">fn</span> <span class="ident">from_args</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ArgumentError</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Ok</span>(($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>::<span class="ident">from_args</span>(<span class="ident">vm</span>, <span class="ident">args</span>)<span class="question-mark">?</span>,)<span class="op">+</span>))
             }
         }
@@ -1011,7 +1004,7 @@
 <span class="macro">tuple_from_py_func_args</span><span class="macro">!</span>(<span class="ident">A</span>, <span class="ident">B</span>, <span class="ident">C</span>, <span class="ident">D</span>, <span class="ident">E</span>, <span class="ident">F</span>);
 
 <span class="doccomment">/// A built-in Python function.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyNativeFunc</span> <span class="op">=</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyNativeFunc</span> <span class="op">=</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Implemented by types that are or can generate built-in functions.</span>
 <span class="doccomment">///</span>
@@ -1027,15 +1020,15 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// A bare `PyNativeFunc` also implements this trait, allowing the above to be</span>
 <span class="doccomment">/// done manually, for rare situations that don&#39;t fit into this model.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyNativeFunc</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">R</span>, <span class="ident">VM</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyNativeFunc</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span><span class="ident">PyFuncArgs</span>, <span class="ident">PyResult</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span><span class="ident">PyFuncArgs</span>, <span class="ident">PyResult</span>, <span class="ident">VirtualMachine</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
 <span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyNativeFunc</span> {
+    <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyNativeFunc</span> {
         <span class="ident">Box</span>::<span class="ident">new</span>(<span class="self">self</span>)
     }
 }
@@ -1048,14 +1041,14 @@
 <span class="comment">//</span>
 <span class="comment">// Note that this could be done without a macro - it is simply to avoid repetition.</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">into_py_native_func_tuple</span> {
-    ($((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>:<span class="ident">tt</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)),<span class="kw-2">*</span>) <span class="op">=&gt;</span> {
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>($(<span class="ident">OwnedParam</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span><span class="op">&gt;</span>,)<span class="kw-2">*</span>), <span class="ident">R</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
+    ($((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>:<span class="ident">tt</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)),<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>($(<span class="ident">OwnedParam</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span><span class="op">&gt;</span>,)<span class="kw-2">*</span>), <span class="ident">R</span>, <span class="ident">VirtualMachine</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
         <span class="kw">where</span>
-            <span class="ident">F</span>: <span class="ident">Fn</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">R</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+            <span class="ident">F</span>: <span class="ident">Fn</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">R</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
             $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">FromArgs</span>,)<span class="op">*</span>
             <span class="ident">R</span>: <span class="ident">IntoPyObject</span>,
         {
-            <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyNativeFunc</span> {
+            <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyNativeFunc</span> {
                 <span class="ident">Box</span>::<span class="ident">new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>, <span class="ident">args</span><span class="op">|</span> {
                     <span class="kw">let</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="kw-2">*</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">bind</span>::<span class="op">&lt;</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>)<span class="op">&gt;</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
 
@@ -1064,19 +1057,42 @@
             }
         }
 
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>(<span class="ident">RefParam</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, $(<span class="ident">OwnedParam</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span><span class="op">&gt;</span>,)<span class="kw-2">*</span>), <span class="ident">R</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
+        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>(<span class="ident">RefParam</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, $(<span class="ident">OwnedParam</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span><span class="op">&gt;</span>,)<span class="kw-2">*</span>), <span class="ident">R</span>, <span class="ident">VirtualMachine</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
         <span class="kw">where</span>
-            <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">R</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+            <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">R</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
             <span class="ident">S</span>: <span class="ident">PyValue</span>,
             $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">FromArgs</span>,)<span class="op">*</span>
             <span class="ident">R</span>: <span class="ident">IntoPyObject</span>,
         {
-            <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PyNativeFunc</span> {
+            <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyNativeFunc</span> {
                 <span class="ident">Box</span>::<span class="ident">new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">vm</span>, <span class="ident">args</span><span class="op">|</span> {
                     <span class="kw">let</span> (<span class="ident">zelf</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="kw-2">*</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">bind</span>::<span class="op">&lt;</span>(<span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>)<span class="op">&gt;</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
 
                     (<span class="self">self</span>)(<span class="kw-2">&amp;</span><span class="ident">zelf</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="op">*</span> <span class="ident">vm</span>).<span class="ident">into_pyobject</span>(<span class="ident">vm</span>)
                 })
+            }
+        }
+
+        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>($(<span class="ident">OwnedParam</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span><span class="op">&gt;</span>,)<span class="kw-2">*</span>), <span class="ident">R</span>, ()<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
+        <span class="kw">where</span>
+            <span class="ident">F</span>: <span class="ident">Fn</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">R</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+            $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">FromArgs</span>,)<span class="op">*</span>
+            <span class="ident">R</span>: <span class="ident">IntoPyObject</span>,
+        {
+            <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyNativeFunc</span> {
+                <span class="ident">IntoPyNativeFunc</span>::<span class="ident">into_func</span>(<span class="kw">move</span> <span class="op">|</span>$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="op">*</span> <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span><span class="op">|</span> (<span class="self">self</span>)($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="kw-2">*</span>))
+            }
+        }
+
+        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="op">*</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="ident">IntoPyNativeFunc</span><span class="op">&lt;</span>(<span class="ident">RefParam</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, $(<span class="ident">OwnedParam</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span><span class="op">&gt;</span>,)<span class="kw-2">*</span>), <span class="ident">R</span>, ()<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">F</span>
+        <span class="kw">where</span>
+            <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">R</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+            <span class="ident">S</span>: <span class="ident">PyValue</span>,
+            $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">FromArgs</span>,)<span class="op">*</span>
+            <span class="ident">R</span>: <span class="ident">IntoPyObject</span>,
+        {
+            <span class="kw">fn</span> <span class="ident">into_func</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyNativeFunc</span> {
+                <span class="ident">IntoPyNativeFunc</span>::<span class="ident">into_func</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">zelf</span>: <span class="kw-2">&amp;</span><span class="ident">S</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="op">*</span> <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span><span class="op">|</span> (<span class="self">self</span>)(<span class="ident">zelf</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>,)<span class="kw-2">*</span>))
             }
         }
     };
@@ -1093,25 +1109,43 @@
 <span class="doccomment">/// test that any of the values contained within the tuples satisfies the predicate. Type parameter</span>
 <span class="doccomment">/// T specifies the type that is expected, if the input value is not of that type or a tuple of</span>
 <span class="doccomment">/// values of that type, then a TypeError is raised.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">single_or_tuple_any</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PyValue</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;&gt;</span>(
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">single_or_tuple_any</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PyValue</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span><span class="op">&gt;</span>(
     <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
     <span class="ident">predicate</span>: <span class="ident">F</span>,
-    <span class="ident">message</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-&gt;</span> <span class="ident">String</span>,
+    <span class="ident">message</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>,
     <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-    <span class="macro">match_class</span><span class="macro">!</span>(<span class="ident">obj</span>,
-        <span class="ident">obj</span> @ <span class="ident">T</span> <span class="op">=&gt;</span> <span class="ident">predicate</span>(<span class="ident">obj</span>),
-        <span class="ident">tuple</span> @ <span class="ident">PyTuple</span> <span class="op">=&gt;</span> {
-            <span class="kw">for</span> <span class="ident">obj</span> <span class="kw">in</span> <span class="ident">tuple</span>.<span class="ident">elements</span>.<span class="ident">iter</span>() {
-                <span class="kw">let</span> <span class="ident">inner_val</span> <span class="op">=</span> <span class="ident">PyRef</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">obj</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
-                <span class="kw">if</span> <span class="ident">predicate</span>(<span class="ident">inner_val</span>)<span class="question-mark">?</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+    <span class="comment">// TODO: figure out some way to have recursive calls without... this</span>
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
+    <span class="kw">struct</span> <span class="ident">Checker</span><span class="op">&lt;</span><span class="lifetime">&#39;vm</span>, <span class="ident">T</span>: <span class="ident">PyValue</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">predicate</span>: <span class="ident">F</span>,
+        <span class="ident">message</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;vm</span> <span class="ident">VirtualMachine</span>,
+        <span class="ident">t</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    }
+    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PyValue</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Checker</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">T</span>, <span class="ident">F</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+            <span class="macro">match_class</span><span class="macro">!</span>(<span class="kw">match</span> <span class="ident">obj</span> {
+                <span class="ident">obj</span> @ <span class="ident">T</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="self">self</span>.<span class="ident">predicate</span>)(<span class="ident">obj</span>),
+                <span class="ident">tuple</span> @ <span class="ident">PyTuple</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="kw">for</span> <span class="ident">obj</span> <span class="kw">in</span> <span class="ident">tuple</span>.<span class="ident">as_slice</span>().<span class="ident">iter</span>() {
+                        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">check</span>(<span class="ident">obj</span>.<span class="ident">clone</span>())<span class="question-mark">?</span> {
+                            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
+                        }
+                    }
+                    <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
                 }
-            }
-            <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
-        },
-        <span class="ident">obj</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">message</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>)))
-    )
+                <span class="ident">obj</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">vm</span>.<span class="ident">new_type_error</span>((<span class="self">self</span>.<span class="ident">message</span>)(<span class="kw-2">&amp;</span><span class="ident">obj</span>))),
+            })
+        }
+    }
+    <span class="kw">let</span> <span class="ident">checker</span> <span class="op">=</span> <span class="ident">Checker</span> {
+        <span class="ident">predicate</span>,
+        <span class="ident">message</span>,
+        <span class="ident">vm</span>,
+        <span class="ident">t</span>: <span class="ident">PhantomData</span>,
+    };
+    <span class="ident">checker</span>.<span class="ident">check</span>(<span class="ident">obj</span>)
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rustpython_vm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

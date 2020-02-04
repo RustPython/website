@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["init",""]],"struct":[["PyModule",""]],"type":[["PyModuleRef",""]]});
+initSidebarItems({"fn":[["init_module_dict",""]],"struct":[["PyModule",""]],"type":[["PyModuleRef",""]]});

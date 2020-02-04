@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["js_py_typeerror",""],["js_to_py",""],["object_entries",""],["py_err_to_js_err",""],["py_to_js",""],["pyresult_to_jsresult",""]]});
+initSidebarItems({"fn":[["js_err_to_py_err",""],["js_py_typeerror",""],["js_to_py",""],["object_entries",""],["py_err_to_js_err",""],["py_to_js",""],["pyresult_to_jsresult",""]],"struct":[["PyError",""]]});

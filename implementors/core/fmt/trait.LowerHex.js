@@ -1,11 +1,10 @@
 (function() {var implementors = {};
-implementors["rustpython_bytecode"] = [{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"rustpython_bytecode/bytecode/struct.FunctionOpArg.html\" title=\"struct rustpython_bytecode::bytecode::FunctionOpArg\">FunctionOpArg</a>",synthetic:false,types:["rustpython_bytecode::bytecode::FunctionOpArg"]},];
-implementors["rustpython_vm"] = [{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"rustpython_vm/cformat/struct.CConversionFlags.html\" title=\"struct rustpython_vm::cformat::CConversionFlags\">CConversionFlags</a>",synthetic:false,types:["rustpython_vm::cformat::CConversionFlags"]},];
+implementors["rustpython_bytecode"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"rustpython_bytecode/bytecode/struct.CodeFlags.html\" title=\"struct rustpython_bytecode::bytecode::CodeFlags\">CodeFlags</a>","synthetic":false,"types":["rustpython_bytecode::bytecode::CodeFlags"]}];
+implementors["rustpython_vm"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"rustpython_vm/cformat/struct.CConversionFlags.html\" title=\"struct rustpython_vm::cformat::CConversionFlags\">CConversionFlags</a>","synthetic":false,"types":["rustpython_vm::cformat::CConversionFlags"]},{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/fmt/trait.LowerHex.html\" title=\"trait core::fmt::LowerHex\">LowerHex</a> for <a class=\"struct\" href=\"rustpython_vm/slots/struct.PyTpFlags.html\" title=\"struct rustpython_vm::slots::PyTpFlags\">PyTpFlags</a>","synthetic":false,"types":["rustpython_vm::slots::PyTpFlags"]}];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

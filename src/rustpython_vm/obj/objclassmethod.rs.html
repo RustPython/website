@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/obj/objclassmethod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>objclassmethod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vm/src/obj/objclassmethod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>objclassmethod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rustpython_vm/index.html'><div class='logo-container'><img src='https://raw.githubusercontent.com/RustPython/RustPython/master/logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -67,9 +67,28 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtype</span>::<span class="ident">PyClassRef</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyClassImpl</span>, <span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::<span class="ident">OptionalArg</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
+    <span class="ident">PyClassImpl</span>, <span class="ident">PyContext</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>, <span class="ident">PyResult</span>, <span class="ident">PyValue</span>, <span class="ident">TypeProtocol</span>,
+};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">slots</span>::<span class="ident">PyBuiltinDescriptor</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
 <span class="doccomment">/// classmethod(function) -&gt; method</span>
@@ -95,47 +114,58 @@
 <span class="attribute">#[<span class="ident">pyclass</span>]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PyClassMethod</span> {
-    <span class="kw">pub</span> <span class="ident">callable</span>: <span class="ident">PyObjectRef</span>,
+    <span class="ident">callable</span>: <span class="ident">PyObjectRef</span>,
 }
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PyClassMethodRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">PyClassMethod</span><span class="op">&gt;</span>;
+
+<span class="kw">impl</span> <span class="ident">PyClassMethod</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">callable</span>: <span class="ident">value</span> }
+    }
+}
 
 <span class="kw">impl</span> <span class="ident">PyValue</span> <span class="kw">for</span> <span class="ident">PyClassMethod</span> {
     <span class="kw">const</span> <span class="ident">HAVE_DICT</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
-    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyClassRef</span> {
+    <span class="kw">fn</span> <span class="ident">class</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyClassRef</span> {
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">classmethod_type</span>()
     }
 }
 
-<span class="attribute">#[<span class="ident">pyimpl</span>]</span>
+<span class="kw">impl</span> <span class="ident">PyBuiltinDescriptor</span> <span class="kw">for</span> <span class="ident">PyClassMethod</span> {
+    <span class="kw">fn</span> <span class="ident">get</span>(
+        <span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>,
+        <span class="ident">cls</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>,
+        <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
+        <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="ident">cls</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">obj</span>.<span class="ident">class</span>().<span class="ident">into_object</span>());
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bound_method</span>(<span class="ident">zelf</span>.<span class="ident">callable</span>.<span class="ident">clone</span>(), <span class="ident">cls</span>))
+    }
+}
+
+<span class="attribute">#[<span class="ident">pyimpl</span>(<span class="ident">with</span>(<span class="ident">PyBuiltinDescriptor</span>), <span class="ident">flags</span>(<span class="ident">BASETYPE</span>))]</span>
 <span class="kw">impl</span> <span class="ident">PyClassMethod</span> {
-    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__new__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">new</span>(
+    <span class="attribute">#[<span class="ident">pyslot</span>]</span>
+    <span class="kw">fn</span> <span class="ident">tp_new</span>(
         <span class="ident">cls</span>: <span class="ident">PyClassRef</span>,
         <span class="ident">callable</span>: <span class="ident">PyObjectRef</span>,
         <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyClassMethodRef</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyClassMethodRef</span><span class="op">&gt;</span> {
         <span class="ident">PyClassMethod</span> {
             <span class="ident">callable</span>: <span class="ident">callable</span>.<span class="ident">clone</span>(),
         }
         .<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">cls</span>)
     }
 
-    <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__get__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_inst</span>: <span class="ident">PyObjectRef</span>, <span class="ident">owner</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>
-            .<span class="ident">ctx</span>
-            .<span class="ident">new_bound_method</span>(<span class="self">self</span>.<span class="ident">callable</span>.<span class="ident">clone</span>(), <span class="ident">owner</span>.<span class="ident">clone</span>()))
-    }
-
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__func__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">func</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-&gt;</span> <span class="ident">PyObjectRef</span> {
+    <span class="kw">fn</span> <span class="ident">func</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="self">self</span>.<span class="ident">callable</span>.<span class="ident">clone</span>()
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
-    <span class="ident">PyClassMethod</span>::<span class="ident">extend_class</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">classmethod_type</span>);
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
+    <span class="ident">PyClassMethod</span>::<span class="ident">extend_class</span>(<span class="ident">context</span>, <span class="kw-2">&amp;</span><span class="ident">context</span>.<span class="ident">types</span>.<span class="ident">classmethod_type</span>);
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

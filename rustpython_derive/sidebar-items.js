@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["pyclass",""],["pyimpl",""],["pystruct_sequence",""]],"derive":[["FromArgs",""],["proc_macro_hack_py_compile_bytecode",""]]});
+initSidebarItems({"attr":[["pyclass",""],["pyimpl",""],["pystruct_sequence",""]],"derive":[["FromArgs",""]],"macro":[["py_compile_bytecode",""]]});

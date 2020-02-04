@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["call_next",""],["get_all",""],["get_iter",""],["get_next_object",""],["init",""],["new_stop_iteration",""]],"struct":[["PySequenceIterator",""]]});
+initSidebarItems({"fn":[["call_next",""],["get_all",""],["get_iter",""],["get_next_object",""],["init",""],["length_hint",""],["new_stop_iteration",""],["seq_iter_method",""],["stop_iter_value",""]],"struct":[["PySequenceIterator",""]]});

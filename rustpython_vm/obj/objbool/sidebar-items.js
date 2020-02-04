@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["boolval","Convert Python bool into Rust bool."],["get_value",""],["init",""],["not",""]]});
+initSidebarItems({"fn":[["boolval","Convert Python bool into Rust bool."],["get_py_int",""],["get_value",""],["init",""],["not",""]],"struct":[["IntoPyBool",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_value",""],["init",""],["make_float",""],["try_float",""],["ufrexp",""]],"struct":[["PyFloat","Convert a string or number to a floating point number, if possible."]],"type":[["PyFloatRef",""]]});
+initSidebarItems({"fn":[["float_pow",""],["get_value",""],["init",""],["try_bigint",""],["try_float",""],["ufrexp",""]],"struct":[["IntoPyFloat",""],["PyFloat","Convert a string or number to a floating point number, if possible."]],"type":[["PyFloatRef",""]]});
