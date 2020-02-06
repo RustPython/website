@@ -74,31 +74,31 @@
 <span class="kw">impl</span> <span class="ident">FrameRef</span> {
     <span class="attribute">#[<span class="ident">pyslot</span>]</span>
     <span class="kw">fn</span> <span class="ident">tp_new</span>(<span class="ident">_cls</span>: <span class="ident">FrameRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Cannot directly create frame object&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Cannot directly create frame object&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="string">&quot;&lt;frame object at .. &gt;&quot;</span>.<span class="ident">to_string</span>()
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="string">&quot;&lt;frame object at .. &gt;&quot;</span>.<span class="ident">to_owned</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="self">self</span>) {
         <span class="comment">// TODO</span>
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">f_globals</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictRef</span> {
+    <span class="kw">fn</span> <span class="ident">f_globals</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictRef</span> {
         <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">globals</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">f_locals</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictRef</span> {
+    <span class="kw">fn</span> <span class="ident">f_locals</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictRef</span> {
         <span class="self">self</span>.<span class="ident">scope</span>.<span class="ident">get_locals</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">f_code</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyCodeRef</span> {
+    <span class="kw">fn</span> <span class="ident">f_code</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyCodeRef</span> {
         <span class="self">self</span>.<span class="ident">code</span>.<span class="ident">clone</span>()
     }
 

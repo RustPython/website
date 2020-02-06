@@ -369,7 +369,7 @@
                 <span class="kw">let</span> <span class="ident">stop</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">stop_index</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">step</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">step_index</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">unwrap_or_else</span>(<span class="ident">BigInt</span>::<span class="ident">one</span>);
                 <span class="kw">if</span> <span class="ident">step</span>.<span class="ident">is_zero</span>() {
-                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;slice step cannot be zero&quot;</span>.<span class="ident">to_string</span>()))
+                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;slice step cannot be zero&quot;</span>.<span class="ident">to_owned</span>()))
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">step</span>.<span class="ident">is_positive</span>() {
                     <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_slice_range</span>(<span class="kw-2">&amp;</span><span class="ident">start</span>, <span class="kw-2">&amp;</span><span class="ident">stop</span>);
                     <span class="kw">if</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">&lt;</span> <span class="ident">range</span>.<span class="ident">end</span> {
@@ -478,7 +478,7 @@
         <span class="kw">if</span> <span class="ident">value</span> <span class="op">&lt;</span> <span class="number">0</span> {
             <span class="kw">let</span> <span class="ident">from_end</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="op">-</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">usize</span>;
             <span class="kw">if</span> <span class="ident">from_end</span> <span class="op">&gt;</span> <span class="ident">length</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;Index out of bounds!&quot;</span>.<span class="ident">to_string</span>()))
+                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;Index out of bounds!&quot;</span>.<span class="ident">to_owned</span>()))
             } <span class="kw">else</span> {
                 <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">length</span> <span class="op">-</span> <span class="ident">from_end</span>;
                 <span class="prelude-val">Ok</span>(<span class="ident">index</span>)
@@ -486,13 +486,13 @@
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">value</span> <span class="kw">as</span> <span class="ident">usize</span>;
             <span class="kw">if</span> <span class="ident">index</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">length</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;Index out of bounds!&quot;</span>.<span class="ident">to_string</span>()))
+                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;Index out of bounds!&quot;</span>.<span class="ident">to_owned</span>()))
             } <span class="kw">else</span> {
                 <span class="prelude-val">Ok</span>(<span class="ident">index</span>)
             }
         }
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -509,11 +509,11 @@
                     <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="ident">elements</span>[<span class="ident">pos_index</span>].<span class="ident">clone</span>();
                     <span class="prelude-val">Ok</span>(<span class="ident">obj</span>)
                 } <span class="kw">else</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;Index out of bounds!&quot;</span>.<span class="ident">to_string</span>()))
+                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;Index out of bounds!&quot;</span>.<span class="ident">to_owned</span>()))
                 }
             }
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_string</span>()))
+                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_owned</span>()))
             }
         };
     }
@@ -552,7 +552,7 @@
             <span class="ident">i</span> @ <span class="ident">PyInt</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">i</span>.<span class="ident">as_bigint</span>().<span class="ident">clone</span>())),
             <span class="ident">_obj</span> @ <span class="ident">PyNone</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
-                <span class="string">&quot;slice indices must be integers or None or have an __index__ method&quot;</span>.<span class="ident">to_string</span>()
+                <span class="string">&quot;slice indices must be integers or None or have an __index__ method&quot;</span>.<span class="ident">to_owned</span>()
             )), <span class="comment">// TODO: check for an __index__ method</span>
         })
     } <span class="kw">else</span> {
@@ -573,10 +573,10 @@
             })<span class="question-mark">?</span>
             .<span class="ident">as_bigint</span>();
         <span class="kw">if</span> <span class="ident">len</span>.<span class="ident">is_negative</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;__len__() should return &gt;= 0&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;__len__() should return &gt;= 0&quot;</span>.<span class="ident">to_owned</span>()));
         }
         <span class="ident">len</span>.<span class="ident">to_usize</span>().<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
-            <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;cannot fit __len__() result into usize&quot;</span>.<span class="ident">to_string</span>())
+            <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;cannot fit __len__() result into usize&quot;</span>.<span class="ident">to_owned</span>())
         })
     })
 }

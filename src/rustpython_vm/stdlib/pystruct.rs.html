@@ -668,7 +668,7 @@
                 )))
             }
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;First argument must be of str type&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;First argument must be of str type&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 }

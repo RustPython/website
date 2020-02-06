@@ -646,13 +646,6 @@
 <span id="646">646</span>
 <span id="647">647</span>
 <span id="648">648</span>
-<span id="649">649</span>
-<span id="650">650</span>
-<span id="651">651</span>
-<span id="652">652</span>
-<span id="653">653</span>
-<span id="654">654</span>
-<span id="655">655</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -661,11 +654,10 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objdict</span>::<span class="ident">PyDictRef</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objlist</span>::<span class="ident">PyList</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objmappingproxy</span>::<span class="ident">PyMappingProxy</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objproperty</span>::<span class="ident">PropertyBuilder</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objstr</span>::<span class="ident">PyStringRef</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objtuple</span>::<span class="ident">PyTuple</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">objweakref</span>::<span class="ident">PyWeak</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::<span class="ident">PyFuncArgs</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::{<span class="ident">OptionalArg</span>, <span class="ident">PyFuncArgs</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{
     <span class="ident">IdProtocol</span>, <span class="ident">PyAttributes</span>, <span class="ident">PyClassImpl</span>, <span class="ident">PyContext</span>, <span class="ident">PyIterable</span>, <span class="ident">PyObject</span>, <span class="ident">PyObjectRef</span>, <span class="ident">PyRef</span>,
     <span class="ident">PyResult</span>, <span class="ident">PyValue</span>, <span class="ident">TypeProtocol</span>,
@@ -736,14 +728,11 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">_mro</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyTuple</span> {
+    <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__mro__&quot;</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">get_mro</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyTuple</span> {
         <span class="kw">let</span> <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">=</span>
             <span class="ident">_mro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>).<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">as_object</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>();
         <span class="ident">PyTuple</span>::<span class="ident">from</span>(<span class="ident">elements</span>)
-    }
-
-    <span class="kw">fn</span> <span class="ident">_set_mro</span>(<span class="self">self</span>, <span class="ident">_value</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="string">&quot;read-only attribute&quot;</span>.<span class="ident">to_string</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">magic</span>)]</span>
@@ -757,28 +746,28 @@
         <span class="kw">let</span> <span class="ident">attributes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_attributes</span>();
         <span class="kw">let</span> <span class="ident">attributes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">attributes</span>
             .<span class="ident">keys</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">k</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">k</span>.<span class="ident">to_owned</span>()))
             .<span class="ident">collect</span>();
         <span class="ident">PyList</span>::<span class="ident">from</span>(<span class="ident">attributes</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">instancecheck</span>(<span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">instancecheck</span>(<span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="kw-2">&amp;</span><span class="self">self</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">subclasscheck</span>(<span class="self">self</span>, <span class="ident">subclass</span>: <span class="ident">PyClassRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">subclasscheck</span>(<span class="self">self</span>, <span class="ident">subclass</span>: <span class="ident">PyClassRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="ident">issubclass</span>(<span class="kw-2">&amp;</span><span class="ident">subclass</span>, <span class="kw-2">&amp;</span><span class="self">self</span>)
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;&lt;class &#39;{}&#39;&gt;&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>)
     }
 
@@ -799,6 +788,13 @@
             .<span class="ident">get</span>(<span class="string">&quot;__module__&quot;</span>)
             .<span class="ident">cloned</span>()
             .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;builtins&quot;</span>.<span class="ident">to_owned</span>()))
+    }
+
+    <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">magic</span>, <span class="ident">setter</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">set_module</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">PyObjectRef</span>) {
+        <span class="self">self</span>.<span class="ident">attributes</span>
+            .<span class="ident">borrow_mut</span>()
+            .<span class="ident">insert</span>(<span class="string">&quot;__module__&quot;</span>.<span class="ident">to_owned</span>(), <span class="ident">value</span>);
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
@@ -826,7 +822,11 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">attr</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_attr</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>) {
             <span class="kw">let</span> <span class="ident">attr_class</span> <span class="op">=</span> <span class="ident">attr</span>.<span class="ident">class</span>();
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">descriptor</span>) <span class="op">=</span> <span class="ident">attr_class</span>.<span class="ident">get_attr</span>(<span class="string">&quot;__get__&quot;</span>) {
+            <span class="kw">let</span> <span class="ident">slots</span> <span class="op">=</span> <span class="ident">attr_class</span>.<span class="ident">slots</span>.<span class="ident">borrow</span>();
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">descr_get</span>) <span class="op">=</span> <span class="ident">slots</span>.<span class="ident">descr_get</span> {
+                <span class="kw">return</span> <span class="ident">descr_get</span>(<span class="ident">vm</span>, <span class="ident">attr</span>, <span class="prelude-val">None</span>, <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="self">self</span>.<span class="ident">into_object</span>()));
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">descriptor</span>) <span class="op">=</span> <span class="ident">attr_class</span>.<span class="ident">get_attr</span>(<span class="string">&quot;__get__&quot;</span>) {
+                <span class="comment">// TODO: is this nessessary?</span>
                 <span class="kw">return</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">descriptor</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">attr</span>, <span class="ident">vm</span>.<span class="ident">get_none</span>(), <span class="self">self</span>.<span class="ident">into_object</span>()]);
             }
         }
@@ -834,7 +834,7 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cls_attr</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_attr</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">cls_attr</span>)
         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">attr</span>) <span class="op">=</span> <span class="ident">mcl</span>.<span class="ident">get_attr</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>) {
-            <span class="ident">vm</span>.<span class="ident">call_get_descriptor</span>(<span class="ident">attr</span>, <span class="self">self</span>.<span class="ident">into_object</span>())
+            <span class="ident">vm</span>.<span class="ident">call_if_get_descriptor</span>(<span class="ident">attr</span>, <span class="self">self</span>.<span class="ident">into_object</span>())
         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">getter</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_attr</span>(<span class="string">&quot;__getattr__&quot;</span>) {
             <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="ident">getter</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">mcl</span>.<span class="ident">into_object</span>(), <span class="ident">name_ref</span>.<span class="ident">into_object</span>()])
         } <span class="kw">else</span> {
@@ -876,7 +876,7 @@
             <span class="self">self</span>.<span class="ident">attributes</span>.<span class="ident">borrow_mut</span>().<span class="ident">remove</span>(<span class="ident">attr_name</span>.<span class="ident">as_str</span>());
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="ident">attr_name</span>.<span class="ident">as_str</span>().<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_attribute_error</span>(<span class="ident">attr_name</span>.<span class="ident">as_str</span>().<span class="ident">to_owned</span>()))
         }
     }
 
@@ -884,11 +884,11 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_str_attr</span><span class="op">&lt;</span><span class="ident">V</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="ident">V</span>) {
         <span class="self">self</span>.<span class="ident">attributes</span>
             .<span class="ident">borrow_mut</span>()
-            .<span class="ident">insert</span>(<span class="ident">attr_name</span>.<span class="ident">to_string</span>(), <span class="ident">value</span>.<span class="ident">into</span>());
+            .<span class="ident">insert</span>(<span class="ident">attr_name</span>.<span class="ident">to_owned</span>(), <span class="ident">value</span>.<span class="ident">into</span>());
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">subclasses</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyList</span> {
+    <span class="kw">fn</span> <span class="ident">subclasses</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyList</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">subclasses</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">subclasses</span>.<span class="ident">borrow_mut</span>();
         <span class="ident">subclasses</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">upgrade</span>().<span class="ident">is_some</span>());
         <span class="ident">PyList</span>::<span class="ident">from</span>(
@@ -917,7 +917,7 @@
 
         <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">3</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="kw">if</span> <span class="ident">is_type_type</span> {
-                <span class="string">&quot;type() takes 1 or 3 arguments&quot;</span>.<span class="ident">to_string</span>()
+                <span class="string">&quot;type() takes 1 or 3 arguments&quot;</span>.<span class="ident">to_owned</span>()
             } <span class="kw">else</span> {
                 <span class="macro">format</span><span class="macro">!</span>(
                     <span class="string">&quot;type.__new__() takes exactly 3 arguments ({} given)&quot;</span>,
@@ -978,10 +978,22 @@
             <span class="kw">let</span> <span class="ident">init_method</span> <span class="op">=</span> <span class="ident">init_method_or_err</span><span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(<span class="kw-2">&amp;</span><span class="ident">init_method</span>, <span class="ident">args</span>)<span class="question-mark">?</span>;
             <span class="kw">if</span> <span class="op">!</span><span class="ident">res</span>.<span class="ident">is</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">get_none</span>()) {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;__init__ must return None&quot;</span>.<span class="ident">to_string</span>()));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;__init__ must return None&quot;</span>.<span class="ident">to_owned</span>()));
             }
         }
         <span class="prelude-val">Ok</span>(<span class="ident">obj</span>)
+    }
+
+    <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">magic</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">dict</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyMappingProxy</span> {
+        <span class="ident">PyMappingProxy</span>::<span class="ident">new</span>(<span class="self">self</span>)
+    }
+
+    <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">magic</span>, <span class="ident">setter</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">set_dict</span>(<span class="self">self</span>, <span class="ident">_value</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(
+            <span class="string">&quot;Setting __dict__ attribute on a type isn&#39;t yet implemented&quot;</span>.<span class="ident">to_owned</span>(),
+        ))
     }
 }
 
@@ -991,18 +1003,6 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">init</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">PyContext</span>) {
     <span class="ident">PyClassRef</span>::<span class="ident">extend_class</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">ctx</span>.<span class="ident">types</span>.<span class="ident">type_type</span>);
-    <span class="macro">extend_class</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">ctx</span>.<span class="ident">types</span>.<span class="ident">type_type</span>, {
-        <span class="string">&quot;__dict__&quot;</span> <span class="op">=</span><span class="op">&gt;</span>
-        <span class="ident">PropertyBuilder</span>::<span class="ident">new</span>(<span class="ident">ctx</span>)
-                .<span class="ident">add_getter</span>(<span class="ident">type_dict</span>)
-                .<span class="ident">add_setter</span>(<span class="ident">type_dict_setter</span>)
-                .<span class="ident">create</span>(),
-        <span class="string">&quot;__mro__&quot;</span> <span class="op">=</span><span class="op">&gt;</span>
-            <span class="ident">PropertyBuilder</span>::<span class="ident">new</span>(<span class="ident">ctx</span>)
-                .<span class="ident">add_getter</span>(<span class="ident">PyClassRef</span>::<span class="ident">_mro</span>)
-                .<span class="ident">add_setter</span>(<span class="ident">PyClassRef</span>::<span class="ident">_set_mro</span>)
-                .<span class="ident">create</span>(),
-    });
 }
 
 <span class="kw">fn</span> <span class="ident">_mro</span>(<span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyClassRef</span><span class="op">&gt;</span> {
@@ -1054,20 +1054,6 @@
     <span class="ident">new</span>(<span class="ident">vm</span>, <span class="ident">args</span>.<span class="ident">insert</span>(<span class="ident">cls</span>.<span class="ident">into_object</span>()))
 }
 
-<span class="kw">fn</span> <span class="ident">type_dict</span>(<span class="ident">class</span>: <span class="ident">PyClassRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyMappingProxy</span> {
-    <span class="ident">PyMappingProxy</span>::<span class="ident">new</span>(<span class="ident">class</span>)
-}
-
-<span class="kw">fn</span> <span class="ident">type_dict_setter</span>(
-    <span class="ident">_instance</span>: <span class="ident">PyClassRef</span>,
-    <span class="ident">_value</span>: <span class="ident">PyObjectRef</span>,
-    <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(
-        <span class="string">&quot;Setting __dict__ attribute on a type isn&#39;t yet implemented&quot;</span>.<span class="ident">to_string</span>(),
-    ))
-}
-
 <span class="kw">impl</span> <span class="ident">PyClassRef</span> {
     <span class="doccomment">/// This is the internal get_attr implementation for fast lookup on a class.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_attr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attr_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span> {
@@ -1104,7 +1090,7 @@
 
         <span class="kw">for</span> <span class="ident">bc</span> <span class="kw">in</span> <span class="ident">base_classes</span> {
             <span class="kw">for</span> (<span class="ident">name</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">bc</span>.<span class="ident">attributes</span>.<span class="ident">borrow</span>().<span class="ident">iter</span>() {
-                <span class="ident">attributes</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">value</span>.<span class="ident">clone</span>());
+                <span class="ident">attributes</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">to_owned</span>(), <span class="ident">value</span>.<span class="ident">clone</span>());
             }
         }
 
@@ -1204,7 +1190,7 @@
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
             <span class="string">&quot;metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass \
              of the metaclasses of all its bases&quot;</span>
-                .<span class="ident">to_string</span>(),
+                .<span class="ident">to_owned</span>(),
         ));
     }
     <span class="prelude-val">Ok</span>(<span class="ident">winner</span>)

@@ -2022,7 +2022,7 @@
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">chr0</span> <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&#39;.&#39;</span>) {
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">chr1</span> <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&#39;_&#39;</span>) {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(<span class="string">&quot;Invalid Syntax&quot;</span>.<span class="ident">to_string</span>()),
+                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(<span class="string">&quot;Invalid Syntax&quot;</span>.<span class="ident">to_owned</span>()),
                         <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
                     });
                 }
@@ -2071,7 +2071,7 @@
                 <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">value_text</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
                 <span class="kw">if</span> <span class="ident">start_is_zero</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="op">!</span><span class="ident">value</span>.<span class="ident">is_zero</span>() {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
-                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(<span class="string">&quot;Invalid Token&quot;</span>.<span class="ident">to_string</span>()),
+                        <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(<span class="string">&quot;Invalid Token&quot;</span>.<span class="ident">to_owned</span>()),
                         <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
                     });
                 }
@@ -2362,7 +2362,7 @@
                         // This is technically stricter than python3 but spaces after
                         // tabs is even more insane than mixing spaces and tabs.
                         return Some(Err(LexicalError {
-                            error: LexicalErrorType::OtherError(&quot;Spaces not allowed as part of indentation after tabs&quot;.to_string()),
+                            error: LexicalErrorType::OtherError(&quot;Spaces not allowed as part of indentation after tabs&quot;.to_owned()),
                             location: self.get_pos(),
                         }));
                     }
@@ -2377,7 +2377,7 @@
                         <span class="comment">// tabs is even more insane than mixing spaces and tabs.</span>
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LexicalError</span> {
                             <span class="ident">error</span>: <span class="ident">LexicalErrorType</span>::<span class="ident">OtherError</span>(
-                                <span class="string">&quot;Tabs not allowed as part of indentation after spaces&quot;</span>.<span class="ident">to_string</span>(),
+                                <span class="string">&quot;Tabs not allowed as part of indentation after spaces&quot;</span>.<span class="ident">to_owned</span>(),
                             ),
                             <span class="ident">location</span>: <span class="self">self</span>.<span class="ident">get_pos</span>(),
                         });
@@ -3032,11 +3032,11 @@ token.
             <span class="ident">tokens</span>,
             <span class="macro">vec</span><span class="macro">!</span>[
                 <span class="ident">Tok</span>::<span class="ident">String</span> {
-                    <span class="ident">value</span>: <span class="string">&quot;\\\\&quot;</span>.<span class="ident">to_string</span>(),
+                    <span class="ident">value</span>: <span class="string">&quot;\\\\&quot;</span>.<span class="ident">to_owned</span>(),
                     <span class="ident">is_fstring</span>: <span class="bool-val">false</span>,
                 },
                 <span class="ident">Tok</span>::<span class="ident">String</span> {
-                    <span class="ident">value</span>: <span class="string">&quot;\\&quot;</span>.<span class="ident">to_string</span>(),
+                    <span class="ident">value</span>: <span class="string">&quot;\\&quot;</span>.<span class="ident">to_owned</span>(),
                     <span class="ident">is_fstring</span>: <span class="bool-val">false</span>,
                 },
                 <span class="ident">Tok</span>::<span class="ident">Newline</span>,

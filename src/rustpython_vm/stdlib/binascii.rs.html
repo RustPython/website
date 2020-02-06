@@ -145,10 +145,6 @@
 <span id="145">145</span>
 <span id="146">146</span>
 <span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">function</span>::<span class="ident">OptionalArg</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">obj</span>::<span class="ident">objbytearray</span>::{<span class="ident">PyByteArray</span>, <span class="ident">PyByteArrayRef</span>};
@@ -177,7 +173,7 @@
                     <span class="prelude-val">Ok</span>(<span class="ident">SerializedData</span>::<span class="ident">Ascii</span>(<span class="ident">a</span>))
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(
-                        <span class="string">&quot;string argument should contain only ASCII characters&quot;</span>.<span class="ident">to_string</span>(),
+                        <span class="string">&quot;string argument should contain only ASCII characters&quot;</span>.<span class="ident">to_owned</span>(),
                     ))
                 }
             }
@@ -208,7 +204,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">binascii_hexlify</span>(<span class="ident">data</span>: <span class="ident">PyBytesLike</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">binascii_hexlify</span>(<span class="ident">data</span>: <span class="ident">PyBytesLike</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
     <span class="ident">data</span>.<span class="ident">with_ref</span>(<span class="op">|</span><span class="ident">bytes</span><span class="op">|</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hex</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>::<span class="ident">with_capacity</span>(<span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">*</span> <span class="number">2</span>);
         <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="ident">bytes</span>.<span class="ident">iter</span>() {
@@ -231,7 +227,7 @@
 <span class="kw">fn</span> <span class="ident">binascii_unhexlify</span>(<span class="ident">data</span>: <span class="ident">SerializedData</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="ident">data</span>.<span class="ident">with_ref</span>(<span class="op">|</span><span class="ident">hex_bytes</span><span class="op">|</span> {
         <span class="kw">if</span> <span class="ident">hex_bytes</span>.<span class="ident">len</span>() <span class="op">%</span> <span class="number">2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Odd-length string&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Odd-length string&quot;</span>.<span class="ident">to_owned</span>()));
         }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">unhex</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>::<span class="ident">with_capacity</span>(<span class="ident">hex_bytes</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="number">2</span>);
@@ -239,7 +235,7 @@
             <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">n1</span>), <span class="prelude-val">Some</span>(<span class="ident">n2</span>)) <span class="op">=</span> (<span class="ident">unhex_nibble</span>(<span class="kw-2">*</span><span class="ident">n1</span>), <span class="ident">unhex_nibble</span>(<span class="kw-2">*</span><span class="ident">n2</span>)) {
                 <span class="ident">unhex</span>.<span class="ident">push</span>(<span class="ident">n1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">4</span> <span class="op">|</span> <span class="ident">n2</span>);
             } <span class="kw">else</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Non-hexadecimal digit found&quot;</span>.<span class="ident">to_string</span>()));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Non-hexadecimal digit found&quot;</span>.<span class="ident">to_owned</span>()));
             }
         }
 
@@ -276,11 +272,7 @@
         .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;error decoding base64: {}&quot;</span>, <span class="ident">err</span>)))
 }
 
-<span class="kw">fn</span> <span class="ident">binascii_b2a_base64</span>(
-    <span class="ident">data</span>: <span class="ident">PyBytesLike</span>,
-    <span class="ident">NewlineArg</span> { <span class="ident">newline</span> }: <span class="ident">NewlineArg</span>,
-    <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">binascii_b2a_base64</span>(<span class="ident">data</span>: <span class="ident">PyBytesLike</span>, <span class="ident">NewlineArg</span> { <span class="ident">newline</span> }: <span class="ident">NewlineArg</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">encoded</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">with_ref</span>(<span class="ident">base64</span>::<span class="ident">encode</span>).<span class="ident">into_bytes</span>();
     <span class="kw">if</span> <span class="ident">newline</span> {
         <span class="ident">encoded</span>.<span class="ident">push</span>(<span class="string">b&#39;\n&#39;</span>);

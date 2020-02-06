@@ -600,28 +600,28 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyRangeRef</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">step</span> <span class="op">=</span> <span class="ident">step</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">PyInt</span>::<span class="ident">new</span>(<span class="ident">BigInt</span>::<span class="ident">one</span>()).<span class="ident">into_ref</span>(<span class="ident">vm</span>));
         <span class="kw">if</span> <span class="ident">step</span>.<span class="ident">as_bigint</span>().<span class="ident">is_zero</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;range() arg 3 must not be zero&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;range() arg 3 must not be zero&quot;</span>.<span class="ident">to_owned</span>()));
         }
         <span class="ident">PyRange</span> { <span class="ident">start</span>, <span class="ident">stop</span>, <span class="ident">step</span> }.<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">cls</span>)
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;start&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyIntRef</span> {
+    <span class="kw">fn</span> <span class="ident">start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyIntRef</span> {
         <span class="self">self</span>.<span class="ident">start</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;stop&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">stop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyIntRef</span> {
+    <span class="kw">fn</span> <span class="ident">stop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyIntRef</span> {
         <span class="self">self</span>.<span class="ident">stop</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;step&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyIntRef</span> {
+    <span class="kw">fn</span> <span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyIntRef</span> {
         <span class="self">self</span>.<span class="ident">step</span>.<span class="ident">clone</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRangeIterator</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRangeIterator</span> {
         <span class="ident">PyRangeIterator</span> {
             <span class="ident">position</span>: <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="number">0</span>),
             <span class="ident">range</span>: <span class="ident">zelf</span>,
@@ -662,12 +662,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BigInt</span> {
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BigInt</span> {
         <span class="self">self</span>.<span class="ident">length</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">step</span>.<span class="ident">as_bigint</span>().<span class="ident">is_one</span>() {
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;range({}, {})&quot;</span>, <span class="self">self</span>.<span class="ident">start</span>, <span class="self">self</span>.<span class="ident">stop</span>)
         } <span class="kw">else</span> {
@@ -676,12 +676,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__bool__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">is_empty</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__contains__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">needle</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">needle</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">int</span>) <span class="op">=</span> <span class="ident">needle</span>.<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">PyInt</span><span class="op">&gt;</span>() {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">offset</span>(<span class="ident">int</span>.<span class="ident">as_bigint</span>()) {
                 <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">offset</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">offset</span>.<span class="ident">is_multiple_of</span>(<span class="self">self</span>.<span class="ident">step</span>.<span class="ident">as_bigint</span>()),
@@ -770,12 +770,12 @@
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} is not in range&quot;</span>, <span class="ident">int</span>))),
             }
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;sequence.index(x): x not in sequence&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;sequence.index(x): x not in sequence&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;count&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">item</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">int</span>) <span class="op">=</span> <span class="ident">item</span>.<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">PyInt</span><span class="op">&gt;</span>() {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">index_of</span>(<span class="ident">int</span>.<span class="ident">as_bigint</span>()).<span class="ident">is_some</span>() {
                 <span class="number">1</span>
@@ -793,8 +793,8 @@
             <span class="ident">RangeIndex</span>::<span class="ident">Slice</span>(<span class="ident">slice</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">substart</span>, <span class="kw-2">mut</span> <span class="ident">substop</span>, <span class="kw-2">mut</span> <span class="ident">substep</span>) <span class="op">=</span>
                     <span class="ident">slice</span>.<span class="ident">inner_indices</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">length</span>(), <span class="ident">vm</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">range_step</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">step</span>(<span class="ident">vm</span>);
-                <span class="kw">let</span> <span class="ident">range_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>(<span class="ident">vm</span>);
+                <span class="kw">let</span> <span class="ident">range_step</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">step</span>;
+                <span class="kw">let</span> <span class="ident">range_start</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">start</span>;
 
                 <span class="ident">substep</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">range_step</span>.<span class="ident">as_bigint</span>();
                 <span class="ident">substart</span> <span class="op">=</span> (<span class="ident">substart</span> <span class="op">*</span> <span class="ident">range_step</span>.<span class="ident">as_bigint</span>()) <span class="op">+</span> <span class="ident">range_start</span>.<span class="ident">as_bigint</span>();
@@ -810,7 +810,7 @@
             }
             <span class="ident">RangeIndex</span>::<span class="ident">Int</span>(<span class="ident">index</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get</span>(<span class="ident">index</span>.<span class="ident">as_bigint</span>()) {
                 <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">PyInt</span>::<span class="ident">new</span>(<span class="ident">value</span>).<span class="ident">into_ref</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>()),
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;range object index out of range&quot;</span>.<span class="ident">to_string</span>())),
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;range object index out of range&quot;</span>.<span class="ident">to_owned</span>())),
             },
         }
     }
@@ -823,14 +823,14 @@
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">length</span>.<span class="ident">is_one</span>() {
             <span class="macro">vec</span><span class="macro">!</span>[
                 <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">length</span>),
-                <span class="ident">zelf</span>.<span class="ident">start</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>(),
+                <span class="ident">zelf</span>.<span class="ident">start</span>().<span class="ident">into_object</span>(),
                 <span class="ident">vm</span>.<span class="ident">get_none</span>(),
             ]
         } <span class="kw">else</span> {
             <span class="macro">vec</span><span class="macro">!</span>[
                 <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">length</span>),
-                <span class="ident">zelf</span>.<span class="ident">start</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>(),
-                <span class="ident">zelf</span>.<span class="ident">step</span>(<span class="ident">vm</span>).<span class="ident">into_object</span>(),
+                <span class="ident">zelf</span>.<span class="ident">start</span>().<span class="ident">into_object</span>(),
+                <span class="ident">zelf</span>.<span class="ident">step</span>().<span class="ident">into_object</span>(),
             ]
         };
         <span class="ident">pyhash</span>::<span class="ident">hash_iter</span>(<span class="ident">elements</span>.<span class="ident">iter</span>(), <span class="ident">vm</span>)
@@ -879,7 +879,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRangeIteratorRef</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRangeIteratorRef</span> {
         <span class="ident">zelf</span>
     }
 }

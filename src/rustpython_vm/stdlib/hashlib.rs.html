@@ -322,7 +322,7 @@
 <span class="kw">impl</span> <span class="ident">PyHasher</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">d</span>: <span class="ident">HashWrapper</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">PyHasher</span> {
-            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_string</span>(),
+            <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>(),
             <span class="ident">buffer</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">d</span>),
         }
     }
@@ -335,7 +335,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;name&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>()
     }
 
@@ -351,13 +351,13 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;digest&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">digest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyBytes</span> {
+    <span class="kw">fn</span> <span class="ident">digest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyBytes</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_digest</span>();
         <span class="ident">PyBytes</span>::<span class="ident">new</span>(<span class="ident">result</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;hexdigest&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">hexdigest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">hexdigest</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_digest</span>();
         <span class="ident">hex</span>::<span class="ident">encode</span>(<span class="ident">result</span>)
     }
@@ -444,11 +444,11 @@
 }
 
 <span class="kw">fn</span> <span class="ident">shake128</span>(<span class="ident">_data</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyBytesRef</span><span class="op">&gt;</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyHasher</span><span class="op">&gt;</span> {
-    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;shake256&quot;</span>.<span class="ident">to_string</span>()))
+    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;shake256&quot;</span>.<span class="ident">to_owned</span>()))
 }
 
 <span class="kw">fn</span> <span class="ident">shake256</span>(<span class="ident">_data</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyBytesRef</span><span class="op">&gt;</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyHasher</span><span class="op">&gt;</span> {
-    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;shake256&quot;</span>.<span class="ident">to_string</span>()))
+    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;shake256&quot;</span>.<span class="ident">to_owned</span>()))
 }
 
 <span class="kw">fn</span> <span class="ident">blake2b</span>(<span class="ident">data</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyBytesRef</span><span class="op">&gt;</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">PyHasher</span><span class="op">&gt;</span> {

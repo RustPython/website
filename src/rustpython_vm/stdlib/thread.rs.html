@@ -83,7 +83,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">rlock_release</span>(<span class="ident">_zelf</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {}
+<span class="kw">fn</span> <span class="ident">rlock_release</span>(<span class="ident">_zelf</span>: <span class="ident">PyObjectRef</span>) {}
 
 <span class="kw">fn</span> <span class="ident">rlock_enter</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
     <span class="macro">arg_check</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="ident">args</span>, <span class="ident">required</span> <span class="op">=</span> [(<span class="ident">instance</span>, <span class="prelude-val">None</span>)]);

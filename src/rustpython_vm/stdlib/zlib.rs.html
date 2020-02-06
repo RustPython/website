@@ -247,7 +247,7 @@
     <span class="kw">let</span> <span class="ident">zlib_error</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">module</span>, <span class="string">&quot;error&quot;</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">zlib_error</span> <span class="op">=</span> <span class="ident">zlib_error</span>.<span class="ident">downcast</span>().<span class="ident">unwrap</span>();
 
-    <span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(<span class="ident">zlib_error</span>, <span class="ident">message</span>.<span class="ident">to_string</span>())
+    <span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(<span class="ident">zlib_error</span>, <span class="ident">message</span>.<span class="ident">to_owned</span>())
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

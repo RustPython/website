@@ -169,7 +169,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyGeneratorRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyGeneratorRef</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyGeneratorRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyGeneratorRef</span> {
         <span class="ident">zelf</span>
     }
 
@@ -228,7 +228,7 @@
         <span class="kw">match</span> <span class="ident">result</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">ExecutionResult</span>::<span class="ident">Yield</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(
                 <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">runtime_error</span>.<span class="ident">clone</span>(),
-                <span class="string">&quot;generator ignored GeneratorExit&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="string">&quot;generator ignored GeneratorExit&quot;</span>.<span class="ident">to_owned</span>(),
             )),
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">generator_exit</span>) {

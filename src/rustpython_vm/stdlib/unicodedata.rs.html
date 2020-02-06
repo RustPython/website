@@ -169,8 +169,6 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/* Access to the unicode database.
    See also: https://docs.python.org/3/library/unicodedata.html
@@ -258,7 +256,7 @@
 
     <span class="kw">fn</span> <span class="ident">extract_char</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">character</span>: <span class="ident">PyStringRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">character</span>.<span class="ident">as_str</span>().<span class="ident">chars</span>().<span class="ident">exactly_one</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-            <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;argument must be an unicode character, not str&quot;</span>.<span class="ident">to_string</span>())
+            <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;argument must be an unicode character, not str&quot;</span>.<span class="ident">to_owned</span>())
         })<span class="question-mark">?</span>;
 
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">check_age</span>(<span class="ident">c</span>) {
@@ -306,9 +304,7 @@
         }
         <span class="kw">match</span> <span class="ident">default</span> {
             <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="ident">obj</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">obj</span>),
-            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;character name not found!&quot;</span>.<span class="ident">to_string</span>()))
-            }
+            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;character name not found!&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -334,14 +330,14 @@
             <span class="string">&quot;NFKC&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">text</span>.<span class="ident">nfkc</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>(),
             <span class="string">&quot;NFD&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">text</span>.<span class="ident">nfd</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>(),
             <span class="string">&quot;NFKD&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">text</span>.<span class="ident">nfkd</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>(),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;invalid normalization form&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;invalid normalization form&quot;</span>.<span class="ident">to_owned</span>())),
         };
 
         <span class="prelude-val">Ok</span>(<span class="ident">normalized_text</span>)
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">unidata_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">unidata_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">unic_version</span>.<span class="ident">to_string</span>()
     }
 }

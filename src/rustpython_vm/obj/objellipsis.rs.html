@@ -52,12 +52,12 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">ellipsis_repr</span>(<span class="ident">_self</span>: <span class="ident">PyEllipsisRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-    <span class="string">&quot;Ellipsis&quot;</span>.<span class="ident">to_string</span>()
+<span class="kw">fn</span> <span class="ident">ellipsis_repr</span>(<span class="ident">_self</span>: <span class="ident">PyEllipsisRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="string">&quot;Ellipsis&quot;</span>.<span class="ident">to_owned</span>()
 }
 
-<span class="kw">fn</span> <span class="ident">ellipsis_reduce</span>(<span class="ident">_self</span>: <span class="ident">PyEllipsisRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-    <span class="string">&quot;Ellipsis&quot;</span>.<span class="ident">to_string</span>()
+<span class="kw">fn</span> <span class="ident">ellipsis_reduce</span>(<span class="ident">_self</span>: <span class="ident">PyEllipsisRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="string">&quot;Ellipsis&quot;</span>.<span class="ident">to_owned</span>()
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rustpython_vm";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

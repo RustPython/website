@@ -722,7 +722,7 @@
                 <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">objiter</span>::<span class="ident">get_iter</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">dict_obj</span>)<span class="question-mark">?</span>;
                 <span class="kw">loop</span> {
                     <span class="kw">fn</span> <span class="ident">err</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyBaseExceptionRef</span> {
-                        <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Iterator must have exactly two elements&quot;</span>.<span class="ident">to_string</span>())
+                        <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Iterator must have exactly two elements&quot;</span>.<span class="ident">to_owned</span>())
                     }
                     <span class="kw">let</span> <span class="ident">element</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">objiter</span>::<span class="ident">get_next_object</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">iter</span>)<span class="question-mark">?</span> {
                         <span class="prelude-val">Some</span>(<span class="ident">obj</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">obj</span>,
@@ -764,7 +764,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">entries</span>.<span class="ident">borrow</span>().<span class="ident">is_empty</span>()
     }
 
@@ -811,12 +811,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">entries</span>.<span class="ident">borrow</span>().<span class="ident">len</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">entries</span>.<span class="ident">borrow</span>().<span class="ident">sizeof</span>()
     }
 
@@ -832,7 +832,7 @@
 
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{{{}}}&quot;</span>, <span class="ident">str_parts</span>.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>))
         } <span class="kw">else</span> {
-            <span class="string">&quot;{...}&quot;</span>.<span class="ident">to_string</span>()
+            <span class="string">&quot;{...}&quot;</span>.<span class="ident">to_owned</span>()
         };
         <span class="prelude-val">Ok</span>(<span class="ident">s</span>)
     }
@@ -848,27 +848,27 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">entries</span>.<span class="ident">borrow_mut</span>().<span class="ident">clear</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictKeyIterator</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictKeyIterator</span> {
         <span class="ident">PyDictKeyIterator</span>::<span class="ident">new</span>(<span class="self">self</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">keys</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictKeys</span> {
+    <span class="kw">fn</span> <span class="ident">keys</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictKeys</span> {
         <span class="ident">PyDictKeys</span>::<span class="ident">new</span>(<span class="self">self</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">values</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictValues</span> {
+    <span class="kw">fn</span> <span class="ident">values</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictValues</span> {
         <span class="ident">PyDictValues</span>::<span class="ident">new</span>(<span class="self">self</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">items</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictItems</span> {
+    <span class="kw">fn</span> <span class="ident">items</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDictItems</span> {
         <span class="ident">PyDictItems</span>::<span class="ident">new</span>(<span class="self">self</span>)
     }
 
@@ -948,7 +948,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">copy</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDict</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">copy</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDict</span> {
         <span class="ident">PyDict</span> {
             <span class="ident">entries</span>: <span class="self">self</span>.<span class="ident">entries</span>.<span class="ident">clone</span>(),
         }
@@ -986,7 +986,7 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">key</span>, <span class="ident">value</span>)) <span class="op">=</span> <span class="ident">entries</span>.<span class="ident">pop_front</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">key</span>, <span class="ident">value</span>]))
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">err_msg</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;popitem(): dictionary is empty&quot;</span>.<span class="ident">to_string</span>());
+            <span class="kw">let</span> <span class="ident">err_msg</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;popitem(): dictionary is empty&quot;</span>.<span class="ident">to_owned</span>());
             <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_key_error</span>(<span class="ident">err_msg</span>))
         }
     }
@@ -1014,7 +1014,7 @@
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">magic</span>)]</span>
     <span class="kw">fn</span> <span class="ident">hash</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unhashable type&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unhashable type&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains_key</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoPyObject</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">T</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1151,13 +1151,13 @@
             }
 
             <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-            <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iter_name</span> {
+            <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iter_name</span> {
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">iter_name</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">dict</span>.<span class="ident">clone</span>())
             }
 
             <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>)]</span>
-            <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-                <span class="self">self</span>.<span class="ident">dict</span>.<span class="ident">clone</span>().<span class="ident">len</span>(<span class="ident">vm</span>)
+            <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+                <span class="self">self</span>.<span class="ident">dict</span>.<span class="ident">clone</span>().<span class="ident">len</span>()
             }
 
             <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
@@ -1167,11 +1167,11 @@
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">str_parts</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
                     <span class="kw">for</span> (<span class="ident">key</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">zelf</span>.<span class="ident">dict</span>.<span class="ident">clone</span>() {
                         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">to_repr</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">result_fn</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="ident">value</span>))<span class="question-mark">?</span>;
-                        <span class="ident">str_parts</span>.<span class="ident">push</span>(<span class="ident">s</span>.<span class="ident">as_str</span>().<span class="ident">to_string</span>());
+                        <span class="ident">str_parts</span>.<span class="ident">push</span>(<span class="ident">s</span>.<span class="ident">as_str</span>().<span class="ident">to_owned</span>());
                     }
                     <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}([{}])&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">class_name</span>, <span class="ident">str_parts</span>.<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>))
                 } <span class="kw">else</span> {
-                    <span class="string">&quot;{...}&quot;</span>.<span class="ident">to_string</span>()
+                    <span class="string">&quot;{...}&quot;</span>.<span class="ident">to_owned</span>()
                 };
                 <span class="prelude-val">Ok</span>(<span class="ident">s</span>)
             }
@@ -1209,7 +1209,7 @@
                 <span class="kw">if</span> <span class="ident">dict</span>.<span class="ident">has_changed_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">size</span>) {
                     <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(
                         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">runtime_error</span>.<span class="ident">clone</span>(),
-                        <span class="string">&quot;dictionary changed size during iteration&quot;</span>.<span class="ident">to_string</span>(),
+                        <span class="string">&quot;dictionary changed size during iteration&quot;</span>.<span class="ident">to_owned</span>(),
                     ));
                 }
                 <span class="kw">match</span> <span class="ident">dict</span>.<span class="ident">next_entry</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">position</span>) {
@@ -1222,12 +1222,12 @@
             }
 
             <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-            <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+            <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
                 <span class="ident">zelf</span>
             }
 
             <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__length_hint__&quot;</span>)]</span>
-            <span class="kw">fn</span> <span class="ident">length_hint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+            <span class="kw">fn</span> <span class="ident">length_hint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
                 <span class="self">self</span>.<span class="ident">dict</span>
                     .<span class="ident">entries</span>
                     .<span class="ident">borrow</span>()

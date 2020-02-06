@@ -100,31 +100,31 @@
 <span class="kw">type</span> <span class="ident">PasswdRef</span> <span class="op">=</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="ident">Passwd</span><span class="op">&gt;</span>;
 
 <span class="kw">impl</span> <span class="ident">PasswdRef</span> {
-    <span class="kw">fn</span> <span class="ident">pw_name</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">pw_name</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">pw_passwd</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">pw_passwd</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">passwd</span>.<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">pw_uid</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">pw_uid</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">uid</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">pw_gid</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">pw_gid</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">gid</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">pw_gecos</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">pw_gecos</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">gecos</span>.<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">pw_dir</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">pw_dir</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">dir</span>.<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">pw_shell</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">pw_shell</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">shell</span>.<span class="ident">clone</span>()
     }
 }
@@ -154,13 +154,13 @@
     <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>;
 
     <span class="kw">let</span> <span class="ident">passwd_type</span> <span class="op">=</span> <span class="macro">py_class</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;struct_passwd&quot;</span>, <span class="ident">ctx</span>.<span class="ident">object</span>(), {
-        <span class="string">&quot;pw_name&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_name</span>),
-        <span class="string">&quot;pw_passwd&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_passwd</span>),
-        <span class="string">&quot;pw_uid&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_uid</span>),
-        <span class="string">&quot;pw_gid&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_gid</span>),
-        <span class="string">&quot;pw_gecos&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_gecos</span>),
-        <span class="string">&quot;pw_dir&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_dir</span>),
-        <span class="string">&quot;pw_shell&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PasswdRef</span>::<span class="ident">pw_shell</span>),
+        <span class="string">&quot;pw_name&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_name&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_name</span>),
+        <span class="string">&quot;pw_passwd&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_passwd&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_passwd</span>),
+        <span class="string">&quot;pw_uid&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_uid&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_uid</span>),
+        <span class="string">&quot;pw_gid&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_gid&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_gid</span>),
+        <span class="string">&quot;pw_gecos&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_gecos&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_gecos</span>),
+        <span class="string">&quot;pw_dir&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_dir&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_dir</span>),
+        <span class="string">&quot;pw_shell&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;pw_shell&quot;</span>, <span class="ident">PasswdRef</span>::<span class="ident">pw_shell</span>),
     });
 
     <span class="macro">py_module</span><span class="macro">!</span>(<span class="ident">vm</span>, <span class="string">&quot;pwd&quot;</span>, {

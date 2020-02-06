@@ -153,7 +153,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">imp_exec_builtin</span>(<span class="ident">_mod</span>: <span class="ident">PyModuleRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+<span class="kw">fn</span> <span class="ident">imp_exec_builtin</span>(<span class="ident">_mod</span>: <span class="ident">PyModuleRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
     <span class="comment">// TOOD: Should we do something here?</span>
     <span class="number">0</span>
 }
@@ -186,7 +186,7 @@
         })
 }
 
-<span class="kw">fn</span> <span class="ident">imp_fix_co_filename</span>(<span class="ident">_code</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_path</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+<span class="kw">fn</span> <span class="ident">imp_fix_co_filename</span>(<span class="ident">_code</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_path</span>: <span class="ident">PyStringRef</span>) {
     <span class="comment">// TODO:</span>
 }
 

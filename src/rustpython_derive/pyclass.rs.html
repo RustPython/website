@@ -745,6 +745,14 @@
 <span id="745">745</span>
 <span id="746">746</span>
 <span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Diagnostic</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">path_eq</span>;
@@ -972,7 +980,7 @@
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">Diagnostic</span>::<span class="ident">span_error</span>(
                 <span class="ident">span</span>,
-                <span class="string">&quot;Duplicate #[py*] attribute on pyimpl&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="string">&quot;Duplicate #[py*] attribute on pyimpl&quot;</span>.<span class="ident">to_owned</span>(),
             ))
         }
     }
@@ -1085,17 +1093,16 @@
             };
             <span class="kw">if</span> <span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;pymethod&quot;</span> {
                 <span class="self">self</span>.<span class="ident">add_item</span>(<span class="self">Self</span>::<span class="ident">extract_method</span>(<span class="ident">sig</span>, <span class="ident">meta</span>)<span class="question-mark">?</span>, <span class="ident">meta_span</span>)<span class="question-mark">?</span>;
-                <span class="ident">attr_idxs</span>.<span class="ident">push</span>(<span class="ident">i</span>);
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;pyclassmethod&quot;</span> {
                 <span class="self">self</span>.<span class="ident">add_item</span>(<span class="self">Self</span>::<span class="ident">extract_classmethod</span>(<span class="ident">sig</span>, <span class="ident">meta</span>)<span class="question-mark">?</span>, <span class="ident">meta_span</span>)<span class="question-mark">?</span>;
-                <span class="ident">attr_idxs</span>.<span class="ident">push</span>(<span class="ident">i</span>);
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;pyproperty&quot;</span> {
                 <span class="self">self</span>.<span class="ident">add_item</span>(<span class="self">Self</span>::<span class="ident">extract_property</span>(<span class="ident">sig</span>, <span class="ident">meta</span>)<span class="question-mark">?</span>, <span class="ident">meta_span</span>)<span class="question-mark">?</span>;
-                <span class="ident">attr_idxs</span>.<span class="ident">push</span>(<span class="ident">i</span>);
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">name</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;pyslot&quot;</span> {
                 <span class="self">self</span>.<span class="ident">add_item</span>(<span class="self">Self</span>::<span class="ident">extract_slot</span>(<span class="ident">sig</span>, <span class="ident">meta</span>)<span class="question-mark">?</span>, <span class="ident">meta_span</span>)<span class="question-mark">?</span>;
-                <span class="ident">attr_idxs</span>.<span class="ident">push</span>(<span class="ident">i</span>);
+            } <span class="kw">else</span> {
+                <span class="kw">continue</span>;
             }
+            <span class="ident">attr_idxs</span>.<span class="ident">push</span>(<span class="ident">i</span>);
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">attr_idxs</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">attr_idxs</span>;
@@ -1154,8 +1161,8 @@
     <span class="kw">let</span> <span class="ident">properties</span> <span class="op">=</span> <span class="ident">properties</span>
         .<span class="ident">into_iter</span>()
         .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, <span class="ident">prop</span>)<span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">getter</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">prop</span>.<span class="number">0</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">getter</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">getter</span>,
+            <span class="kw">let</span> <span class="ident">getter_func</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">prop</span>.<span class="number">0</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">func</span>,
                 <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="macro">push_err_span</span><span class="macro">!</span>(
                         <span class="ident">diagnostics</span>,
@@ -1166,14 +1173,17 @@
                     <span class="kw">return</span> <span class="ident">TokenStream2</span>::<span class="ident">new</span>();
                 }
             };
-            <span class="kw">let</span> <span class="ident">add_setter</span> <span class="op">=</span> <span class="ident">prop</span>.<span class="number">1</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">setter</span><span class="op">|</span> <span class="macro">quote</span><span class="macro">!</span>(.<span class="ident">add_setter</span>(<span class="self">Self</span>::#<span class="ident">setter</span>)));
+            <span class="kw">let</span> (<span class="ident">new</span>, <span class="ident">setter</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">prop</span>.<span class="number">1</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">func</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="macro">quote</span><span class="macro">!</span> { <span class="ident">with_get_set</span> }, <span class="macro">quote</span><span class="macro">!</span> { , <span class="kw-2">&amp;</span><span class="self">Self</span>::#<span class="ident">func</span> }),
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> (<span class="macro">quote</span><span class="macro">!</span> { <span class="ident">with_get</span> }, <span class="macro">quote</span><span class="macro">!</span> { }),
+            };
+            <span class="kw">let</span> <span class="ident">str_name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">to_string</span>();
             <span class="macro">quote</span><span class="macro">!</span> {
                 <span class="ident">class</span>.<span class="ident">set_str_attr</span>(
                     #<span class="ident">name</span>,
-                    ::<span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::<span class="ident">objproperty</span>::<span class="ident">PropertyBuilder</span>::<span class="ident">new</span>(<span class="ident">ctx</span>)
-                        .<span class="ident">add_getter</span>(<span class="self">Self</span>::#<span class="ident">getter</span>)
-                        #<span class="ident">add_setter</span>
-                        .<span class="ident">create</span>(),
+                    ::<span class="ident">rustpython_vm</span>::<span class="ident">pyobject</span>::<span class="ident">PyObject</span>::<span class="ident">new</span>(
+                        ::<span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::<span class="ident">objgetset</span>::<span class="ident">PyGetSet</span>::#<span class="ident">new</span>(#<span class="ident">str_name</span>.<span class="ident">into</span>(), <span class="kw-2">&amp;</span><span class="self">Self</span>::#<span class="ident">getter_func</span> #<span class="ident">setter</span>),
+                        <span class="ident">ctx</span>.<span class="ident">getset_type</span>(), <span class="prelude-val">None</span>)
                 );
             }
         })
@@ -1201,8 +1211,13 @@
             <span class="ident">slot_ident</span>,
             <span class="ident">item_ident</span>,
         } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">transform</span> <span class="op">=</span> <span class="kw">if</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;new&quot;</span>, <span class="string">&quot;call&quot;</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">slot_ident</span>.<span class="ident">to_string</span>().<span class="ident">as_str</span>()) {
+                <span class="macro">quote</span><span class="macro">!</span> { ::<span class="ident">rustpython_vm</span>::<span class="ident">function</span>::<span class="ident">IntoPyNativeFunc</span>::<span class="ident">into_func</span> }
+            } <span class="kw">else</span> {
+                <span class="macro">quote</span><span class="macro">!</span> { <span class="ident">Box</span>::<span class="ident">new</span> }
+            };
             <span class="kw">let</span> <span class="ident">into_func</span> <span class="op">=</span> <span class="macro">quote_spanned</span><span class="macro">!</span> {<span class="ident">item_ident</span>.<span class="ident">span</span>()<span class="op">=</span><span class="op">&gt;</span>
-                ::<span class="ident">rustpython_vm</span>::<span class="ident">function</span>::<span class="ident">IntoPyNativeFunc</span>::<span class="ident">into_func</span>(<span class="self">Self</span>::#<span class="ident">item_ident</span>)
+                #<span class="ident">transform</span>(<span class="self">Self</span>::#<span class="ident">item_ident</span>)
             };
             <span class="prelude-val">Some</span>(<span class="macro">quote</span><span class="macro">!</span> {
                 (<span class="kw-2">*</span><span class="ident">class</span>.<span class="ident">slots</span>.<span class="ident">borrow_mut</span>()).#<span class="ident">slot_ident</span> <span class="op">=</span> <span class="prelude-val">Some</span>(#<span class="ident">into_func</span>);
@@ -1368,7 +1383,7 @@
             <span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">attr</span>.<span class="ident">parse_meta</span>().<span class="ident">expect</span>(<span class="string">&quot;expected doc attr to be a meta&quot;</span>);
             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Meta</span>::<span class="ident">NameValue</span>(<span class="ident">name_value</span>) <span class="op">=</span> <span class="ident">meta</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Lit</span>::<span class="ident">Str</span>(<span class="ident">s</span>) <span class="op">=</span> <span class="ident">name_value</span>.<span class="ident">lit</span> {
-                    <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">value</span>().<span class="ident">trim</span>().<span class="ident">to_string</span>();
+                    <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">value</span>().<span class="ident">trim</span>().<span class="ident">to_owned</span>();
                     <span class="kw">match</span> <span class="ident">doc</span> {
                         <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">doc</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">doc</span>.<span class="ident">push</span>(<span class="ident">val</span>),
                         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">doc</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">val</span>]),
@@ -1433,7 +1448,8 @@
             <span class="kw">let</span> <span class="ident">property</span> <span class="op">=</span> <span class="macro">quote</span><span class="macro">!</span> {
                 <span class="ident">class</span>.<span class="ident">set_str_attr</span>(
                     #<span class="ident">field_name_str</span>,
-                    <span class="ident">ctx</span>.<span class="ident">new_property</span>(
+                    <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(
+                        #<span class="ident">field_name_str</span>,
                         <span class="op">|</span><span class="ident">zelf</span>: <span class="kw-2">&amp;</span>::<span class="ident">rustpython_vm</span>::<span class="ident">obj</span>::<span class="ident">objtuple</span>::<span class="ident">PyTuple</span>,
                          <span class="ident">_vm</span>: <span class="kw-2">&amp;</span>::<span class="ident">rustpython_vm</span>::<span class="ident">VirtualMachine</span><span class="op">|</span> {
                             <span class="ident">zelf</span>.<span class="ident">fast_getitem</span>(#<span class="ident">idx</span>)

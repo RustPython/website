@@ -1055,7 +1055,7 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">key</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">content</span>.<span class="ident">pop_front</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">key</span>)
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">err_msg</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;pop from an empty set&quot;</span>.<span class="ident">to_string</span>());
+            <span class="kw">let</span> <span class="ident">err_msg</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;pop from an empty set&quot;</span>.<span class="ident">to_owned</span>());
             <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_key_error</span>(<span class="ident">err_msg</span>))
         }
     }
@@ -1123,17 +1123,17 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">borrow</span>().<span class="ident">len</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__sizeof__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">borrow</span>().<span class="ident">sizeof</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">copy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">copy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">inner</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">borrow</span>().<span class="ident">copy</span>()),
         }
@@ -1266,11 +1266,11 @@
     <span class="kw">fn</span> <span class="ident">repr</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">zelf</span>.<span class="ident">inner</span>.<span class="ident">borrow</span>();
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inner</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="string">&quot;set()&quot;</span>.<span class="ident">to_string</span>()
+            <span class="string">&quot;set()&quot;</span>.<span class="ident">to_owned</span>()
         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">_guard</span>) <span class="op">=</span> <span class="ident">ReprGuard</span>::<span class="ident">enter</span>(<span class="ident">zelf</span>.<span class="ident">as_object</span>()) {
             <span class="ident">inner</span>.<span class="ident">repr</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>
         } <span class="kw">else</span> {
-            <span class="string">&quot;set(...)&quot;</span>.<span class="ident">to_string</span>()
+            <span class="string">&quot;set(...)&quot;</span>.<span class="ident">to_owned</span>()
         };
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">s</span>))
     }
@@ -1293,7 +1293,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">borrow_mut</span>().<span class="ident">clear</span>()
     }
 
@@ -1360,7 +1360,7 @@
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__hash__&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unhashable type&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unhashable type&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -1379,17 +1379,17 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">len</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__sizeof__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">sizeof</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">copy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">copy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">copy</span>(),
         }
@@ -1522,11 +1522,11 @@
     <span class="kw">fn</span> <span class="ident">repr</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">zelf</span>.<span class="ident">inner</span>;
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inner</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="string">&quot;frozenset()&quot;</span>.<span class="ident">to_string</span>()
+            <span class="string">&quot;frozenset()&quot;</span>.<span class="ident">to_owned</span>()
         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">_guard</span>) <span class="op">=</span> <span class="ident">ReprGuard</span>::<span class="ident">enter</span>(<span class="ident">zelf</span>.<span class="ident">as_object</span>()) {
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;frozenset({})&quot;</span>, <span class="ident">inner</span>.<span class="ident">repr</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>)
         } <span class="kw">else</span> {
-            <span class="string">&quot;frozenset(...)&quot;</span>.<span class="ident">to_string</span>()
+            <span class="string">&quot;frozenset(...)&quot;</span>.<span class="ident">to_owned</span>()
         };
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">s</span>))
     }

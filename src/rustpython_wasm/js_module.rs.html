@@ -333,22 +333,22 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">null</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
+    <span class="kw">fn</span> <span class="ident">null</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
         <span class="ident">PyJsValue</span>::<span class="ident">new</span>(<span class="ident">JsValue</span>::<span class="ident">NULL</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">undefined</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
+    <span class="kw">fn</span> <span class="ident">undefined</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
         <span class="ident">PyJsValue</span>::<span class="ident">new</span>(<span class="ident">JsValue</span>::<span class="ident">UNDEFINED</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">new_from_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
+    <span class="kw">fn</span> <span class="ident">new_from_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">PyStringRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
         <span class="ident">PyJsValue</span>::<span class="ident">new</span>(<span class="ident">s</span>.<span class="ident">as_str</span>())
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">new_from_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">PyFloatRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
+    <span class="kw">fn</span> <span class="ident">new_from_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">PyFloatRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyJsValue</span> {
         <span class="ident">PyJsValue</span>::<span class="ident">new</span>(<span class="ident">n</span>.<span class="ident">to_f64</span>())
     }
 
@@ -360,7 +360,7 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">proto</span>.<span class="ident">value</span>.<span class="ident">is_null</span>() {
                 <span class="ident">Object</span>::<span class="ident">create</span>(<span class="ident">proto</span>.<span class="ident">value</span>.<span class="ident">unchecked_ref</span>())
             } <span class="kw">else</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;prototype must be an Object or null&quot;</span>.<span class="ident">to_string</span>()));
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;prototype must be an Object or null&quot;</span>.<span class="ident">to_owned</span>()));
             }
         } <span class="kw">else</span> {
             <span class="ident">Object</span>::<span class="ident">new</span>()
@@ -401,7 +401,7 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
         <span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">value</span>
             .<span class="ident">dyn_ref</span>::<span class="op">&lt;</span><span class="ident">js_sys</span>::<span class="ident">Function</span><span class="op">&gt;</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;JS value is not callable&quot;</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;JS value is not callable&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="ident">opts</span>
             .<span class="ident">this</span>
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">this</span><span class="op">|</span> <span class="ident">this</span>.<span class="ident">value</span>.<span class="ident">clone</span>())
@@ -425,7 +425,7 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
         <span class="kw">let</span> <span class="ident">ctor</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">value</span>
             .<span class="ident">dyn_ref</span>::<span class="op">&lt;</span><span class="ident">js_sys</span>::<span class="ident">Function</span><span class="op">&gt;</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;JS value is not callable&quot;</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;JS value is not callable&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">proto</span> <span class="op">=</span> <span class="ident">opts</span>
             .<span class="ident">prototype</span>
             .<span class="ident">as_ref</span>()
@@ -446,29 +446,29 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">as_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">as_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_string</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">as_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">as_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_f64</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">as_bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">as_bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_bool</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;typeof&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">type_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">type_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="ident">type_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
     <span class="doccomment">/// Checks that `typeof self == &quot;object&quot; &amp;&amp; self !== null`. Use instead</span>
     <span class="doccomment">/// of `value.typeof() == &quot;object&quot;`</span>
-    <span class="kw">fn</span> <span class="ident">is_object</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_object</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_object</span>()
     }
 
@@ -478,7 +478,7 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
     }
 }
@@ -517,7 +517,7 @@ export function instance_of(lhs, rhs) { return lhs instanceof rhs; }
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">setup_js_module</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
     <span class="ident">vm</span>.<span class="ident">stdlib_inits</span>
         .<span class="ident">borrow_mut</span>()
-        .<span class="ident">insert</span>(<span class="string">&quot;_js&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">make_module</span>));
+        .<span class="ident">insert</span>(<span class="string">&quot;_js&quot;</span>.<span class="ident">to_owned</span>(), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">make_module</span>));
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rustpython_wasm";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

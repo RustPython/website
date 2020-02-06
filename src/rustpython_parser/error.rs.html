@@ -401,7 +401,7 @@
             <span class="ident">ParseErrorType</span>::<span class="ident">UnrecognizedToken</span>(<span class="kw-2">ref</span> <span class="ident">tok</span>, <span class="kw-2">ref</span> <span class="ident">expected</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">tok</span> <span class="op">=</span><span class="op">=</span> <span class="ident">Tok</span>::<span class="ident">Indent</span> {
                     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;unexpected indent&quot;</span>)
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">expected</span>.<span class="ident">clone</span>() <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&quot;Indent&quot;</span>.<span class="ident">to_string</span>()) {
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">expected</span>.<span class="ident">clone</span>() <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&quot;Indent&quot;</span>.<span class="ident">to_owned</span>()) {
                     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;expected an indented block&quot;</span>)
                 } <span class="kw">else</span> {
                     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Got unexpected token {}&quot;</span>, <span class="ident">tok</span>)

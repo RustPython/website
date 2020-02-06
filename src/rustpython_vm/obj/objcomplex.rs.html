@@ -309,17 +309,17 @@
 <span class="attribute">#[<span class="ident">pyimpl</span>(<span class="ident">flags</span>(<span class="ident">BASETYPE</span>))]</span>
 <span class="kw">impl</span> <span class="ident">PyComplex</span> {
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;real&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">real</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="kw">fn</span> <span class="ident">real</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">re</span>
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;imag&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">imag</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="kw">fn</span> <span class="ident">imag</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">im</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__abs__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">abs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="kw">fn</span> <span class="ident">abs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="kw">let</span> <span class="ident">Complex64</span> { <span class="ident">im</span>, <span class="ident">re</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>;
         <span class="ident">re</span>.<span class="ident">hypot</span>(<span class="ident">im</span>)
     }
@@ -356,7 +356,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;conjugate&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">conjugate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Complex64</span> {
+    <span class="kw">fn</span> <span class="ident">conjugate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Complex64</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">conj</span>()
     }
 
@@ -407,7 +407,7 @@
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__mod__&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">mod_</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_other</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;can&#39;t mod complex numbers.&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;can&#39;t mod complex numbers.&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__rmod__&quot;</span>)]</span>
@@ -417,7 +417,7 @@
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__floordiv__&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">floordiv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_other</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;can&#39;t take floor of complex number.&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;can&#39;t take floor of complex number.&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__rfloordiv__&quot;</span>)]</span>
@@ -427,7 +427,7 @@
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__divmod__&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">divmod</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_other</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;can&#39;t take floor or mod of complex number.&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;can&#39;t take floor or mod of complex number.&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__rdivmod__&quot;</span>)]</span>
@@ -436,12 +436,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__neg__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Complex64</span> {
+    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Complex64</span> {
         <span class="op">-</span><span class="self">self</span>.<span class="ident">value</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">Complex64</span> { <span class="ident">re</span>, <span class="ident">im</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">if</span> <span class="ident">re</span> <span class="op">=</span><span class="op">=</span> <span class="number">0.0</span> {
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}j&quot;</span>, <span class="ident">im</span>)
@@ -461,7 +461,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__bool__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="ident">Complex64</span>::<span class="ident">is_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>)
     }
 
@@ -487,7 +487,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__hash__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">pyhash</span>::<span class="ident">PyHash</span> {
+    <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">pyhash</span>::<span class="ident">PyHash</span> {
         <span class="kw">let</span> <span class="ident">re_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_float</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">re</span>);
         <span class="kw">let</span> <span class="ident">im_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_float</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">im</span>);
         <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">Wrapping</span>(<span class="ident">re_hash</span>) <span class="op">+</span> <span class="ident">Wrapping</span>(<span class="ident">im_hash</span>) <span class="op">*</span> <span class="ident">Wrapping</span>(<span class="ident">pyhash</span>::<span class="ident">IMAG</span>);

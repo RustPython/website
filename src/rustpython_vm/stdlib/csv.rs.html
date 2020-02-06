@@ -254,7 +254,7 @@
                 <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">bytes</span>[<span class="number">0</span>],
                 <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="string">r#&quot;&quot;delimiter&quot; must be a 1-character string&quot;#</span>;
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">msg</span>.<span class="ident">to_string</span>()));
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">msg</span>.<span class="ident">to_owned</span>()));
                 }
             }
         } <span class="kw">else</span> {
@@ -267,7 +267,7 @@
                 <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">bytes</span>[<span class="number">0</span>],
                 <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="string">r#&quot;&quot;quotechar&quot; must be a 1-character string&quot;#</span>;
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">msg</span>.<span class="ident">to_string</span>()));
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="ident">msg</span>.<span class="ident">to_owned</span>()));
                 }
             }
         } <span class="kw">else</span> {
@@ -409,7 +409,7 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">iterable</span>) <span class="op">=</span> <span class="ident">PyIterable</span>::<span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">fp</span>) {
         <span class="ident">build_reader</span>(<span class="ident">iterable</span>, <span class="ident">args</span>, <span class="ident">vm</span>)
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;argument 1 must be an iterator&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;argument 1 must be an iterator&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 

@@ -396,7 +396,7 @@
         <span class="ident">E</span>: <span class="ident">serde</span>::<span class="ident">de</span>::<span class="ident">Error</span>,
     {
         <span class="comment">// Owned value needed anyway, delegate to visit_string</span>
-        <span class="self">self</span>.<span class="ident">visit_string</span>(<span class="ident">value</span>.<span class="ident">to_string</span>())
+        <span class="self">self</span>.<span class="ident">visit_string</span>(<span class="ident">value</span>.<span class="ident">to_owned</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">visit_string</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Value</span>, <span class="ident">E</span><span class="op">&gt;</span>

@@ -270,7 +270,7 @@
                         <span class="kw">let</span> <span class="ident">len_val</span> <span class="op">=</span> <span class="ident">int_obj</span>.<span class="ident">as_bigint</span>();
                         <span class="kw">if</span> <span class="ident">len_val</span>.<span class="ident">sign</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">Sign</span>::<span class="ident">Minus</span> {
                             <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                                <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;__len__() should return &gt;= 0&quot;</span>.<span class="ident">to_string</span>())
+                                <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;__len__() should return &gt;= 0&quot;</span>.<span class="ident">to_owned</span>())
                             );
                         }
 
@@ -308,7 +308,7 @@ The class bool is a subclass of the class int, and cannot be subclassed.&quot;</
         <span class="string">&quot;__rand__&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">context</span>.<span class="ident">new_method</span>(<span class="ident">bool_and</span>),
         <span class="string">&quot;__xor__&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">context</span>.<span class="ident">new_method</span>(<span class="ident">bool_xor</span>),
         <span class="string">&quot;__rxor__&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">context</span>.<span class="ident">new_method</span>(<span class="ident">bool_xor</span>),
-        <span class="string">&quot;__doc__&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">context</span>.<span class="ident">new_str</span>(<span class="ident">bool_doc</span>.<span class="ident">to_string</span>()),
+        <span class="string">&quot;__doc__&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">context</span>.<span class="ident">new_str</span>(<span class="ident">bool_doc</span>.<span class="ident">to_owned</span>()),
     });
 }
 
@@ -330,11 +330,11 @@ The class bool is a subclass of the class int, and cannot be subclassed.&quot;</
     <span class="kw-2">&amp;</span><span class="ident">obj</span>.<span class="ident">payload</span>::<span class="op">&lt;</span><span class="ident">PyInt</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>()
 }
 
-<span class="kw">fn</span> <span class="ident">bool_repr</span>(<span class="ident">obj</span>: <span class="ident">bool</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">bool_repr</span>(<span class="ident">obj</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
     <span class="kw">if</span> <span class="ident">obj</span> {
-        <span class="string">&quot;True&quot;</span>.<span class="ident">to_string</span>()
+        <span class="string">&quot;True&quot;</span>.<span class="ident">to_owned</span>()
     } <span class="kw">else</span> {
-        <span class="string">&quot;False&quot;</span>.<span class="ident">to_string</span>()
+        <span class="string">&quot;False&quot;</span>.<span class="ident">to_owned</span>()
     }
 }
 
@@ -346,7 +346,7 @@ The class bool is a subclass of the class int, and cannot be subclassed.&quot;</
     <span class="kw">if</span> <span class="ident">format_spec</span>.<span class="ident">as_str</span>().<span class="ident">is_empty</span>() {
         <span class="ident">vm</span>.<span class="ident">to_str</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>)
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unsupported format string passed to bool.__format__&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;unsupported format string passed to bool.__format__&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 

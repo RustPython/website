@@ -1300,7 +1300,7 @@
         <span class="kw">if</span> <span class="ident">buffer</span>.<span class="ident">is_some</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">RefMut</span>::<span class="ident">map</span>(<span class="ident">buffer</span>, <span class="op">|</span><span class="ident">opt</span><span class="op">|</span> <span class="ident">opt</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()))
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;I/O operation on closed file.&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;I/O operation on closed file.&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 
@@ -1310,7 +1310,7 @@
 
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">write</span>(<span class="ident">bytes</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>)),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Error Writing String&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Error Writing String&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -1318,7 +1318,7 @@
     <span class="kw">fn</span> <span class="ident">getvalue</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">match</span> <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">getvalue</span>()) {
             <span class="prelude-val">Ok</span>(<span class="ident">result</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">result</span>)),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Retrieving Value&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Retrieving Value&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -1326,11 +1326,11 @@
     <span class="kw">fn</span> <span class="ident">seek</span>(<span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">u64</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">seek</span>(<span class="ident">offset</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>)),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">seekable</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">seekable</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
@@ -1345,7 +1345,7 @@
 
         <span class="kw">match</span> <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">data</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>)),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Retrieving Value&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Retrieving Value&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -1356,7 +1356,7 @@
     <span class="kw">fn</span> <span class="ident">readline</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">readline</span>() {
             <span class="prelude-val">Some</span>(<span class="ident">line</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">line</span>),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -1367,11 +1367,11 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">closed</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">closed</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">borrow</span>().<span class="ident">is_none</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">close</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">close</span>(<span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">replace</span>(<span class="prelude-val">None</span>);
     }
 }
@@ -1418,7 +1418,7 @@
         <span class="kw">if</span> <span class="ident">buffer</span>.<span class="ident">is_some</span>() {
             <span class="prelude-val">Ok</span>(<span class="ident">RefMut</span>::<span class="ident">map</span>(<span class="ident">buffer</span>, <span class="op">|</span><span class="ident">opt</span><span class="op">|</span> <span class="ident">opt</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()))
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;I/O operation on closed file.&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;I/O operation on closed file.&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 
@@ -1426,7 +1426,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>;
         <span class="kw">match</span> <span class="ident">data</span>.<span class="ident">with_ref</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">buffer</span>.<span class="ident">write</span>(<span class="ident">b</span>)) {
             <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Error Writing Bytes&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Error Writing Bytes&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
     <span class="comment">//Retrieves the entire bytes object value from the underlying buffer</span>
@@ -1440,7 +1440,7 @@
     <span class="kw">fn</span> <span class="ident">read</span>(<span class="self">self</span>, <span class="ident">bytes</span>: <span class="ident">OptionalOption</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">read</span>(<span class="ident">byte_count</span>(<span class="ident">bytes</span>)) {
             <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">value</span>)),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Retrieving Value&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Retrieving Value&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -1448,11 +1448,11 @@
     <span class="kw">fn</span> <span class="ident">seek</span>(<span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">u64</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">seek</span>(<span class="ident">offset</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_int</span>(<span class="ident">value</span>)),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">seekable</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">seekable</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
@@ -1463,7 +1463,7 @@
     <span class="kw">fn</span> <span class="ident">readline</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">buffer</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>.<span class="ident">readline</span>() {
             <span class="prelude-val">Some</span>(<span class="ident">line</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">line</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>()),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_string</span>())),
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error Performing Operation&quot;</span>.<span class="ident">to_owned</span>())),
         }
     }
 
@@ -1474,11 +1474,11 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">closed</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">closed</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">borrow</span>().<span class="ident">is_none</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">close</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">close</span>(<span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">replace</span>(<span class="prelude-val">None</span>);
     }
 }
@@ -1499,7 +1499,7 @@
     .<span class="ident">into_ref_with_type</span>(<span class="ident">vm</span>, <span class="ident">cls</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">io_base_cm_enter</span>(<span class="ident">instance</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">io_base_cm_enter</span>(<span class="ident">instance</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="ident">instance</span>.<span class="ident">clone</span>()
 }
 
@@ -1509,15 +1509,15 @@
 }
 
 <span class="comment">// TODO Check if closed, then if so raise ValueError</span>
-<span class="kw">fn</span> <span class="ident">io_base_flush</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {}
+<span class="kw">fn</span> <span class="ident">io_base_flush</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) {}
 
-<span class="kw">fn</span> <span class="ident">io_base_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">io_base_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="bool-val">false</span>
 }
-<span class="kw">fn</span> <span class="ident">io_base_readable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">io_base_readable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="bool-val">false</span>
 }
-<span class="kw">fn</span> <span class="ident">io_base_writable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">io_base_writable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="bool-val">false</span>
 }
 
@@ -1564,7 +1564,7 @@
     <span class="kw">if</span> <span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">instance</span>, <span class="string">&quot;closed&quot;</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span> {
         <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>
             .<span class="ident">flat_option</span>()
-            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;I/O operation on closed file.&quot;</span>.<span class="ident">to_string</span>()));
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;I/O operation on closed file.&quot;</span>.<span class="ident">to_owned</span>()));
         <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">msg</span>]))
     } <span class="kw">else</span> {
         <span class="prelude-val">Ok</span>(())
@@ -1579,7 +1579,7 @@
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;readable&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>)<span class="question-mark">?</span> {
         <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>
             .<span class="ident">flat_option</span>()
-            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;File or stream is not readable.&quot;</span>.<span class="ident">to_string</span>()));
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;File or stream is not readable.&quot;</span>.<span class="ident">to_owned</span>()));
         <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">msg</span>]))
     } <span class="kw">else</span> {
         <span class="prelude-val">Ok</span>(())
@@ -1594,7 +1594,7 @@
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;writable&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>)<span class="question-mark">?</span> {
         <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>
             .<span class="ident">flat_option</span>()
-            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;File or stream is not writable.&quot;</span>.<span class="ident">to_string</span>()));
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;File or stream is not writable.&quot;</span>.<span class="ident">to_owned</span>()));
         <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">msg</span>]))
     } <span class="kw">else</span> {
         <span class="prelude-val">Ok</span>(())
@@ -1609,14 +1609,14 @@
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objbool</span>::<span class="ident">boolval</span>(<span class="ident">vm</span>, <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;seekable&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>)<span class="question-mark">?</span> {
         <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span>
             .<span class="ident">flat_option</span>()
-            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;File or stream is not seekable.&quot;</span>.<span class="ident">to_string</span>()));
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;File or stream is not seekable.&quot;</span>.<span class="ident">to_owned</span>()));
         <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">exceptions</span>.<span class="ident">value_error</span>.<span class="ident">clone</span>(), <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">msg</span>]))
     } <span class="kw">else</span> {
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="kw">fn</span> <span class="ident">io_base_iter</span>(<span class="ident">instance</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
+<span class="kw">fn</span> <span class="ident">io_base_iter</span>(<span class="ident">instance</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
     <span class="ident">instance</span>
 }
 <span class="kw">fn</span> <span class="ident">io_base_next</span>(<span class="ident">instance</span>: <span class="ident">PyObjectRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
@@ -1686,7 +1686,7 @@
     )
 }
 
-<span class="kw">fn</span> <span class="ident">buffered_reader_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">buffered_reader_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="bool-val">true</span>
 }
 
@@ -1745,7 +1745,7 @@
         <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">file_io</span>, <span class="string">&quot;name&quot;</span>, <span class="ident">name</span>)<span class="question-mark">?</span>;
         <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">file_io</span>, <span class="string">&quot;__fileno&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_int</span>(<span class="ident">file_no</span>))<span class="question-mark">?</span>;
         <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">file_io</span>, <span class="string">&quot;closefd&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
-        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">file_io</span>, <span class="string">&quot;closed&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
+        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">file_io</span>, <span class="string">&quot;__closed&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">get_none</span>())
     }
 
@@ -1795,7 +1795,7 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="ident">obj</span>.<span class="ident">readonly</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
-                <span class="string">&quot;readinto() argument must be read-write bytes-like object&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="string">&quot;readinto() argument must be read-write bytes-like object&quot;</span>.<span class="ident">to_owned</span>(),
             ));
         }
 
@@ -1813,7 +1813,7 @@
             <span class="ident">value_mut</span>.<span class="ident">clear</span>();
             <span class="kw">match</span> <span class="ident">f</span>.<span class="ident">read_to_end</span>(<span class="ident">value_mut</span>) {
                 <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error reading from Take&quot;</span>.<span class="ident">to_string</span>())),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Error reading from Take&quot;</span>.<span class="ident">to_owned</span>())),
             }
         };
 
@@ -1846,7 +1846,7 @@
             <span class="ident">winapi</span>::<span class="ident">um</span>::<span class="ident">handleapi</span>::<span class="ident">CloseHandle</span>(<span class="ident">raw_handle</span> <span class="kw">as</span> <span class="kw">_</span>);
         }
         <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;closefd&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))<span class="question-mark">?</span>;
-        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;closed&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))<span class="question-mark">?</span>;
+        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;__closed&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -1857,11 +1857,11 @@
             <span class="ident">libc</span>::<span class="ident">close</span>(<span class="ident">raw_fd</span> <span class="kw">as</span> <span class="kw">_</span>);
         }
         <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;closefd&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))<span class="question-mark">?</span>;
-        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;closed&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))<span class="question-mark">?</span>;
+        <span class="ident">vm</span>.<span class="ident">set_attr</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>, <span class="string">&quot;__closed&quot;</span>, <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">file_io_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">file_io_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
@@ -1890,7 +1890,7 @@
     <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>, <span class="string">&quot;write&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">obj</span>.<span class="ident">clone</span>()])
 }
 
-<span class="kw">fn</span> <span class="ident">buffered_writer_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">buffered_writer_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="bool-val">true</span>
 }
 
@@ -1903,7 +1903,7 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn</span> <span class="ident">text_io_wrapper_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">text_io_wrapper_seekable</span>(<span class="ident">_self</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="bool-val">true</span>
 }
 
@@ -1917,7 +1917,7 @@
 
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>, <span class="kw-2">&amp;</span><span class="ident">buffered_reader_class</span>) {
         <span class="comment">// TODO: this should be io.UnsupportedOperation error which derives both from ValueError *and* OSError</span>
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;not readable&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;not readable&quot;</span>.<span class="ident">to_owned</span>()));
     }
 
     <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(
@@ -1948,15 +1948,15 @@
 
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>, <span class="kw-2">&amp;</span><span class="ident">buffered_writer_class</span>) {
         <span class="comment">// TODO: this should be io.UnsupportedOperation error which derives from ValueError and OSError</span>
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;not writable&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;not writable&quot;</span>.<span class="ident">to_owned</span>()));
     }
 
-    <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">obj</span>.<span class="ident">as_str</span>().<span class="ident">to_string</span>().<span class="ident">into_bytes</span>();
+    <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">obj</span>.<span class="ident">as_str</span>().<span class="ident">to_owned</span>().<span class="ident">into_bytes</span>();
 
     <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>, <span class="string">&quot;write&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">bytes</span>.<span class="ident">clone</span>())])<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">len</span>).<span class="ident">to_usize</span>().<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
-        <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;int to large to convert to Rust usize&quot;</span>.<span class="ident">to_string</span>())
-    })<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">len</span>)
+        .<span class="ident">to_usize</span>()
+        .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;int to large to convert to Rust usize&quot;</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>;
 
     <span class="comment">// returns the count of unicode code points written</span>
     <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>[..<span class="ident">len</span>])
@@ -1976,7 +1976,7 @@
 
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>, <span class="kw-2">&amp;</span><span class="ident">buffered_reader_class</span>) {
         <span class="comment">// TODO: this should be io.UnsupportedOperation error which derives both from ValueError *and* OSError</span>
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;not readable&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;not readable&quot;</span>.<span class="ident">to_owned</span>()));
     }
 
     <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(
@@ -2014,7 +2014,7 @@
                         <span class="comment">// no duplicates allowed</span>
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;invalid mode: &#39;{}&#39;&quot;</span>, <span class="ident">mode_string</span>));
                     } <span class="kw">else</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;can&#39;t have text and binary mode at once&quot;</span>.<span class="ident">to_string</span>());
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;can&#39;t have text and binary mode at once&quot;</span>.<span class="ident">to_owned</span>());
                     }
                 }
                 <span class="ident">typ</span> <span class="op">=</span> <span class="ident">ch</span>;
@@ -2026,7 +2026,7 @@
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;invalid mode: &#39;{}&#39;&quot;</span>, <span class="ident">mode_string</span>));
                     } <span class="kw">else</span> {
                         <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                            <span class="string">&quot;must have exactly one of create/read/write/append mode&quot;</span>.<span class="ident">to_string</span>()
+                            <span class="string">&quot;must have exactly one of create/read/write/append mode&quot;</span>.<span class="ident">to_owned</span>()
                         );
                     }
                 }
@@ -2039,7 +2039,7 @@
     <span class="kw">if</span> <span class="ident">mode</span> <span class="op">=</span><span class="op">=</span> <span class="string">&#39;\0&#39;</span> {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(
             <span class="string">&quot;Must have exactly one of create/read/write/append mode and at most one plus&quot;</span>
-                .<span class="ident">to_string</span>(),
+                .<span class="ident">to_owned</span>(),
         );
     }
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">mode</span>.<span class="ident">to_string</span>();
@@ -2077,7 +2077,7 @@
     <span class="kw">let</span> <span class="ident">file_io_class</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_attribute</span>(<span class="ident">io_module</span>.<span class="ident">clone</span>(), <span class="string">&quot;FileIO&quot;</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
         <span class="comment">// TODO: UnsupportedOperation here</span>
         <span class="ident">vm</span>.<span class="ident">new_os_error</span>(
-            <span class="string">&quot;Couldn&#39;t get FileIO, io.open likely isn&#39;t supported on your platform&quot;</span>.<span class="ident">to_string</span>(),
+            <span class="string">&quot;Couldn&#39;t get FileIO, io.open likely isn&#39;t supported on your platform&quot;</span>.<span class="ident">to_owned</span>(),
         )
     })<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">file_io_obj</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">invoke</span>(
@@ -2133,7 +2133,7 @@
         <span class="string">&quot;readable&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">io_base_readable</span>),
         <span class="string">&quot;writable&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">io_base_writable</span>),
         <span class="string">&quot;flush&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">io_base_flush</span>),
-        <span class="string">&quot;closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">io_base_closed</span>),
+        <span class="string">&quot;closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;closed&quot;</span>, <span class="ident">io_base_closed</span>),
         <span class="string">&quot;__closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>),
         <span class="string">&quot;close&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">io_base_close</span>),
         <span class="string">&quot;readline&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">io_base_readline</span>),
@@ -2198,7 +2198,7 @@
         <span class="string">&quot;tell&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyStringIORef</span>::<span class="ident">tell</span>),
         <span class="string">&quot;readline&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyStringIORef</span>::<span class="ident">readline</span>),
         <span class="string">&quot;truncate&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyStringIORef</span>::<span class="ident">truncate</span>),
-        <span class="string">&quot;closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PyStringIORef</span>::<span class="ident">closed</span>),
+        <span class="string">&quot;closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;closed&quot;</span>, <span class="ident">PyStringIORef</span>::<span class="ident">closed</span>),
         <span class="string">&quot;close&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyStringIORef</span>::<span class="ident">close</span>),
     });
 
@@ -2214,7 +2214,7 @@
         <span class="string">&quot;tell&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyBytesIORef</span>::<span class="ident">tell</span>),
         <span class="string">&quot;readline&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyBytesIORef</span>::<span class="ident">readline</span>),
         <span class="string">&quot;truncate&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyBytesIORef</span>::<span class="ident">truncate</span>),
-        <span class="string">&quot;closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_property</span>(<span class="ident">PyBytesIORef</span>::<span class="ident">closed</span>),
+        <span class="string">&quot;closed&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_readonly_getset</span>(<span class="string">&quot;closed&quot;</span>, <span class="ident">PyBytesIORef</span>::<span class="ident">closed</span>),
         <span class="string">&quot;close&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_method</span>(<span class="ident">PyBytesIORef</span>::<span class="ident">close</span>),
     });
 
@@ -2265,15 +2265,15 @@
     <span class="kw">fn</span> <span class="ident">test_invalid_mode</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;rbsss&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;rbsss&#39;&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;rbsss&#39;&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;rrb&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;rrb&#39;&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;rrb&#39;&quot;</span>.<span class="ident">to_owned</span>())
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;rbb&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;rbb&#39;&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;rbb&#39;&quot;</span>.<span class="ident">to_owned</span>())
         );
     }
 
@@ -2283,21 +2283,21 @@
             <span class="ident">split_mode_string</span>(<span class="string">&quot;&quot;</span>),
             <span class="prelude-val">Err</span>(
                 <span class="string">&quot;Must have exactly one of create/read/write/append mode and at most one plus&quot;</span>
-                    .<span class="ident">to_string</span>()
+                    .<span class="ident">to_owned</span>()
             )
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;b&quot;</span>),
             <span class="prelude-val">Err</span>(
                 <span class="string">&quot;Must have exactly one of create/read/write/append mode and at most one plus&quot;</span>
-                    .<span class="ident">to_string</span>()
+                    .<span class="ident">to_owned</span>()
             )
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;t&quot;</span>),
             <span class="prelude-val">Err</span>(
                 <span class="string">&quot;Must have exactly one of create/read/write/append mode and at most one plus&quot;</span>
-                    .<span class="ident">to_string</span>()
+                    .<span class="ident">to_owned</span>()
             )
         );
     }
@@ -2306,7 +2306,7 @@
     <span class="kw">fn</span> <span class="ident">test_text_and_binary_at_once</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;rbt&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="string">&quot;can&#39;t have text and binary mode at once&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="string">&quot;can&#39;t have text and binary mode at once&quot;</span>.<span class="ident">to_owned</span>())
         );
     }
 
@@ -2314,7 +2314,7 @@
     <span class="kw">fn</span> <span class="ident">test_exactly_one_mode</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;rwb&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="string">&quot;must have exactly one of create/read/write/append mode&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="string">&quot;must have exactly one of create/read/write/append mode&quot;</span>.<span class="ident">to_owned</span>())
         );
     }
 
@@ -2322,7 +2322,7 @@
     <span class="kw">fn</span> <span class="ident">test_at_most_one_plus</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">split_mode_string</span>(<span class="string">&quot;a++&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;a++&#39;&quot;</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Err</span>(<span class="string">&quot;invalid mode: &#39;a++&#39;&quot;</span>.<span class="ident">to_owned</span>())
         );
     }
 

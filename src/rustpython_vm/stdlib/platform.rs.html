@@ -55,7 +55,7 @@
 }
 
 <span class="kw">fn</span> <span class="ident">platform_python_implementation</span>(<span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-    <span class="string">&quot;RustPython&quot;</span>.<span class="ident">to_string</span>()
+    <span class="string">&quot;RustPython&quot;</span>.<span class="ident">to_owned</span>()
 }
 
 <span class="kw">fn</span> <span class="ident">platform_python_version</span>(<span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {

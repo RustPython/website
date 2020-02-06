@@ -453,7 +453,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deque</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow_mut</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">maxlen</span>.<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">deque</span>.<span class="ident">len</span>()) {
             <span class="ident">deque</span>.<span class="ident">pop_front</span>();
@@ -462,7 +462,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">appendleft</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">appendleft</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deque</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow_mut</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">maxlen</span>.<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">deque</span>.<span class="ident">len</span>()) {
             <span class="ident">deque</span>.<span class="ident">pop_back</span>();
@@ -471,12 +471,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">clear</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow_mut</span>().<span class="ident">clear</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">copy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">copy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">clone</span>()
     }
 
@@ -495,7 +495,7 @@
     <span class="kw">fn</span> <span class="ident">extend</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">PyIterable</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// TODO: use length_hint here and for extendleft</span>
         <span class="kw">for</span> <span class="ident">elem</span> <span class="kw">in</span> <span class="ident">iter</span>.<span class="ident">iter</span>(<span class="ident">vm</span>)<span class="question-mark">?</span> {
-            <span class="self">self</span>.<span class="ident">append</span>(<span class="ident">elem</span><span class="question-mark">?</span>, <span class="ident">vm</span>);
+            <span class="self">self</span>.<span class="ident">append</span>(<span class="ident">elem</span><span class="question-mark">?</span>);
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -503,7 +503,7 @@
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
     <span class="kw">fn</span> <span class="ident">extendleft</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">PyIterable</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">for</span> <span class="ident">elem</span> <span class="kw">in</span> <span class="ident">iter</span>.<span class="ident">iter</span>(<span class="ident">vm</span>)<span class="question-mark">?</span> {
-            <span class="self">self</span>.<span class="ident">appendleft</span>(<span class="ident">elem</span><span class="question-mark">?</span>, <span class="ident">vm</span>);
+            <span class="self">self</span>.<span class="ident">appendleft</span>(<span class="ident">elem</span><span class="question-mark">?</span>);
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -536,7 +536,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deque</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow_mut</span>();
 
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">maxlen</span>.<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">deque</span>.<span class="ident">len</span>()) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;deque already at its maximum size&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;deque already at its maximum size&quot;</span>.<span class="ident">to_owned</span>()));
         }
 
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">idx</span> <span class="op">&lt;</span> <span class="number">0</span> {
@@ -561,7 +561,7 @@
         <span class="self">self</span>.<span class="ident">deque</span>
             .<span class="ident">borrow_mut</span>()
             .<span class="ident">pop_back</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;pop from an empty deque&quot;</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;pop from an empty deque&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
@@ -569,7 +569,7 @@
         <span class="self">self</span>.<span class="ident">deque</span>
             .<span class="ident">borrow_mut</span>()
             .<span class="ident">pop_front</span>()
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;pop from an empty deque&quot;</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;pop from an empty deque&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
@@ -583,17 +583,17 @@
             }
         }
         <span class="ident">idx</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="ident">deque</span>.<span class="ident">remove</span>(<span class="ident">idx</span>).<span class="ident">unwrap</span>())
-            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;deque.remove(x): x not in deque&quot;</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;deque.remove(x): x not in deque&quot;</span>.<span class="ident">to_owned</span>()))
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">reverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">reverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">deque</span>
             .<span class="ident">replace_with</span>(<span class="op">|</span><span class="ident">deque</span><span class="op">|</span> <span class="ident">deque</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">rev</span>().<span class="ident">collect</span>());
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">rotate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mid</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">rotate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">mid</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deque</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow_mut</span>();
         <span class="kw">let</span> <span class="ident">mid</span> <span class="op">=</span> <span class="ident">mid</span>.<span class="ident">unwrap_or</span>(<span class="number">1</span>);
         <span class="kw">if</span> <span class="ident">mid</span> <span class="op">&lt;</span> <span class="number">0</span> {
@@ -604,12 +604,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">maxlen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">maxlen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">maxlen</span>.<span class="ident">get</span>()
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">setter</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">set_maxlen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">maxlen</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">set_maxlen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">maxlen</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">maxlen</span>.<span class="ident">set</span>(<span class="ident">maxlen</span>);
     }
 
@@ -629,7 +629,7 @@
                 .<span class="ident">unwrap_or_default</span>();
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;deque([{}]{})&quot;</span>, <span class="ident">elements</span>.<span class="ident">into_iter</span>().<span class="ident">format</span>(<span class="string">&quot;, &quot;</span>), <span class="ident">maxlen</span>)
         } <span class="kw">else</span> {
-            <span class="string">&quot;[...]&quot;</span>.<span class="ident">to_string</span>()
+            <span class="string">&quot;[...]&quot;</span>.<span class="ident">to_owned</span>()
         };
         <span class="prelude-val">Ok</span>(<span class="ident">repr</span>)
     }
@@ -722,7 +722,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__mul__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">isize</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">deque</span>: <span class="kw-2">&amp;</span><span class="ident">VecDeque</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow</span>();
         <span class="kw">let</span> <span class="ident">mul</span> <span class="op">=</span> <span class="ident">sequence</span>::<span class="ident">seq_mul</span>(<span class="ident">deque</span>, <span class="ident">n</span>);
         <span class="kw">let</span> <span class="ident">skipped</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">maxlen</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">maxlen</span>.<span class="ident">get</span>() {
@@ -738,12 +738,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">borrow</span>().<span class="ident">len</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDequeIterator</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyDequeIterator</span> {
         <span class="ident">PyDequeIterator</span> {
             <span class="ident">position</span>: <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="number">0</span>),
             <span class="ident">deque</span>: <span class="ident">zelf</span>,
@@ -778,7 +778,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">zelf</span>
     }
 }

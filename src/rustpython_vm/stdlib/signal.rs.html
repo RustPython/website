@@ -254,7 +254,7 @@
 
     <span class="kw">let</span> <span class="ident">old</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">libc</span>::<span class="ident">signal</span>(<span class="ident">signalnum</span>, <span class="ident">sig_handler</span>) };
     <span class="kw">if</span> <span class="ident">old</span> <span class="op">=</span><span class="op">=</span> <span class="ident">SIG_ERR</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_os_error</span>(<span class="string">&quot;Failed to set signal&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_os_error</span>(<span class="string">&quot;Failed to set signal&quot;</span>.<span class="ident">to_owned</span>()));
     }
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">unix</span>, <span class="ident">not</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;redox&quot;</span>)))]</span>
     {
@@ -280,7 +280,7 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-<span class="kw">fn</span> <span class="ident">alarm</span>(<span class="ident">time</span>: <span class="ident">u32</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+<span class="kw">fn</span> <span class="ident">alarm</span>(<span class="ident">time</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">let</span> <span class="ident">prev_time</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">time</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="ident">sig_alarm</span>::<span class="ident">cancel</span>()
     } <span class="kw">else</span> {

@@ -335,10 +335,10 @@
         })<span class="question-mark">?</span>
         .<span class="ident">as_bigint</span>();
     <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_negative</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;__length_hint__() should return &gt;= 0&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;__length_hint__() should return &gt;= 0&quot;</span>.<span class="ident">to_owned</span>()));
     }
     <span class="kw">let</span> <span class="ident">hint</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">to_usize</span>().<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
-        <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Python int too large to convert to Rust usize&quot;</span>.<span class="ident">to_string</span>())
+        <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Python int too large to convert to Rust usize&quot;</span>.<span class="ident">to_owned</span>())
     })<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">hint</span>))
 }
@@ -381,7 +381,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">zelf</span>
     }
 
@@ -392,7 +392,7 @@
             <span class="ident">pos</span> <span class="op">+</span> <span class="number">1</span>
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">objsequence</span>::<span class="ident">opt_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">obj</span>, <span class="ident">vm</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;sequence has no __len__ method&quot;</span>.<span class="ident">to_string</span>()))
+                <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;sequence has no __len__ method&quot;</span>.<span class="ident">to_owned</span>()))
             })<span class="question-mark">?</span>;
             <span class="ident">len</span> <span class="kw">as</span> <span class="ident">isize</span> <span class="op">-</span> <span class="ident">pos</span>
         };
@@ -400,7 +400,7 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">seq_iter_method</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PySequenceIterator</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">seq_iter_method</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PySequenceIterator</span> {
     <span class="ident">PySequenceIterator</span> {
         <span class="ident">position</span>: <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="number">0</span>),
         <span class="ident">obj</span>,

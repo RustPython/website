@@ -832,7 +832,7 @@
     <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0.0</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">v1</span> <span class="op">/</span> <span class="ident">v2</span>)
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float division by zero&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float division by zero&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -840,7 +840,7 @@
     <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0.0</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">v1</span> <span class="op">%</span> <span class="ident">v2</span>)
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float mod by zero&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float mod by zero&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -850,11 +850,11 @@
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() {
                 <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(
-                    <span class="string">&quot;OverflowError: cannot convert float infinity to integer&quot;</span>.<span class="ident">to_string</span>(),
+                    <span class="string">&quot;OverflowError: cannot convert float infinity to integer&quot;</span>.<span class="ident">to_owned</span>(),
                 ))
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() {
                 <span class="prelude-val">Err</span>(<span class="ident">vm</span>
-                    .<span class="ident">new_value_error</span>(<span class="string">&quot;ValueError: cannot convert float NaN to integer&quot;</span>.<span class="ident">to_string</span>()))
+                    .<span class="ident">new_value_error</span>(<span class="string">&quot;ValueError: cannot convert float NaN to integer&quot;</span>.<span class="ident">to_owned</span>()))
             } <span class="kw">else</span> {
                 <span class="comment">// unreachable unless BigInt has a bug</span>
                 <span class="macro">unreachable</span><span class="macro">!</span>(
@@ -870,7 +870,7 @@
     <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0.0</span> {
         <span class="prelude-val">Ok</span>((<span class="ident">v1</span> <span class="op">/</span> <span class="ident">v2</span>).<span class="ident">floor</span>())
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float floordiv by zero&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float floordiv by zero&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -878,7 +878,7 @@
     <span class="kw">if</span> <span class="ident">v2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0.0</span> {
         <span class="prelude-val">Ok</span>(((<span class="ident">v1</span> <span class="op">/</span> <span class="ident">v2</span>).<span class="ident">floor</span>(), <span class="ident">v1</span> <span class="op">%</span> <span class="ident">v2</span>))
     } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float divmod()&quot;</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_zero_division_error</span>(<span class="string">&quot;float divmod()&quot;</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -1025,7 +1025,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__abs__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">abs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="kw">fn</span> <span class="ident">abs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">abs</span>()
     }
 
@@ -1067,7 +1067,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__bool__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span> <span class="op">!</span><span class="op">=</span> <span class="number">0.0</span>
     }
 
@@ -1102,12 +1102,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__pos__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">pos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="kw">fn</span> <span class="ident">pos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="self">self</span>.<span class="ident">value</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__neg__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="op">-</span><span class="self">self</span>.<span class="ident">value</span>
     }
 
@@ -1132,14 +1132,14 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:e}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">position</span>) <span class="op">=</span> <span class="ident">value</span>.<span class="ident">find</span>(<span class="string">&#39;e&#39;</span>) {
             <span class="kw">let</span> <span class="ident">significand</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">value</span>[..<span class="ident">position</span>];
             <span class="kw">let</span> <span class="ident">exponent</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">value</span>[<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>..];
             <span class="kw">let</span> <span class="ident">exponent</span> <span class="op">=</span> <span class="ident">exponent</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
             <span class="kw">if</span> <span class="ident">exponent</span> <span class="op">&lt;</span> <span class="number">16</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">exponent</span> <span class="op">&gt;</span> <span class="op">-</span><span class="number">5</span> {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_integer</span>(<span class="ident">vm</span>) {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_integer</span>() {
                     <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:.1?}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>)
                 } <span class="kw">else</span> {
                     <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">to_string</span>()
@@ -1241,32 +1241,32 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__float__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">float</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFloatRef</span> {
+    <span class="kw">fn</span> <span class="ident">float</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFloatRef</span> {
         <span class="ident">zelf</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__hash__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">pyhash</span>::<span class="ident">PyHash</span> {
+    <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">pyhash</span>::<span class="ident">PyHash</span> {
         <span class="ident">pyhash</span>::<span class="ident">hash_float</span>(<span class="self">self</span>.<span class="ident">value</span>)
     }
 
-    <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;real&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">real</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFloatRef</span> {
+    <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
+    <span class="kw">fn</span> <span class="ident">real</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFloatRef</span> {
         <span class="ident">zelf</span>
     }
 
-    <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;imag&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">imag</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+    <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
+    <span class="kw">fn</span> <span class="ident">imag</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
         <span class="number">0.0f64</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;conjugate&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">conjugate</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFloatRef</span> {
+    <span class="kw">fn</span> <span class="ident">conjugate</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyFloatRef</span> {
         <span class="ident">zelf</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;is_integer&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">is_integer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_integer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>;
         (<span class="ident">v</span> <span class="op">-</span> <span class="ident">v</span>.<span class="ident">round</span>()).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">EPSILON</span>
     }
@@ -1276,11 +1276,11 @@
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;cannot convert Infinity to integer ratio&quot;</span>.<span class="ident">to_string</span>())
+                <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;cannot convert Infinity to integer ratio&quot;</span>.<span class="ident">to_owned</span>())
             );
         }
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;cannot convert NaN to integer ratio&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;cannot convert NaN to integer ratio&quot;</span>.<span class="ident">to_owned</span>()));
         }
 
         <span class="kw">let</span> <span class="ident">ratio</span> <span class="op">=</span> <span class="ident">Ratio</span>::<span class="ident">from_float</span>(<span class="ident">value</span>).<span class="ident">unwrap</span>();
@@ -1336,7 +1336,7 @@
                     }
 
                     <span class="ident">hexf_parse</span>::<span class="ident">parse_hexf64</span>(<span class="ident">hex</span>.<span class="ident">as_str</span>(), <span class="bool-val">false</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-                        <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;invalid hexadecimal floating-point string&quot;</span>.<span class="ident">to_string</span>())
+                        <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;invalid hexadecimal floating-point string&quot;</span>.<span class="ident">to_owned</span>())
                     })
                 }
             }
@@ -1344,7 +1344,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">hex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">hex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="ident">to_hex</span>(<span class="self">self</span>.<span class="ident">value</span>)
     }
 }
@@ -1413,7 +1413,7 @@
     <span class="kw">match</span> <span class="ident">value</span> {
         <span class="ident">value</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_zero</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}0x0.0p+0&quot;</span>, <span class="ident">sign_fmt</span>),
         <span class="ident">value</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_infinite</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}inf&quot;</span>, <span class="ident">sign_fmt</span>),
-        <span class="ident">value</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;nan&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="ident">value</span> <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_nan</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;nan&quot;</span>.<span class="ident">to_owned</span>(),
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">const</span> <span class="ident">BITS</span>: <span class="ident">i16</span> <span class="op">=</span> <span class="number">52</span>;
             <span class="kw">const</span> <span class="ident">FRACT_MASK</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0xf_ffff_ffff_ffff</span>;

@@ -792,7 +792,7 @@
 <span class="kw">impl</span> <span class="ident">DictKey</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
     <span class="kw">fn</span> <span class="ident">do_hash</span>(<span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">HashValue</span><span class="op">&gt;</span> {
         <span class="comment">// follow a similar route as the hashing of PyStringRef</span>
-        <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">to_string</span>()).<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">to_owned</span>()).<span class="ident">to_bigint</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">raw_hash</span> <span class="op">=</span> <span class="ident">pyhash</span>::<span class="ident">hash_bigint</span>(<span class="kw-2">&amp;</span><span class="ident">raw_hash</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hasher</span> <span class="op">=</span> <span class="ident">DefaultHasher</span>::<span class="ident">new</span>();
         <span class="ident">raw_hash</span>.<span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hasher</span>);
@@ -810,7 +810,7 @@
             <span class="prelude-val">Ok</span>(<span class="ident">py_str_value</span>.<span class="ident">as_str</span>() <span class="op">=</span><span class="op">=</span> <span class="self">self</span>)
         } <span class="kw">else</span> {
             <span class="comment">// Fall back to PyString implementation.</span>
-            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">to_string</span>());
+            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">to_owned</span>());
             <span class="ident">s</span>.<span class="ident">do_eq</span>(<span class="ident">vm</span>, <span class="ident">other_key</span>)
         }
     }
@@ -841,12 +841,12 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
         <span class="kw">let</span> <span class="ident">key1</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_bool</span>(<span class="bool-val">true</span>);
-        <span class="kw">let</span> <span class="ident">value1</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;abc&quot;</span>.<span class="ident">to_string</span>());
+        <span class="kw">let</span> <span class="ident">value1</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;abc&quot;</span>.<span class="ident">to_owned</span>());
         <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key1</span>, <span class="ident">value1</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
-        <span class="kw">let</span> <span class="ident">key2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;x&quot;</span>.<span class="ident">to_string</span>());
-        <span class="kw">let</span> <span class="ident">value2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;def&quot;</span>.<span class="ident">to_string</span>());
+        <span class="kw">let</span> <span class="ident">key2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;x&quot;</span>.<span class="ident">to_owned</span>());
+        <span class="kw">let</span> <span class="ident">value2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="string">&quot;def&quot;</span>.<span class="ident">to_owned</span>());
         <span class="ident">dict</span>.<span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">key2</span>, <span class="ident">value2</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">2</span>, <span class="ident">dict</span>.<span class="ident">len</span>());
 
@@ -886,7 +886,7 @@
     <span class="kw">fn</span> <span class="ident">check_hash_equivalence</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
         <span class="kw">let</span> <span class="ident">vm</span>: <span class="ident">VirtualMachine</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">value1</span> <span class="op">=</span> <span class="ident">text</span>;
-        <span class="kw">let</span> <span class="ident">value2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">value1</span>.<span class="ident">to_string</span>());
+        <span class="kw">let</span> <span class="ident">value2</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">value1</span>.<span class="ident">to_owned</span>());
 
         <span class="kw">let</span> <span class="ident">hash1</span> <span class="op">=</span> <span class="ident">value1</span>.<span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>).<span class="ident">expect</span>(<span class="string">&quot;Hash should not fail.&quot;</span>);
         <span class="kw">let</span> <span class="ident">hash2</span> <span class="op">=</span> <span class="ident">value2</span>.<span class="ident">do_hash</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>).<span class="ident">expect</span>(<span class="string">&quot;Hash should not fail.&quot;</span>);

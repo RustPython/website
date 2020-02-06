@@ -666,14 +666,6 @@
 <span id="666">666</span>
 <span id="667">667</span>
 <span id="668">668</span>
-<span id="669">669</span>
-<span id="670">670</span>
-<span id="671">671</span>
-<span id="672">672</span>
-<span id="673">673</span>
-<span id="674">674</span>
-<span id="675">675</span>
-<span id="676">676</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::{<span class="ident">Cell</span>, <span class="ident">Ref</span>, <span class="ident">RefCell</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
@@ -908,12 +900,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+    <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">sock</span>.<span class="ident">replace</span>(<span class="ident">invalid_sock</span>());
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">fileno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawSocket</span> {
+    <span class="kw">fn</span> <span class="ident">fileno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RawSocket</span> {
         <span class="ident">sock_fileno</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">sock</span>())
     }
 
@@ -1009,7 +1001,7 @@
             },
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                    <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;expected the value arg xor the optlen arg&quot;</span>.<span class="ident">to_string</span>())
+                    <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;expected the value arg xor the optlen arg&quot;</span>.<span class="ident">to_owned</span>())
                 );
             }
         };
@@ -1028,7 +1020,7 @@
             <span class="ident">c</span>::<span class="ident">SHUT_RDWR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Shutdown</span>::<span class="ident">Both</span>,
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                    <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;`how` must be SHUT_RD, SHUT_WR, or SHUT_RDWR&quot;</span>.<span class="ident">to_string</span>())
+                    <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;`how` must be SHUT_RD, SHUT_WR, or SHUT_RDWR&quot;</span>.<span class="ident">to_owned</span>())
                 )
             }
         };
@@ -1038,15 +1030,15 @@
     }
 
     <span class="attribute">#[<span class="ident">pyproperty</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;type&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="self">self</span>.<span class="ident">kind</span>.<span class="ident">get</span>()
     }
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">family</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">family</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="self">self</span>.<span class="ident">family</span>.<span class="ident">get</span>()
     }
     <span class="attribute">#[<span class="ident">pyproperty</span>]</span>
-    <span class="kw">fn</span> <span class="ident">proto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">proto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="self">self</span>.<span class="ident">proto</span>.<span class="ident">get</span>()
     }
 }
@@ -1067,7 +1059,7 @@
     <span class="kw">fn</span> <span class="ident">try_from_object</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">tuple</span> <span class="op">=</span> <span class="ident">PyTupleRef</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">obj</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">tuple</span>.<span class="ident">as_slice</span>().<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">2</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Address tuple should have only 2 values&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;Address tuple should have only 2 values&quot;</span>.<span class="ident">to_owned</span>()))
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">host</span> <span class="op">=</span> <span class="ident">PyStringRef</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="ident">tuple</span>.<span class="ident">as_slice</span>()[<span class="number">0</span>].<span class="ident">clone</span>())<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">host</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">host</span>.<span class="ident">as_str</span>().<span class="ident">is_empty</span>() {
@@ -1111,23 +1103,15 @@
         .<span class="ident">as_str</span>()
         .<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">Ipv4Addr</span><span class="op">&gt;</span>()
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">ip_addr</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_bytes</span>(<span class="ident">ip_addr</span>.<span class="ident">octets</span>().<span class="ident">to_vec</span>()))
-        .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_os_error</span>(<span class="string">&quot;illegal IP address string passed to inet_aton&quot;</span>.<span class="ident">to_string</span>()))
+        .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_os_error</span>(<span class="string">&quot;illegal IP address string passed to inet_aton&quot;</span>.<span class="ident">to_owned</span>()))
 }
 
 <span class="kw">fn</span> <span class="ident">socket_inet_ntoa</span>(<span class="ident">packed_ip</span>: <span class="ident">PyBytesRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
     <span class="kw">if</span> <span class="ident">packed_ip</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">4</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_os_error</span>(<span class="string">&quot;packed IP wrong length for inet_ntoa&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_os_error</span>(<span class="string">&quot;packed IP wrong length for inet_ntoa&quot;</span>.<span class="ident">to_owned</span>()));
     }
     <span class="kw">let</span> <span class="ident">ip_num</span> <span class="op">=</span> <span class="ident">BigEndian</span>::<span class="ident">read_u32</span>(<span class="kw-2">&amp;</span><span class="ident">packed_ip</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">Ipv4Addr</span>::<span class="ident">from</span>(<span class="ident">ip_num</span>).<span class="ident">to_string</span>()))
-}
-
-<span class="kw">fn</span> <span class="ident">socket_hton</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">num_traits</span>::<span class="ident">int</span>::<span class="ident">PrimInt</span><span class="op">&gt;</span>(<span class="ident">host</span>: <span class="ident">U</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">U</span> {
-    <span class="ident">U</span>::<span class="ident">to_be</span>(<span class="ident">host</span>)
-}
-
-<span class="kw">fn</span> <span class="ident">socket_ntoh</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">num_traits</span>::<span class="ident">int</span>::<span class="ident">PrimInt</span><span class="op">&gt;</span>(<span class="ident">network</span>: <span class="ident">U</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">U</span> {
-    <span class="ident">U</span>::<span class="ident">from_be</span>(<span class="ident">network</span>)
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">FromArgs</span>)]</span>
@@ -1222,7 +1206,7 @@
                 <span class="kw">let</span> <span class="ident">error_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;_socket&quot;</span>, <span class="string">&quot;gaierror&quot;</span>);
                 <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(
                     <span class="ident">error_type</span>,
-                    <span class="string">&quot;nodename nor servname provided, or not known&quot;</span>.<span class="ident">to_string</span>(),
+                    <span class="string">&quot;nodename nor servname provided, or not known&quot;</span>.<span class="ident">to_owned</span>(),
                 ))
             } <span class="kw">else</span> {
                 <span class="prelude-val">Ok</span>(<span class="ident">sock_addrs</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>().<span class="ident">into</span>())
@@ -1276,7 +1260,7 @@
 <span class="kw">fn</span> <span class="ident">convert_sock_error</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">err</span>: <span class="ident">io</span>::<span class="ident">Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyBaseExceptionRef</span> {
     <span class="kw">if</span> <span class="ident">err</span>.<span class="ident">kind</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">TimedOut</span> {
         <span class="kw">let</span> <span class="ident">socket_timeout</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">class</span>(<span class="string">&quot;_socket&quot;</span>, <span class="string">&quot;timeout&quot;</span>);
-        <span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(<span class="ident">socket_timeout</span>, <span class="string">&quot;Timed out&quot;</span>.<span class="ident">to_string</span>())
+        <span class="ident">vm</span>.<span class="ident">new_exception_msg</span>(<span class="ident">socket_timeout</span>, <span class="string">&quot;Timed out&quot;</span>.<span class="ident">to_owned</span>())
     } <span class="kw">else</span> {
         <span class="ident">convert_io_error</span>(<span class="ident">vm</span>, <span class="ident">err</span>)
     }
@@ -1295,10 +1279,10 @@
         <span class="string">&quot;inet_aton&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_inet_aton</span>),
         <span class="string">&quot;inet_ntoa&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_inet_ntoa</span>),
         <span class="string">&quot;gethostname&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_gethostname</span>),
-        <span class="string">&quot;htonl&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_hton</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>),
-        <span class="string">&quot;htons&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_hton</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>),
-        <span class="string">&quot;ntohl&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_ntoh</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>),
-        <span class="string">&quot;ntohs&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">socket_ntoh</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>),
+        <span class="string">&quot;htonl&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">u32</span>::<span class="ident">to_be</span>),
+        <span class="string">&quot;htons&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">u16</span>::<span class="ident">to_be</span>),
+        <span class="string">&quot;ntohl&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">u32</span>::<span class="ident">from_be</span>),
+        <span class="string">&quot;ntohs&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="ident">u16</span>::<span class="ident">from_be</span>),
         <span class="string">&quot;getdefaulttimeout&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_function</span>(<span class="op">|</span><span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">get_none</span>()),
         <span class="string">&quot;has_ipv6&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">ctx</span>.<span class="ident">new_bool</span>(<span class="bool-val">false</span>),
         <span class="comment">// constants</span>

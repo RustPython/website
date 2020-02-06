@@ -1772,33 +1772,6 @@
 <span id="1772">1772</span>
 <span id="1773">1773</span>
 <span id="1774">1774</span>
-<span id="1775">1775</span>
-<span id="1776">1776</span>
-<span id="1777">1777</span>
-<span id="1778">1778</span>
-<span id="1779">1779</span>
-<span id="1780">1780</span>
-<span id="1781">1781</span>
-<span id="1782">1782</span>
-<span id="1783">1783</span>
-<span id="1784">1784</span>
-<span id="1785">1785</span>
-<span id="1786">1786</span>
-<span id="1787">1787</span>
-<span id="1788">1788</span>
-<span id="1789">1789</span>
-<span id="1790">1790</span>
-<span id="1791">1791</span>
-<span id="1792">1792</span>
-<span id="1793">1793</span>
-<span id="1794">1794</span>
-<span id="1795">1795</span>
-<span id="1796">1796</span>
-<span id="1797">1797</span>
-<span id="1798">1798</span>
-<span id="1799">1799</span>
-<span id="1800">1800</span>
-<span id="1801">1801</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">char</span>;
@@ -1863,7 +1836,7 @@
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PyString</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyString</span> {
-        <span class="ident">s</span>.<span class="ident">to_string</span>().<span class="ident">into</span>()
+        <span class="ident">s</span>.<span class="ident">to_owned</span>().<span class="ident">into</span>()
     }
 }
 
@@ -1929,7 +1902,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">zelf</span>
     }
 }
@@ -1965,7 +1938,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident">zelf</span>
     }
 }
@@ -2027,7 +2000,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__bool__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>()
     }
 
@@ -2050,7 +2023,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__contains__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">needle</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">needle</span>: <span class="ident">PyStringRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">needle</span>.<span class="ident">value</span>)
     }
 
@@ -2068,17 +2041,18 @@
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">character</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">nth</span>(<span class="ident">index</span>) {
                         <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">character</span>.<span class="ident">to_string</span>()))
                     } <span class="kw">else</span> {
-                        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;string index out of range&quot;</span>.<span class="ident">to_string</span>()))
+                        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;string index out of range&quot;</span>.<span class="ident">to_owned</span>()))
                     }
                 }
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(
-                    <span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_string</span>())
-                ),
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>
+                        .<span class="ident">new_index_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_owned</span>()))
+                }
             },
             <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">slice</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="self">self</span>
                     .<span class="ident">value</span>
-                    .<span class="ident">to_string</span>()
+                    .<span class="ident">to_owned</span>()
                     .<span class="ident">get_slice_items</span>(<span class="ident">vm</span>, <span class="ident">slice</span>.<span class="ident">as_object</span>())<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">string</span>))
             }
@@ -2086,27 +2060,27 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__gt__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">gt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">gt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span> <span class="op">&gt;</span> <span class="ident">other</span>.<span class="ident">value</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__ge__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ge</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">ge</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">value</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__lt__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">lt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">lt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">other</span>.<span class="ident">value</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__le__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">le</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">le</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PyStringRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">value</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__hash__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">pyhash</span>::<span class="ident">PyHash</span> {
+    <span class="kw">fn</span> <span class="ident">hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">pyhash</span>::<span class="ident">PyHash</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">hash</span>.<span class="ident">get</span>() {
             <span class="prelude-val">Some</span>(<span class="ident">hash</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">hash</span>,
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
@@ -2118,12 +2092,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__len__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">count</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__sizeof__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">sizeof</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">capacity</span>() <span class="op">*</span> <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>()
     }
 
@@ -2134,7 +2108,7 @@
             .<span class="ident">to_usize</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">multiplier</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">repeat</span>(<span class="ident">multiplier</span>))
             .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> {
-                <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_string</span>())
+                <span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;cannot fit &#39;int&#39; into an index-sized integer&quot;</span>.<span class="ident">to_owned</span>())
             })
     }
 
@@ -2144,12 +2118,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__str__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">str</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyStringRef</span> {
+    <span class="kw">fn</span> <span class="ident">str</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyStringRef</span> {
         <span class="ident">zelf</span>
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">repr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">let</span> <span class="ident">quote_char</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">count_char</span>(<span class="ident">value</span>, <span class="string">&#39;\&#39;&#39;</span>) <span class="op">&gt;</span> <span class="ident">count_char</span>(<span class="ident">value</span>, <span class="string">&#39;&quot;&#39;</span>) {
             <span class="string">&#39;&quot;&#39;</span>
@@ -2191,23 +2165,23 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">lower</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">lower</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">to_lowercase</span>()
     }
 
     <span class="comment">// casefold is much more aggressive than lower</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">casefold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">casefold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="ident">caseless</span>::<span class="ident">default_case_fold_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">upper</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">upper</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">to_uppercase</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">capitalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">capitalize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> (<span class="ident">first_part</span>, <span class="ident">lower_str</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">split_at</span>(<span class="number">1</span>);
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">first_part</span>.<span class="ident">to_uppercase</span>(), <span class="ident">lower_str</span>)
     }
@@ -2220,21 +2194,21 @@
         <span class="kw">let</span> <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">pattern</span>, <span class="ident">num_splits</span>.<span class="ident">is_negative</span>()) {
             (<span class="prelude-val">Some</span>(<span class="ident">pattern</span>), <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">split</span>(<span class="ident">pattern</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
             (<span class="prelude-val">Some</span>(<span class="ident">pattern</span>), <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">splitn</span>(<span class="ident">num_splits</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">pattern</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
             (<span class="prelude-val">None</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">split</span>(<span class="op">|</span><span class="ident">c</span>: <span class="ident">char</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_ascii_whitespace</span>())
                 .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="op">!</span><span class="ident">s</span>.<span class="ident">is_empty</span>())
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
             (<span class="prelude-val">None</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">splitn</span>(<span class="ident">num_splits</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>, <span class="op">|</span><span class="ident">c</span>: <span class="ident">char</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_ascii_whitespace</span>())
                 .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="op">!</span><span class="ident">s</span>.<span class="ident">is_empty</span>())
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
         };
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="ident">elements</span>)
@@ -2248,21 +2222,21 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">pattern</span>, <span class="ident">num_splits</span>.<span class="ident">is_negative</span>()) {
             (<span class="prelude-val">Some</span>(<span class="ident">pattern</span>), <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">rsplit</span>(<span class="ident">pattern</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
             (<span class="prelude-val">Some</span>(<span class="ident">pattern</span>), <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">rsplitn</span>(<span class="ident">num_splits</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">pattern</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
             (<span class="prelude-val">None</span>, <span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">rsplit</span>(<span class="op">|</span><span class="ident">c</span>: <span class="ident">char</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_ascii_whitespace</span>())
                 .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="op">!</span><span class="ident">s</span>.<span class="ident">is_empty</span>())
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
             (<span class="prelude-val">None</span>, <span class="bool-val">false</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">value</span>
                 .<span class="ident">rsplitn</span>(<span class="ident">num_splits</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>, <span class="op">|</span><span class="ident">c</span>: <span class="ident">char</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_ascii_whitespace</span>())
                 .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="op">!</span><span class="ident">s</span>.<span class="ident">is_empty</span>())
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">o</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">o</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>(),
         };
         <span class="comment">// Unlike Python rsplit, Rust rsplitn returns an iterator that</span>
@@ -2272,34 +2246,34 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">strip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">chars</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">strip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">chars</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">chars</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">chars</span> {
             <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="kw-2">ref</span> <span class="ident">chars</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">chars</span>.<span class="ident">value</span>,
-            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim</span>().<span class="ident">to_string</span>(),
+            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim</span>().<span class="ident">to_owned</span>(),
         };
-        <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim_matches</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">chars</span>.<span class="ident">contains</span>(<span class="ident">c</span>)).<span class="ident">to_string</span>()
+        <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim_matches</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">chars</span>.<span class="ident">contains</span>(<span class="ident">c</span>)).<span class="ident">to_owned</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">lstrip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">chars</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">lstrip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">chars</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">chars</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">chars</span> {
             <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="kw-2">ref</span> <span class="ident">chars</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">chars</span>.<span class="ident">value</span>,
-            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim_start</span>().<span class="ident">to_string</span>(),
+            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim_start</span>().<span class="ident">to_owned</span>(),
         };
         <span class="self">self</span>.<span class="ident">value</span>
             .<span class="ident">trim_start_matches</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">chars</span>.<span class="ident">contains</span>(<span class="ident">c</span>))
-            .<span class="ident">to_string</span>()
+            .<span class="ident">to_owned</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">rstrip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">chars</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">rstrip</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">chars</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">PyStringRef</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">chars</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">chars</span> {
             <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="kw-2">ref</span> <span class="ident">chars</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">chars</span>.<span class="ident">value</span>,
-            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim_end</span>().<span class="ident">to_string</span>(),
+            <span class="ident">OptionalArg</span>::<span class="ident">Missing</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">trim_end</span>().<span class="ident">to_owned</span>(),
         };
         <span class="self">self</span>.<span class="ident">value</span>
             .<span class="ident">trim_end_matches</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">chars</span>.<span class="ident">contains</span>(<span class="ident">c</span>))
-            .<span class="ident">to_string</span>()
+            .<span class="ident">to_owned</span>()
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
@@ -2355,17 +2329,17 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isalnum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isalnum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">all</span>(<span class="ident">char</span>::<span class="ident">is_alphanumeric</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isnumeric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isnumeric</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">all</span>(<span class="ident">char</span>::<span class="ident">is_numeric</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isdigit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isdigit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="comment">// python&#39;s isdigit also checks if exponents are digits, these are the unicodes for exponents</span>
         <span class="kw">let</span> <span class="ident">valid_unicodes</span>: [<span class="ident">u16</span>; <span class="number">10</span>] <span class="op">=</span> [
             <span class="number">0x2070</span>, <span class="number">0x00B9</span>, <span class="number">0x00B2</span>, <span class="number">0x00B3</span>, <span class="number">0x2074</span>, <span class="number">0x2075</span>, <span class="number">0x2076</span>, <span class="number">0x2077</span>, <span class="number">0x2078</span>, <span class="number">0x2079</span>,
@@ -2382,7 +2356,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isdecimal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isdecimal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() {
             <span class="bool-val">false</span>
         } <span class="kw">else</span> {
@@ -2407,7 +2381,7 @@
     <span class="kw">fn</span> <span class="ident">format</span>(<span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>, <span class="ident">args</span>: <span class="ident">PyFuncArgs</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
         <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">args</span>.<span class="ident">is_empty</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
-                <span class="string">&quot;descriptor &#39;format&#39; of &#39;str&#39; object needs an argument&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="string">&quot;descriptor &#39;format&#39; of &#39;str&#39; object needs an argument&quot;</span>.<span class="ident">to_owned</span>(),
             ));
         }
 
@@ -2425,9 +2399,9 @@
             <span class="prelude-val">Ok</span>(<span class="ident">format_string</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">perform_format</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">format_string</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>),
             <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">err</span> {
                 <span class="ident">FormatParseError</span>::<span class="ident">UnmatchedBracket</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;expected &#39;}&#39; before end of string&quot;</span>.<span class="ident">to_string</span>()))
+                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;expected &#39;}&#39; before end of string&quot;</span>.<span class="ident">to_owned</span>()))
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Unexpected error parsing format string&quot;</span>.<span class="ident">to_string</span>())),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Unexpected error parsing format string&quot;</span>.<span class="ident">to_owned</span>())),
             },
         }
     }
@@ -2451,9 +2425,9 @@
             <span class="prelude-val">Ok</span>(<span class="ident">format_string</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">perform_format_map</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">format_string</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">args</span>[<span class="number">1</span>]),
             <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="ident">err</span> {
                 <span class="ident">FormatParseError</span>::<span class="ident">UnmatchedBracket</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;expected &#39;}&#39; before end of string&quot;</span>.<span class="ident">to_string</span>()))
+                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;expected &#39;}&#39; before end of string&quot;</span>.<span class="ident">to_owned</span>()))
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Unexpected error parsing format string&quot;</span>.<span class="ident">to_string</span>())),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Unexpected error parsing format string&quot;</span>.<span class="ident">to_owned</span>())),
             },
         }
     }
@@ -2461,7 +2435,7 @@
     <span class="doccomment">/// Return a titlecased version of the string where words start with an</span>
     <span class="doccomment">/// uppercase character and the remaining characters are lowercase.</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">title</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">title</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">title</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">previous_is_cased</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>() {
@@ -2488,7 +2462,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">swapcase</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">swapcase</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">swapped_str</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">len</span>());
         <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>() {
             <span class="comment">// to_uppercase returns an iterator, to_ascii_uppercase returns the char</span>
@@ -2504,18 +2478,12 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isalpha</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isalpha</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">all</span>(<span class="ident">char</span>::<span class="ident">is_alphanumeric</span>)
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">old</span>: <span class="ident">PyStringRef</span>,
-        <span class="ident">new</span>: <span class="ident">PyStringRef</span>,
-        <span class="ident">num</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-        <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">old</span>: <span class="ident">PyStringRef</span>, <span class="ident">new</span>: <span class="ident">PyStringRef</span>, <span class="ident">num</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">match</span> <span class="ident">num</span>.<span class="ident">into_option</span>() {
             <span class="prelude-val">Some</span>(<span class="ident">num</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">replacen</span>(<span class="kw-2">&amp;</span><span class="ident">old</span>.<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">new</span>.<span class="ident">value</span>, <span class="ident">num</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="ident">old</span>.<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">new</span>.<span class="ident">value</span>),
@@ -2538,7 +2506,7 @@
     <span class="doccomment">///   * Zp Separator, Paragraph (&#39;\u2029&#39;, PARAGRAPH SEPARATOR)</span>
     <span class="doccomment">///   * Zs (Separator, Space) other than ASCII space(&#39;\x20&#39;).</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isprintable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isprintable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">value</span>
             .<span class="ident">chars</span>()
             .<span class="ident">all</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">=</span><span class="op">=</span> <span class="string">&#39;\u{0020}&#39;</span> <span class="op">|</span><span class="op">|</span> <span class="ident">char_is_printable</span>(<span class="ident">c</span>))
@@ -2547,13 +2515,13 @@
     <span class="comment">// cpython&#39;s isspace ignores whitespace, including \t and \n, etc, unless the whole string is empty</span>
     <span class="comment">// which is why isspace is using is_ascii_whitespace. Same for isupper &amp; islower</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isspace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isspace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_ascii_whitespace</span>())
     }
 
     <span class="comment">// Return true if all cased characters in the string are uppercase and there is at least one cased character, false otherwise.</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isupper</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isupper</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cased</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>() {
             <span class="kw">if</span> <span class="ident">is_cased</span>(<span class="ident">c</span>) <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">c</span>.<span class="ident">is_uppercase</span>() {
@@ -2567,7 +2535,7 @@
 
     <span class="comment">// Return true if all cased characters in the string are lowercase and there is at least one cased character, false otherwise.</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">islower</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">islower</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cased</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>() {
             <span class="kw">if</span> <span class="ident">is_cased</span>(<span class="ident">c</span>) <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">c</span>.<span class="ident">is_lowercase</span>() {
@@ -2580,7 +2548,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isascii</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isascii</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">all</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">is_ascii</span>())
     }
 
@@ -2588,7 +2556,7 @@
     <span class="kw">fn</span> <span class="ident">splitlines</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">args</span>: <span class="ident">SplitLineArgs</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyObjectRef</span> {
         <span class="kw">let</span> <span class="ident">keepends</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">keepends</span>.<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">elements</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">curr</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">curr</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>();
         <span class="kw">for</span> <span class="ident">ch</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>() {
             <span class="kw">if</span> <span class="ident">ch</span> <span class="op">=</span><span class="op">=</span> <span class="string">&#39;\n&#39;</span> {
                 <span class="kw">if</span> <span class="ident">keepends</span> {
@@ -2622,13 +2590,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">find</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">sub</span>: <span class="ident">PyStringRef</span>,
-        <span class="ident">start</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>,
-        <span class="ident">end</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>,
-        <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+    <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">PyStringRef</span>, <span class="ident">start</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>, <span class="ident">end</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">adjust_indices</span>(<span class="ident">start</span>, <span class="ident">end</span>, <span class="ident">value</span>.<span class="ident">len</span>()) {
             <span class="kw">match</span> <span class="ident">value</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="ident">sub</span>.<span class="ident">value</span>) {
@@ -2641,13 +2603,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">rfind</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">sub</span>: <span class="ident">PyStringRef</span>,
-        <span class="ident">start</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>,
-        <span class="ident">end</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>,
-        <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
+    <span class="kw">fn</span> <span class="ident">rfind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">PyStringRef</span>, <span class="ident">start</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>, <span class="ident">end</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">isize</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">adjust_indices</span>(<span class="ident">start</span>, <span class="ident">end</span>, <span class="ident">value</span>.<span class="ident">len</span>()) {
             <span class="kw">match</span> <span class="ident">value</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">rfind</span>(<span class="kw-2">&amp;</span><span class="ident">sub</span>.<span class="ident">value</span>) {
@@ -2671,10 +2627,10 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">adjust_indices</span>(<span class="ident">start</span>, <span class="ident">end</span>, <span class="ident">value</span>.<span class="ident">len</span>()) {
             <span class="kw">match</span> <span class="ident">value</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="ident">sub</span>.<span class="ident">value</span>) {
                 <span class="prelude-val">Some</span>(<span class="ident">num</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">start</span> <span class="op">+</span> <span class="ident">num</span>),
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_string</span>())),
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_owned</span>())),
             }
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 
@@ -2690,10 +2646,10 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">adjust_indices</span>(<span class="ident">start</span>, <span class="ident">end</span>, <span class="ident">value</span>.<span class="ident">len</span>()) {
             <span class="kw">match</span> <span class="ident">value</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">rfind</span>(<span class="kw-2">&amp;</span><span class="ident">sub</span>.<span class="ident">value</span>) {
                 <span class="prelude-val">Some</span>(<span class="ident">num</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">start</span> <span class="op">+</span> <span class="ident">num</span>),
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_string</span>())),
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_owned</span>())),
             }
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_string</span>()))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;substring not found&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 
@@ -2705,13 +2661,13 @@
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">contains</span>(<span class="ident">sub</span>) {
             <span class="ident">new_tup</span> <span class="op">=</span> <span class="ident">value</span>
                 .<span class="ident">splitn</span>(<span class="number">2</span>, <span class="ident">sub</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">s</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">s</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>();
             <span class="ident">new_tup</span>.<span class="ident">insert</span>(<span class="number">1</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">sub</span>.<span class="ident">clone</span>()));
         } <span class="kw">else</span> {
             <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
-            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()));
-            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>()));
+            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>()));
         }
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">new_tup</span>)
     }
@@ -2724,13 +2680,13 @@
         <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">contains</span>(<span class="ident">sub</span>) {
             <span class="ident">new_tup</span> <span class="op">=</span> <span class="ident">value</span>
                 .<span class="ident">rsplitn</span>(<span class="number">2</span>, <span class="ident">sub</span>)
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">s</span>.<span class="ident">to_string</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">s</span>.<span class="ident">to_owned</span>()))
                 .<span class="ident">collect</span>();
             <span class="ident">new_tup</span>.<span class="ident">swap</span>(<span class="number">0</span>, <span class="number">1</span>); <span class="comment">// so it&#39;s in the right order</span>
             <span class="ident">new_tup</span>.<span class="ident">insert</span>(<span class="number">1</span>, <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">sub</span>.<span class="ident">clone</span>()));
         } <span class="kw">else</span> {
-            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()));
-            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>()));
+            <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>()));
             <span class="ident">new_tup</span>.<span class="ident">push</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
         }
         <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_tuple</span>(<span class="ident">new_tup</span>)
@@ -2739,7 +2695,7 @@
     <span class="doccomment">/// Return `true` if the sequence is ASCII titlecase and the sequence is not</span>
     <span class="doccomment">/// empty, `false` otherwise.</span>
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">istitle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">istitle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">is_empty</span>() {
             <span class="kw">return</span> <span class="bool-val">false</span>;
         }
@@ -2767,13 +2723,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">count</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">sub</span>: <span class="ident">PyStringRef</span>,
-        <span class="ident">start</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>,
-        <span class="ident">end</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>,
-        <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sub</span>: <span class="ident">PyStringRef</span>, <span class="ident">start</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>, <span class="ident">end</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">start</span>, <span class="ident">end</span>)) <span class="op">=</span> <span class="ident">adjust_indices</span>(<span class="ident">start</span>, <span class="ident">end</span>, <span class="ident">value</span>.<span class="ident">len</span>()) {
             <span class="self">self</span>.<span class="ident">value</span>[<span class="ident">start</span>..<span class="ident">end</span>].<span class="ident">matches</span>(<span class="kw-2">&amp;</span><span class="ident">sub</span>.<span class="ident">value</span>).<span class="ident">count</span>()
@@ -2783,10 +2733,10 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">zfill</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">zfill</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">value</span>.<span class="ident">len</span>() {
-            <span class="ident">value</span>.<span class="ident">to_string</span>()
+            <span class="ident">value</span>.<span class="ident">to_owned</span>()
         } <span class="kw">else</span> {
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="string">&quot;0&quot;</span>.<span class="ident">repeat</span>(<span class="ident">len</span> <span class="op">-</span> <span class="ident">value</span>.<span class="ident">len</span>()), <span class="ident">value</span>)
         }
@@ -2803,9 +2753,8 @@
         <span class="kw">if</span> <span class="ident">rep_str</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">rep_str</span>)
         } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
-                <span class="string">&quot;The fill character must be exactly one character long&quot;</span>.<span class="ident">to_string</span>(),
-            ))
+            <span class="prelude-val">Err</span>(<span class="ident">vm</span>
+                .<span class="ident">new_type_error</span>(<span class="string">&quot;The fill character must be exactly one character long&quot;</span>.<span class="ident">to_owned</span>()))
         }
     }
 
@@ -2819,7 +2768,7 @@
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">let</span> <span class="ident">rep_char</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">get_fill_char</span>(<span class="kw-2">&amp;</span><span class="ident">rep</span>, <span class="ident">vm</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">value</span>.<span class="ident">len</span>() {
-            <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_owned</span>())
         } <span class="kw">else</span> {
             <span class="prelude-val">Ok</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">value</span>, <span class="ident">rep_char</span>.<span class="ident">repeat</span>(<span class="ident">len</span> <span class="op">-</span> <span class="ident">value</span>.<span class="ident">len</span>())))
         }
@@ -2835,7 +2784,7 @@
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">value</span>;
         <span class="kw">let</span> <span class="ident">rep_char</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">get_fill_char</span>(<span class="kw-2">&amp;</span><span class="ident">rep</span>, <span class="ident">vm</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">value</span>.<span class="ident">len</span>() {
-            <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_string</span>())
+            <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_owned</span>())
         } <span class="kw">else</span> {
             <span class="prelude-val">Ok</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="ident">rep_char</span>.<span class="ident">repeat</span>(<span class="ident">len</span> <span class="op">-</span> <span class="ident">value</span>.<span class="ident">len</span>()), <span class="ident">value</span>))
         }
@@ -2853,7 +2802,7 @@
         <span class="kw">let</span> <span class="ident">value_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">count</span>();
 
         <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">value_len</span> {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_string</span>());
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_owned</span>());
         }
         <span class="kw">let</span> <span class="ident">diff</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">len</span> <span class="op">-</span> <span class="ident">value_len</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left_buff</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">diff</span> <span class="op">/</span> <span class="number">2</span>;
@@ -2875,7 +2824,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">expandtabs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">tab_stop</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">expandtabs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">tab_stop</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">tab_stop</span> <span class="op">=</span> <span class="ident">tab_stop</span>.<span class="ident">into_option</span>().<span class="ident">unwrap_or</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">usize</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">expanded_str</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tab_size</span> <span class="op">=</span> <span class="ident">tab_stop</span>;
@@ -2899,7 +2848,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>]</span>
-    <span class="kw">fn</span> <span class="ident">isidentifier</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">isidentifier</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chars</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">chars</span>();
         <span class="kw">let</span> <span class="ident">is_identifier_start</span> <span class="op">=</span> <span class="ident">chars</span>.<span class="ident">next</span>().<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">=</span><span class="op">=</span> <span class="string">&#39;_&#39;</span> <span class="op">|</span><span class="op">|</span> <span class="ident">is_xid_start</span>(<span class="ident">c</span>));
         <span class="comment">// a string is not an identifier if it has whitespace or starts with a number</span>
@@ -2953,7 +2902,7 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">OptionalArg</span>::<span class="ident">Present</span>(<span class="ident">to_str</span>) <span class="op">=</span> <span class="ident">to_str</span> {
             <span class="kw">match</span> <span class="ident">dict_or_str</span>.<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">PyString</span><span class="op">&gt;</span>() {
                 <span class="prelude-val">Ok</span>(<span class="ident">from_str</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">to_str</span>.<span class="ident">len</span>(<span class="ident">vm</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">from_str</span>.<span class="ident">len</span>(<span class="ident">vm</span>) {
+                    <span class="kw">if</span> <span class="ident">to_str</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">from_str</span>.<span class="ident">len</span>() {
                         <span class="kw">for</span> (<span class="ident">c1</span>, <span class="ident">c2</span>) <span class="kw">in</span> <span class="ident">from_str</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">zip</span>(<span class="ident">to_str</span>.<span class="ident">value</span>.<span class="ident">chars</span>()) {
                             <span class="ident">new_dict</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">new_int</span>(<span class="ident">c1</span> <span class="kw">as</span> <span class="ident">u32</span>), <span class="ident">vm</span>.<span class="ident">new_int</span>(<span class="ident">c2</span> <span class="kw">as</span> <span class="ident">u32</span>), <span class="ident">vm</span>)<span class="question-mark">?</span>;
                         }
@@ -2986,7 +2935,7 @@
                                 <span class="ident">vm</span>,
                             )<span class="question-mark">?</span>;
                         } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">string</span>) <span class="op">=</span> <span class="ident">key</span>.<span class="ident">payload</span>::<span class="op">&lt;</span><span class="ident">PyString</span><span class="op">&gt;</span>() {
-                            <span class="kw">if</span> <span class="ident">string</span>.<span class="ident">len</span>(<span class="ident">vm</span>) <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+                            <span class="kw">if</span> <span class="ident">string</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
                                 <span class="kw">let</span> <span class="ident">num_value</span> <span class="op">=</span> <span class="ident">string</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">next</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
                                 <span class="ident">new_dict</span>.<span class="ident">set_item</span>(<span class="kw-2">&amp;</span><span class="ident">num_value</span>.<span class="ident">into_pyobject</span>(<span class="ident">vm</span>)<span class="question-mark">?</span>, <span class="ident">val</span>, <span class="ident">vm</span>)<span class="question-mark">?</span>;
                             } <span class="kw">else</span> {
@@ -3016,7 +2965,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__iter__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyStringIterator</span> {
+    <span class="kw">fn</span> <span class="ident">iter</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyStringIterator</span> {
         <span class="ident">PyStringIterator</span> {
             <span class="ident">byte_position</span>: <span class="ident">Cell</span>::<span class="ident">new</span>(<span class="number">0</span>),
             <span class="ident">string</span>: <span class="ident">zelf</span>,
@@ -3024,7 +2973,7 @@
     }
 
     <span class="attribute">#[<span class="ident">pymethod</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__reversed__&quot;</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">reversed</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyStringReverseIterator</span> {
+    <span class="kw">fn</span> <span class="ident">reversed</span>(<span class="ident">zelf</span>: <span class="ident">PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyStringReverseIterator</span> {
         <span class="kw">let</span> <span class="ident">begin</span> <span class="op">=</span> <span class="ident">zelf</span>.<span class="ident">value</span>.<span class="ident">chars</span>().<span class="ident">count</span>();
 
         <span class="ident">PyStringReverseIterator</span> {
@@ -3066,7 +3015,7 @@
 
 <span class="kw">impl</span> <span class="ident">IntoPyObject</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
     <span class="kw">fn</span> <span class="ident">into_pyobject</span>(<span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">to_string</span>()))
+        <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="self">self</span>.<span class="ident">to_owned</span>()))
     }
 }
 
@@ -3116,7 +3065,7 @@
         <span class="prelude-val">Some</span>(<span class="ident">FormatPreconversor</span>::<span class="ident">Bytes</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">argument</span>, <span class="string">&quot;decode&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[])<span class="question-mark">?</span>,
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">argument</span>,
     };
-    <span class="kw">let</span> <span class="ident">returned_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">new_format_spec</span>.<span class="ident">to_string</span>());
+    <span class="kw">let</span> <span class="ident">returned_type</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">new_format_spec</span>.<span class="ident">to_owned</span>());
 
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">call_method</span>(<span class="kw-2">&amp;</span><span class="ident">argument</span>, <span class="string">&quot;__format__&quot;</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">returned_type</span>])<span class="question-mark">?</span>;
     <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
@@ -3183,20 +3132,20 @@
                     <span class="kw">match</span> <span class="ident">objint</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>).<span class="ident">to_u32</span>().<span class="ident">and_then</span>(<span class="ident">char</span>::<span class="ident">from_u32</span>) {
                         <span class="prelude-val">Some</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>.<span class="ident">to_string</span>()),
                         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;%c arg not in range(0x110000)&quot;</span>.<span class="ident">to_string</span>()))
+                            <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_overflow_error</span>(<span class="string">&quot;%c arg not in range(0x110000)&quot;</span>.<span class="ident">to_owned</span>()))
                         }
                     }
                 } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">str_type</span>()) {
                     <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">borrow_value</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>);
                     <span class="kw">let</span> <span class="ident">num_chars</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">chars</span>().<span class="ident">count</span>();
                     <span class="kw">if</span> <span class="ident">num_chars</span> <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
-                        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;%c requires int or char&quot;</span>.<span class="ident">to_string</span>()))
+                        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;%c requires int or char&quot;</span>.<span class="ident">to_owned</span>()))
                     } <span class="kw">else</span> {
                         <span class="prelude-val">Ok</span>(<span class="ident">s</span>.<span class="ident">chars</span>().<span class="ident">next</span>().<span class="ident">unwrap</span>().<span class="ident">to_string</span>())
                     }
                 } <span class="kw">else</span> {
                     <span class="comment">// TODO re-arrange this block so this error is only created once</span>
-                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;%c requires int or char&quot;</span>.<span class="ident">to_string</span>()))
+                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;%c requires int or char&quot;</span>.<span class="ident">to_owned</span>()))
                 }
             }<span class="question-mark">?</span>;
             <span class="ident">format_spec</span>.<span class="ident">precision</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(<span class="number">1</span>));
@@ -3217,7 +3166,7 @@
                 <span class="prelude-val">Some</span>(<span class="ident">width_obj</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="ident">tuple_index</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                     <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">width_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">int_type</span>()) {
-                        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;* wants int&quot;</span>.<span class="ident">to_string</span>()))
+                        <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;* wants int&quot;</span>.<span class="ident">to_owned</span>()))
                     } <span class="kw">else</span> {
                         <span class="comment">// TODO: handle errors when truncating BigInt to usize</span>
                         <span class="kw-2">*</span><span class="ident">q</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">CFormatQuantity</span>::<span class="ident">Amount</span>(
@@ -3226,9 +3175,7 @@
                         <span class="prelude-val">Ok</span>(<span class="ident">tuple_index</span>)
                     }
                 }
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;not enough arguments for format string&quot;</span>.<span class="ident">to_string</span>()))
-                }
+                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;not enough arguments for format string&quot;</span>.<span class="ident">to_owned</span>())),
             }
         }
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">tuple_index</span>),
@@ -3258,7 +3205,7 @@
 
     <span class="kw">let</span> <span class="ident">values</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">mapping_required</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">values_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">dict_type</span>()) {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;format requires a mapping&quot;</span>.<span class="ident">to_string</span>()));
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;format requires a mapping&quot;</span>.<span class="ident">to_owned</span>()));
         }
         <span class="ident">values_obj</span>.<span class="ident">clone</span>()
     } <span class="kw">else</span> {
@@ -3269,7 +3216,7 @@
             <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">values_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">types</span>.<span class="ident">dict_type</span>)
         {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
-                <span class="string">&quot;not all arguments converted during string formatting&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="string">&quot;not all arguments converted during string formatting&quot;</span>.<span class="ident">to_owned</span>(),
             ));
         }
 
@@ -3289,7 +3236,7 @@
                 <span class="kw">let</span> <span class="ident">obj</span>: <span class="ident">PyObjectRef</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">format_spec</span>.<span class="ident">mapping_key</span> {
                     <span class="prelude-val">Some</span>(<span class="ident">key</span>) <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="comment">// TODO: change the KeyError message to match the one in cpython</span>
-                        <span class="ident">call_getitem</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">values</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">key</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>
+                        <span class="ident">call_getitem</span>(<span class="ident">vm</span>, <span class="kw-2">&amp;</span><span class="ident">values</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">key</span>.<span class="ident">to_owned</span>()))<span class="question-mark">?</span>
                     }
                     <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">objtuple</span>::<span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="ident">values</span>)
@@ -3313,7 +3260,7 @@
                         <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">elements</span>.<span class="ident">next</span>() {
                             <span class="prelude-val">Some</span>(<span class="ident">obj</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">obj</span>),
                             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_type_error</span>(
-                                <span class="string">&quot;not enough arguments for format string&quot;</span>.<span class="ident">to_string</span>(),
+                                <span class="string">&quot;not enough arguments for format string&quot;</span>.<span class="ident">to_owned</span>(),
                             )),
                         }<span class="question-mark">?</span>;
                         <span class="ident">tuple_index</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -3333,7 +3280,7 @@
         <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="op">!</span><span class="ident">objtype</span>::<span class="ident">isinstance</span>(<span class="kw-2">&amp;</span><span class="ident">values_obj</span>, <span class="kw-2">&amp;</span><span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">types</span>.<span class="ident">dict_type</span>)
     {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(
-            <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;not all arguments converted during string formatting&quot;</span>.<span class="ident">to_string</span>())
+            <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;not all arguments converted during string formatting&quot;</span>.<span class="ident">to_owned</span>())
         );
     }
     <span class="prelude-val">Ok</span>(<span class="ident">final_string</span>)
@@ -3359,8 +3306,7 @@
         <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">format_string</span>.<span class="ident">format_parts</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="ident">FormatPart</span>::<span class="ident">is_index</span>)
     {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(
-            <span class="string">&quot;cannot switch from automatic field numbering to manual field specification&quot;</span>
-                .<span class="ident">to_string</span>(),
+            <span class="string">&quot;cannot switch from automatic field numbering to manual field specification&quot;</span>.<span class="ident">to_owned</span>(),
         ));
     }
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">auto_argument_index</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1</span>;
@@ -3370,7 +3316,7 @@
                 <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">arguments</span>.<span class="ident">args</span>.<span class="ident">get</span>(<span class="ident">auto_argument_index</span>) {
                     <span class="prelude-val">Some</span>(<span class="ident">argument</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">call_object_format</span>(<span class="ident">vm</span>, <span class="ident">argument</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">format_spec</span>)<span class="question-mark">?</span>,
                     <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;tuple index out of range&quot;</span>.<span class="ident">to_string</span>()));
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;tuple index out of range&quot;</span>.<span class="ident">to_owned</span>()));
                     }
                 };
                 <span class="ident">auto_argument_index</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -3380,7 +3326,7 @@
                 <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">arguments</span>.<span class="ident">args</span>.<span class="ident">get</span>(<span class="kw-2">*</span><span class="ident">index</span> <span class="op">+</span> <span class="number">1</span>) {
                     <span class="prelude-val">Some</span>(<span class="ident">argument</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">call_object_format</span>(<span class="ident">vm</span>, <span class="ident">argument</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">format_spec</span>)<span class="question-mark">?</span>,
                     <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;tuple index out of range&quot;</span>.<span class="ident">to_string</span>()));
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_index_error</span>(<span class="string">&quot;tuple index out of range&quot;</span>.<span class="ident">to_owned</span>()));
                     }
                 };
                 <span class="ident">clone_value</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>)
@@ -3389,7 +3335,7 @@
                 <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">arguments</span>.<span class="ident">get_optional_kwarg</span>(<span class="kw-2">&amp;</span><span class="ident">keyword</span>) {
                     <span class="prelude-val">Some</span>(<span class="ident">argument</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">call_object_format</span>(<span class="ident">vm</span>, <span class="ident">argument</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">format_spec</span>)<span class="question-mark">?</span>,
                     <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_key_error</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">keyword</span>.<span class="ident">to_string</span>())));
+                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_key_error</span>(<span class="ident">vm</span>.<span class="ident">new_str</span>(<span class="ident">keyword</span>.<span class="ident">to_owned</span>())));
                     }
                 };
                 <span class="ident">clone_value</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>)
@@ -3411,7 +3357,7 @@
         <span class="kw">let</span> <span class="ident">result_string</span>: <span class="ident">String</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">part</span> {
             <span class="ident">FormatPart</span>::<span class="ident">AutoSpec</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">FormatPart</span>::<span class="ident">IndexSpec</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                    <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Format string contains positional fields&quot;</span>.<span class="ident">to_string</span>())
+                    <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;Format string contains positional fields&quot;</span>.<span class="ident">to_owned</span>())
                 );
             }
             <span class="ident">FormatPart</span>::<span class="ident">KeywordSpec</span>(<span class="ident">keyword</span>, <span class="ident">format_spec</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -3540,7 +3486,7 @@
             (<span class="string">&quot;Greek ῼitlecases ...&quot;</span>, <span class="string">&quot;greek ῳitlecases ...&quot;</span>),
         ];
         <span class="kw">for</span> (<span class="ident">title</span>, <span class="ident">input</span>) <span class="kw">in</span> <span class="ident">tests</span> {
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">PyString</span>::<span class="ident">from</span>(<span class="ident">input</span>).<span class="ident">title</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>).<span class="ident">as_str</span>(), <span class="ident">title</span>);
+            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">PyString</span>::<span class="ident">from</span>(<span class="ident">input</span>).<span class="ident">title</span>().<span class="ident">as_str</span>(), <span class="ident">title</span>);
         }
     }
 
@@ -3558,7 +3504,7 @@
         ];
 
         <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="ident">pos</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">PyString</span>::<span class="ident">from</span>(<span class="ident">s</span>).<span class="ident">istitle</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>));
+            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">PyString</span>::<span class="ident">from</span>(<span class="ident">s</span>).<span class="ident">istitle</span>());
         }
 
         <span class="kw">let</span> <span class="ident">neg</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
@@ -3571,7 +3517,7 @@
             <span class="string">&quot;NOT&quot;</span>,
         ];
         <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="ident">neg</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">PyString</span>::<span class="ident">from</span>(<span class="ident">s</span>).<span class="ident">istitle</span>(<span class="kw-2">&amp;</span><span class="ident">vm</span>));
+            <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">PyString</span>::<span class="ident">from</span>(<span class="ident">s</span>).<span class="ident">istitle</span>());
         }
     }
 

@@ -54,7 +54,7 @@
     <span class="kw">let</span> <span class="ident">keyword_kwlist</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">new_list</span>(
         <span class="ident">lexer</span>::<span class="ident">get_keywords</span>()
             .<span class="ident">keys</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">k</span>.<span class="ident">to_string</span>()))
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">k</span>.<span class="ident">to_owned</span>()))
             .<span class="ident">collect</span>(),
     );
 

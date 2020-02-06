@@ -304,7 +304,7 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">unix</span>))]</span>
-<span class="kw">fn</span> <span class="ident">time_sleep</span>(<span class="ident">dur</span>: <span class="ident">Duration</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+<span class="kw">fn</span> <span class="ident">time_sleep</span>(<span class="ident">dur</span>: <span class="ident">Duration</span>) {
     <span class="ident">std</span>::<span class="ident">thread</span>::<span class="ident">sleep</span>(<span class="ident">dur</span>);
 }
 
@@ -396,7 +396,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_str</span>(<span class="ident">formatted_time</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">time_ctime</span>(<span class="ident">secs</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">Either</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">i64</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">fn</span> <span class="ident">time_ctime</span>(<span class="ident">secs</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">Either</span><span class="op">&lt;</span><span class="ident">f64</span>, <span class="ident">i64</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
     <span class="kw">let</span> <span class="ident">instant</span> <span class="op">=</span> <span class="ident">optional_or_localtime</span>(<span class="ident">secs</span>);
     <span class="ident">instant</span>.<span class="ident">format</span>(<span class="kw-2">&amp;</span><span class="ident">CFMT</span>).<span class="ident">to_string</span>()
 }
@@ -465,7 +465,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">to_date_time</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">NaiveDateTime</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">invalid</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;invalid struct_time parameter&quot;</span>.<span class="ident">to_string</span>());
+        <span class="kw">let</span> <span class="ident">invalid</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> <span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;invalid struct_time parameter&quot;</span>.<span class="ident">to_owned</span>());
         <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">field</span> {
             (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">TryFromObject</span>::<span class="ident">try_from_object</span>(<span class="ident">vm</span>, <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>
@@ -496,7 +496,7 @@
         <span class="kw">let</span> <span class="ident">seq</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">extract_elements</span>::<span class="op">&lt;</span><span class="ident">PyObjectRef</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">seq</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">seq</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">9</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(
-                <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;time.struct_time() takes a sequence of length 9&quot;</span>.<span class="ident">to_string</span>())
+                <span class="ident">vm</span>.<span class="ident">new_type_error</span>(<span class="string">&quot;time.struct_time() takes a sequence of length 9&quot;</span>.<span class="ident">to_owned</span>())
             );
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">seq</span>.<span class="ident">into_iter</span>();

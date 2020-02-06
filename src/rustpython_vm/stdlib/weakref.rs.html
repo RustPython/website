@@ -48,7 +48,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
-<span class="kw">fn</span> <span class="ident">weakref_getweakrefcount</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+<span class="kw">fn</span> <span class="ident">weakref_getweakrefcount</span>(<span class="ident">obj</span>: <span class="ident">PyObjectRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
     <span class="ident">Rc</span>::<span class="ident">weak_count</span>(<span class="kw-2">&amp;</span><span class="ident">obj</span>)
 }
 
@@ -57,7 +57,7 @@
     <span class="ident">vm</span>.<span class="ident">ctx</span>.<span class="ident">new_list</span>(<span class="macro">vec</span><span class="macro">!</span>[])
 }
 
-<span class="kw">fn</span> <span class="ident">weakref_remove_dead_weakref</span>(<span class="ident">_obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_key</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) {
+<span class="kw">fn</span> <span class="ident">weakref_remove_dead_weakref</span>(<span class="ident">_obj</span>: <span class="ident">PyObjectRef</span>, <span class="ident">_key</span>: <span class="ident">PyObjectRef</span>) {
     <span class="comment">// TODO</span>
 }
 

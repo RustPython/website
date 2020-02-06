@@ -388,7 +388,7 @@
                         }))
                     } <span class="kw">else</span> {
                         <span class="ident">spec</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Constant</span> {
-                            <span class="ident">value</span>: <span class="ident">spec_expression</span>.<span class="ident">to_string</span>(),
+                            <span class="ident">value</span>: <span class="ident">spec_expression</span>.<span class="ident">to_owned</span>(),
                         }))
                     }
                 }
@@ -579,7 +579,7 @@
                 <span class="ident">value</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">mk_ident</span>(<span class="string">&quot;foo&quot;</span>, <span class="number">1</span>, <span class="number">1</span>)),
                 <span class="ident">conversion</span>: <span class="prelude-val">None</span>,
                 <span class="ident">spec</span>: <span class="prelude-val">Some</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Constant</span> {
-                    <span class="ident">value</span>: <span class="string">&quot;spec&quot;</span>.<span class="ident">to_string</span>(),
+                    <span class="ident">value</span>: <span class="string">&quot;spec&quot;</span>.<span class="ident">to_owned</span>(),
                 })),
             }
         );

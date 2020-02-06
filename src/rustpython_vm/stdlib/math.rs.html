@@ -471,7 +471,7 @@
 <span class="comment">// Helper macro:</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">make_math_func</span> {
     ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fun</span>:<span class="ident">ident</span> ) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fname</span>(<span class="ident">value</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fname</span>(<span class="ident">value</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
             <span class="ident">value</span>.<span class="ident">to_f64</span>().<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fun</span>()
         }
     };
@@ -479,7 +479,7 @@
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">make_math_func_bool</span> {
     ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fname</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fun</span>:<span class="ident">ident</span> ) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fname</span>(<span class="ident">value</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fname</span>(<span class="ident">value</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
             <span class="ident">value</span>.<span class="ident">to_f64</span>().<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fun</span>()
         }
     };
@@ -518,7 +518,7 @@
     };
 
     <span class="kw">if</span> <span class="ident">rel_tol</span> <span class="op">&lt;</span> <span class="number">0.0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">abs_tol</span> <span class="op">&lt;</span> <span class="number">0.0</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;tolerances must be non-negative&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;tolerances must be non-negative&quot;</span>.<span class="ident">to_owned</span>()));
     }
 
     <span class="kw">if</span> <span class="ident">a</span> <span class="op">=</span><span class="op">=</span> <span class="ident">b</span> {
@@ -544,7 +544,7 @@
     <span class="prelude-val">Ok</span>((<span class="ident">diff</span> <span class="op">&lt;</span><span class="op">=</span> (<span class="ident">rel_tol</span> <span class="op">*</span> <span class="ident">b</span>).<span class="ident">abs</span>()) <span class="op">|</span><span class="op">|</span> (<span class="ident">diff</span> <span class="op">&lt;</span><span class="op">=</span> (<span class="ident">rel_tol</span> <span class="op">*</span> <span class="ident">a</span>).<span class="ident">abs</span>()) <span class="op">|</span><span class="op">|</span> (<span class="ident">diff</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">abs_tol</span>))
 }
 
-<span class="kw">fn</span> <span class="ident">math_copysign</span>(<span class="ident">a</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">b</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_copysign</span>(<span class="ident">a</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">b</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">to_f64</span>();
     <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_nan</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">is_nan</span>() {
@@ -558,18 +558,18 @@
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_exp</span>, <span class="ident">exp</span>);
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_expm1</span>, <span class="ident">exp_m1</span>);
 
-<span class="kw">fn</span> <span class="ident">math_log</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">base</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">IntoPyFloat</span><span class="op">&gt;</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_log</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">base</span>: <span class="ident">OptionalArg</span><span class="op">&lt;</span><span class="ident">IntoPyFloat</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">base</span>.<span class="ident">map_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">to_f64</span>().<span class="ident">ln</span>(), <span class="op">|</span><span class="ident">base</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">to_f64</span>().<span class="ident">log</span>(<span class="ident">base</span>.<span class="ident">to_f64</span>()))
 }
 
-<span class="kw">fn</span> <span class="ident">math_log1p</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_log1p</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     (<span class="ident">x</span>.<span class="ident">to_f64</span>() <span class="op">+</span> <span class="number">1.0</span>).<span class="ident">ln</span>()
 }
 
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_log2</span>, <span class="ident">log2</span>);
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_log10</span>, <span class="ident">log10</span>);
 
-<span class="kw">fn</span> <span class="ident">math_pow</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">y</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_pow</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">y</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">x</span>.<span class="ident">to_f64</span>().<span class="ident">powf</span>(<span class="ident">y</span>.<span class="ident">to_f64</span>())
 }
 
@@ -580,24 +580,24 @@
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_asin</span>, <span class="ident">asin</span>);
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_atan</span>, <span class="ident">atan</span>);
 
-<span class="kw">fn</span> <span class="ident">math_atan2</span>(<span class="ident">y</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_atan2</span>(<span class="ident">y</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">y</span>.<span class="ident">to_f64</span>().<span class="ident">atan2</span>(<span class="ident">x</span>.<span class="ident">to_f64</span>())
 }
 
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_cos</span>, <span class="ident">cos</span>);
 
-<span class="kw">fn</span> <span class="ident">math_hypot</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">y</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_hypot</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">y</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">x</span>.<span class="ident">to_f64</span>().<span class="ident">hypot</span>(<span class="ident">y</span>.<span class="ident">to_f64</span>())
 }
 
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_sin</span>, <span class="ident">sin</span>);
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_tan</span>, <span class="ident">tan</span>);
 
-<span class="kw">fn</span> <span class="ident">math_degrees</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_degrees</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">x</span>.<span class="ident">to_f64</span>() <span class="op">*</span> (<span class="number">180.0</span> <span class="op">/</span> <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">consts</span>::<span class="ident">PI</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">math_radians</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_radians</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">x</span>.<span class="ident">to_f64</span>() <span class="op">*</span> (<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">consts</span>::<span class="ident">PI</span> <span class="op">/</span> <span class="number">180.0</span>)
 }
 
@@ -610,7 +610,7 @@
 <span class="macro">make_math_func</span><span class="macro">!</span>(<span class="ident">math_tanh</span>, <span class="ident">tanh</span>);
 
 <span class="comment">// Special functions:</span>
-<span class="kw">fn</span> <span class="ident">math_erf</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_erf</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_nan</span>() {
         <span class="ident">x</span>
@@ -619,7 +619,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">math_erfc</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_erfc</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_nan</span>() {
         <span class="ident">x</span>
@@ -628,7 +628,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">math_gamma</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_gamma</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_finite</span>() {
         <span class="ident">gamma</span>(<span class="ident">x</span>)
@@ -639,7 +639,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">math_lgamma</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_lgamma</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_finite</span>() {
         <span class="ident">ln_gamma</span>(<span class="ident">x</span>)
@@ -697,7 +697,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">math_frexp</span>(<span class="ident">value</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">i32</span>) {
+<span class="kw">fn</span> <span class="ident">math_frexp</span>(<span class="ident">value</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">i32</span>) {
     <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">is_finite</span>() {
         <span class="kw">let</span> (<span class="ident">m</span>, <span class="ident">e</span>) <span class="op">=</span> <span class="ident">objfloat</span>::<span class="ident">ufrexp</span>(<span class="ident">value</span>);
@@ -707,11 +707,11 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">math_ldexp</span>(<span class="ident">value</span>: <span class="ident">PyFloatRef</span>, <span class="ident">i</span>: <span class="ident">PyIntRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
+<span class="kw">fn</span> <span class="ident">math_ldexp</span>(<span class="ident">value</span>: <span class="ident">PyFloatRef</span>, <span class="ident">i</span>: <span class="ident">PyIntRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
     <span class="ident">value</span>.<span class="ident">to_f64</span>() <span class="op">*</span> (<span class="number">2_f64</span>).<span class="ident">powf</span>(<span class="ident">i</span>.<span class="ident">as_bigint</span>().<span class="ident">to_f64</span>().<span class="ident">unwrap</span>())
 }
 
-<span class="kw">fn</span> <span class="ident">math_gcd</span>(<span class="ident">a</span>: <span class="ident">PyIntRef</span>, <span class="ident">b</span>: <span class="ident">PyIntRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BigInt</span> {
+<span class="kw">fn</span> <span class="ident">math_gcd</span>(<span class="ident">a</span>: <span class="ident">PyIntRef</span>, <span class="ident">b</span>: <span class="ident">PyIntRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BigInt</span> {
     <span class="kw">use</span> <span class="ident">num_integer</span>::<span class="ident">Integer</span>;
     <span class="ident">a</span>.<span class="ident">as_bigint</span>().<span class="ident">gcd</span>(<span class="ident">b</span>.<span class="ident">as_bigint</span>())
 }
@@ -719,7 +719,7 @@
 <span class="kw">fn</span> <span class="ident">math_factorial</span>(<span class="ident">value</span>: <span class="ident">PyIntRef</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">BigInt</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">as_bigint</span>();
     <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">BigInt</span>::<span class="ident">zero</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;factorial() not defined for negative values&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;factorial() not defined for negative values&quot;</span>.<span class="ident">to_owned</span>()));
     } <span class="kw">else</span> <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">BigInt</span>::<span class="ident">one</span>() {
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">BigInt</span>::<span class="ident">from</span>(<span class="number">1u64</span>));
     }
@@ -727,7 +727,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">ret</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">math_modf</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>) {
+<span class="kw">fn</span> <span class="ident">math_modf</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">f64</span>, <span class="ident">f64</span>) {
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">to_f64</span>();
     <span class="kw">if</span> <span class="op">!</span><span class="ident">x</span>.<span class="ident">is_finite</span>() {
         <span class="kw">if</span> <span class="ident">x</span>.<span class="ident">is_infinite</span>() {
@@ -752,7 +752,7 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>)]</span>
 <span class="kw">fn</span> <span class="ident">math_nextafter</span>(<span class="ident">x</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">y</span>: <span class="ident">IntoPyFloat</span>, <span class="ident">vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyResult</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> {
-    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;not implemented for this platform&quot;</span>.<span class="ident">to_string</span>()))
+    <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_not_implemented_error</span>(<span class="string">&quot;not implemented for this platform&quot;</span>.<span class="ident">to_owned</span>()))
 }
 
 <span class="kw">fn</span> <span class="ident">fmod</span>(<span class="ident">x</span>: <span class="ident">f64</span>, <span class="ident">y</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f64</span> {
@@ -770,7 +770,7 @@
     <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">fmod</span>(<span class="ident">x</span>, <span class="ident">y</span>);
 
     <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">is_nan</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="op">!</span><span class="ident">x</span>.<span class="ident">is_nan</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="op">!</span><span class="ident">y</span>.<span class="ident">is_nan</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;math domain error&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;math domain error&quot;</span>.<span class="ident">to_owned</span>()));
     }
 
     <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
@@ -808,7 +808,7 @@
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">NAN</span>);
     }
     <span class="kw">if</span> <span class="ident">y</span>.<span class="ident">is_infinite</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;math domain error&quot;</span>.<span class="ident">to_string</span>()));
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">vm</span>.<span class="ident">new_value_error</span>(<span class="string">&quot;math domain error&quot;</span>.<span class="ident">to_owned</span>()));
     }
     <span class="prelude-val">Ok</span>(<span class="ident">x</span>)
 }

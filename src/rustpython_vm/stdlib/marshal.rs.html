@@ -29,7 +29,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">pyobject</span>::{<span class="ident">PyObjectRef</span>, <span class="ident">PyResult</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vm</span>::<span class="ident">VirtualMachine</span>;
 
-<span class="kw">fn</span> <span class="ident">marshal_dumps</span>(<span class="ident">co</span>: <span class="ident">PyCodeRef</span>, <span class="ident">_vm</span>: <span class="kw-2">&amp;</span><span class="ident">VirtualMachine</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyBytes</span> {
+<span class="kw">fn</span> <span class="ident">marshal_dumps</span>(<span class="ident">co</span>: <span class="ident">PyCodeRef</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PyBytes</span> {
     <span class="ident">PyBytes</span>::<span class="ident">new</span>(<span class="ident">co</span>.<span class="ident">code</span>.<span class="ident">to_bytes</span>())
 }
 
